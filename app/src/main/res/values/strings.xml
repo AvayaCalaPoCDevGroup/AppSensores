@@ -1,0 +1,42 @@
+<resources>
+    <string name="app_name">AppSensores</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">App Sensores</string>
+    <string name="nav_header_subtitle">Avaya</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="menu_inicio">Inicio</string>
+    <string name="menu_gallery">Gallery</string>
+    <string name="menu_slideshow">Slideshow</string>
+    <string name="menu_tools">Tools</string>
+    <string name="menu_acercade">Acerca de</string>
+    <string name="menu_send">Send</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="fragment_acercade_info">Aplicacion de Sensores \n Avaya 2020</string>
+
+    <!--Strings de Fragment_Home-->
+    <string name="fragment_home_elige">Elige un dispositivo:</string>
+    <string name="fragment_detalle_sensorpuck">Detalle de dispositivo:</string>
+
+    <!--Dialogos-->
+    <string name="dialog_agregar_dispositivo_title">AGREGAR DISPOSITIVO</string>
+    <string name="dialog_agregar_dispositivo_tipo">Tipo de dispositivo</string>
+    <string name="dialog_agregar_dispositivo_nombre">Nombre de dispositivo</string>
+    <string name="dialog_agregar_dispositivo_mac">Mac Address</string>
+    <string name="dialog_agregar_dispositivo_token">Token</string>
+    <string name="dialog_agregar_dispositivo_ok">ACEPTAR</string>
+
+    <!--encabezado vista dispositivo fragment-->
+    <string name="encabezado_fragment_base_dispo_info">Informacion del Dispositivo</string>
+
+    <!--Measures-->
+    <string name="measure_temperatura">Temperatura</string>
+    <string name="measure_humedad">Humedad Relativa</string>
+    <string name="measure_lux">Luz Ambiente</string>
+    <string name="measure_uv">Indice UV</string>
+    <string name="measure_voltaje">Voltaje</string>
+
+</resources>
