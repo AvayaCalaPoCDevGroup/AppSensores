@@ -6,6 +6,9 @@ import java.util.Arrays;
 
 public class Utils {
 
+    public static final String AVAYA_SHARED_PREFERENCES = "AVAYA_PREFERENCES";
+    public static final String AVAYA_INTERVALO = "AVAYA_INTERVALO";
+
     public static final int ENVIRONMENTAL_MODE = 0;
     public static final int BIOMETRIC_MODE = 1;
 

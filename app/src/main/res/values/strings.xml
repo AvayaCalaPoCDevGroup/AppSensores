@@ -20,6 +20,11 @@
     <!--Strings de Fragment_Home-->
     <string name="fragment_home_elige">Elige un dispositivo:</string>
     <string name="fragment_detalle_sensorpuck">Detalle de dispositivo:</string>
+    <string name="fragment_home_Eliminar">¿Deseas elimiar este dispositivo?</string>
+    <string name="fragment_home_Eliminar_si">Si</string>
+    <string name="fragment_home_Eliminar_no">No</string>
+    <string name="fragment_home_EliminarTelefono">Este Dispositivo no se puede borrar</string>
+
 
     <!--Dialogos-->
     <string name="dialog_agregar_dispositivo_title">AGREGAR DISPOSITIVO</string>
@@ -28,6 +33,13 @@
     <string name="dialog_agregar_dispositivo_mac">Mac Address</string>
     <string name="dialog_agregar_dispositivo_token">Token</string>
     <string name="dialog_agregar_dispositivo_ok">ACEPTAR</string>
+
+
+    <string name="dialog_settins_title">Ajustes</string>
+    <string name="dialog_settins_token">Ingresa el Token del Telefono</string>
+    <string name="dialog_settins_intervalo">Intervalo de actualizacion con Tago (min 5seg)</string>
+    <string name="dialog_settins_adv_token">El token es ecesario para continuar.</string>
+    <string name="dialog_settins_adv_intervalo">El intervalo es requerido y mayor o igual a 5 seg.</string>
 
     <!--encabezado vista dispositivo fragment-->
     <string name="encabezado_fragment_base_dispo_info">Informacion del Dispositivo</string>
@@ -38,5 +50,9 @@
     <string name="measure_lux">Luz Ambiente</string>
     <string name="measure_uv">Indice UV</string>
     <string name="measure_voltaje">Voltaje</string>
+    <string name="measure_hrmrate">Ritmo cardiaco</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

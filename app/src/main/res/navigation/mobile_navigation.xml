@@ -14,6 +14,9 @@
         <action
             android:id="@+id/action_nav_home_to_fragmentDetalleSensorPuck"
             app:destination="@id/fragmentDetalleSensorPuck" />
+        <action
+            android:id="@+id/action_nav_home_to_fragmentDetalleTel"
+            app:destination="@id/fragmentDetalleTel" />
     </fragment>
     <fragment
         android:id="@+id/nav_acercade"
@@ -30,6 +33,11 @@
             app:argType="integer"
             android:defaultValue="0" />
     </fragment>
+    <fragment
+        android:id="@+id/fragmentDetalleTel"
+        android:name="com.example.appsensores.ui.Fragments.vista_sensor.FragmentDetalleTel"
+        android:label="fragment_fragment_detalle_tel"
+        tools:layout="@layout/fragment_fragment_detalle_tel" />
     <!--
     <fragment
         android:id="@+id/nav_gallery"

@@ -6,6 +6,8 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import androidx.annotation.Nullable;
 
+import com.example.appsensores.Models.Dispositivos.BaseDispositivo;
+
 public class DBGeneralHandler extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "GeneralDB";
@@ -33,6 +35,15 @@ public class DBGeneralHandler extends SQLiteOpenHelper {
                 + KEY_DISPOSITIVOS_TIPODISPOSITIVO + " INT"
                 + ")";
         db.execSQL(CREATE_DISPOSITIVOS_TABLE);
+
+        String SEED = "insert into " + TABLE_DISPOSITIVOS + " ( " +
+                KEY_DISPOSITIVOS_NOMBRE + "," +
+                KEY_DISPOSITIVOS_MACADDRESS + "," +
+                KEY_DISPOSITIVOS_TOKEN + "," +
+                KEY_DISPOSITIVOS_TIPODISPOSITIVO +
+                ") values('Telefono', 'abcd', 'token', 0)";
+        db.execSQL(SEED);
+
     }
 
     @Override

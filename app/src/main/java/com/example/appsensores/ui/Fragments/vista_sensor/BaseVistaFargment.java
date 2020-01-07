@@ -1,9 +1,6 @@
 package com.example.appsensores.ui.Fragments.vista_sensor;
 
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothManager;
-import android.content.Context;
-import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -21,10 +18,14 @@ import androidx.fragment.app.Fragment;
 
 import com.example.appsensores.Clases.Enums.EnumTipoDispo;
 import com.example.appsensores.Models.Dispositivos.BaseDispositivo;
+import com.example.appsensores.Models.ValuesTago;
 import com.example.appsensores.R;
 import com.example.appsensores.Repositorio.RepositorioDBGeneralSingleton;
+import com.example.appsensores.WebMethods.WebMethods;
+import com.google.gson.Gson;
 
-import org.w3c.dom.Text;
+import java.util.ArrayList;
+
 
 public abstract class BaseVistaFargment extends Fragment {
 
@@ -36,6 +37,17 @@ public abstract class BaseVistaFargment extends Fragment {
     private TextView tv_fragment_base_dispo_tipo;
     private TextView tv_fragment_base_dispo_mac;
     private TextView tv_fragment_base_dispo_token;
+
+    private ArrayList<Switch> listSwitches = new ArrayList<>();
+
+    /***
+     * Bandera para diferenciar entre set del switch por usuario o por codigo
+     */
+    private boolean PROGRAMATICALLY_SET_CHEQUED = false;
+    /***
+     * Bandera para diferenciar entre set del switch general por usuario o por codigo
+     */
+    private boolean PROGRAMATICALLY_SET_CHEQUED_GRAL = false;
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
     @Override
@@ -61,7 +73,12 @@ public abstract class BaseVistaFargment extends Fragment {
         sw_fragmnetvista_gral.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                toogleControles(isChecked);
+                if(PROGRAMATICALLY_SET_CHEQUED_GRAL){
+                    PROGRAMATICALLY_SET_CHEQUED_GRAL = false;
+                } else {
+                    onToogleControles(isChecked);
+                    toogleControles(isChecked);
+                }
             }
         });
 
@@ -87,5 +104,77 @@ public abstract class BaseVistaFargment extends Fragment {
      * Aqui se debe implementar la logica para apagar o encender los sensores del dispositio actual
      * @param opcion
      */
-    protected abstract void toogleControles(Boolean opcion);
+    protected abstract void onToogleControles(Boolean opcion);
+
+    /***
+     * Metodo para cambiar el estado de los switch de la UI dependiendo del estado del switch general
+     * @param isChecked
+     */
+    private void toogleControles(boolean isChecked) {
+        for (Switch unit : listSwitches ) {
+            PROGRAMATICALLY_SET_CHEQUED = true;
+            unit.setChecked(isChecked);
+        }
+    }
+
+    /***
+     * Metodo para checar el estado de todos los SW, si alguno esta en ON, el sw general se pone en ON, si no se pone en OFF
+     */
+    private void checkSwitches(){
+        if(PROGRAMATICALLY_SET_CHEQUED)
+            PROGRAMATICALLY_SET_CHEQUED = false;
+        else {
+            for (Switch unit : listSwitches ) {
+
+                if(unit.isChecked()){
+                    //si ya esta activo no tenemos que activarlo de nuevo
+                    //if(!sw_fragmnetvista_gral.isChecked()) {
+                    PROGRAMATICALLY_SET_CHEQUED_GRAL = true;
+                    sw_fragmnetvista_gral.setChecked(true);
+                    //}
+                    return;
+                }
+
+            }
+            PROGRAMATICALLY_SET_CHEQUED_GRAL = true;
+            sw_fragmnetvista_gral.setChecked(false);
+        }
+    }
+
+    /***
+     * Listener para todos los switches de la UI, es asi por que todos checan el estatus del SW general.
+     */
+    protected CompoundButton.OnCheckedChangeListener swListener = new CompoundButton.OnCheckedChangeListener() {
+        @Override
+        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+            checkSwitches();
+        }
+    };
+
+    /***
+     * Async TASK para mandar informacion a Tago.io
+     */
+    protected class EnviarInformacionTago extends AsyncTask<ValuesTago[],Void,String >{
+
+        @Override
+        protected String doInBackground(ValuesTago[]... lists) {
+            String json = new Gson().toJson(lists[0]);
+            String resp = WebMethods.getStringPOSTmethodTago(WebMethods.IP_SERVER, " 8e8d61d2-a77c-4313-9472-a5492674939a",json);
+            return resp;
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            Log.d("BaseVista", "Respuesta del envio a tago: " + s);
+        }
+    }
+
+    /***
+     * Metodo para agregar Switches que se veran afectados por el Swtich del encabezado general
+     * @param sw
+     */
+    protected void addSwitchToList(Switch sw){
+        this.listSwitches.add(sw);
+    }
 }

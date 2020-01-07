@@ -4,8 +4,10 @@ import android.net.Uri;
 import android.os.Bundle;
 
 import com.example.appsensores.R;
+import com.example.appsensores.ui.Dialogs.DialogSettings;
 import com.example.appsensores.ui.Fragments.acercade.AcercaDeFragment;
 
+import androidx.annotation.NonNull;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -19,6 +21,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import android.view.Menu;
+import android.view.MenuItem;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity implements AcercaDeFragment.OnFragmentInteractionListener {
 
@@ -43,15 +47,6 @@ public class MainActivity extends AppCompatActivity implements AcercaDeFragment.
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
 
-        /*navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem v) {
-                if(v.getItemId() == R.id.nav_acercade){
-                    Toast.makeText(getApplicationContext(), "Fragment acerca de clikeado", Toast.LENGTH_SHORT).show();
-                }
-                return true;
-            }
-        });*/
     }
 
     @Override
@@ -59,6 +54,20 @@ public class MainActivity extends AppCompatActivity implements AcercaDeFragment.
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        Toast.makeText(this,"Menu Settings", Toast.LENGTH_SHORT).show();
+        switch (item.getItemId()){
+            case R.id.action_settings:
+                DialogSettings dialogSettings = new DialogSettings(this);
+                dialogSettings.show();
+                break;
+                default:
+                    break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
