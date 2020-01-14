@@ -3,6 +3,9 @@ package com.example.appsensores.Clases;
 import com.example.appsensores.Models.Dispositivos.DispoSensorPuck;
 
 import java.util.Arrays;
+import java.util.UUID;
+
+import static java.util.UUID.fromString;
 
 public class Utils {
 
@@ -90,5 +93,85 @@ public class Utils {
     static int Int16( byte LSB, byte MSB )
     {
         return Int8(LSB) + (Int8(MSB)*256);
+    }
+
+    /***
+     * Retrona el nobre de la caracterustica a partir de su UUID
+     * @param uuid UUID de la Caracteristica
+     * @return
+     */
+    static String getCharacteristicName(UUID uuid)
+    {
+        String resp;
+        switch (uuid.toString()){
+                case "00002a00-0000-1000-8000-00805f9b34fb": resp = "DEVICE_NAME"; break;
+                case "00002a01-0000-1000-8000-00805f9b34fb": resp = "APPEARANCE"; break;
+                case "00002a05-0000-1000-8000-00805f9b34fb": resp = "ATTRIBUTE_CHANGED"; break;
+                case "00002a23-0000-1000-8000-00805f9b34fb": resp = "SYSTEM_ID"; break;
+                case "00002a24-0000-1000-8000-00805f9b34fb": resp = "MODEL_NUMBER"; break;
+                case "00002a25-0000-1000-8000-00805f9b34fb": resp = "SERIAL_NUMBER"; break;
+                case "00002a26-0000-1000-8000-00805f9b34fb": resp = "FIRMWARE_REVISION"; break;
+                case "00002a27-0000-1000-8000-00805f9b34fb": resp = "HARDWARE_REVISION"; break;
+                case "00002a29-0000-1000-8000-00805f9b34fb": resp = "MANUFACTURER_NAME"; break;
+                case "00002a19-0000-1000-8000-00805f9b34fb": resp = "BATTERY_LEVEL"; break;
+                case "EC61A454-ED01-A5E8-B8F9-DE9EC026EC51": resp = "POWER_SOURCE"; break;
+                case "00002a55-0000-1000-8000-00805f9b34fb": resp = "CSC_CONTROL_POINT"; break;
+                case "00002a5b-0000-1000-8000-00805f9b34fb": resp = "CSC_MEASUREMENT"; break;
+                case "00002a5c-0000-1000-8000-00805f9b34fb": resp = "CSC_FEATURE"; break;
+                case "9f70a8fc-826c-4c6f-9c72-41b81d1c9561": resp = "CSC_UNKNOWN"; break;
+                case "00002a76-0000-1000-8000-00805f9b34fb": resp = "UV_INDEX"; break;
+                case "00002a6d-0000-1000-8000-00805f9b34fb": resp = "PRESSURE"; break;
+                case "00002a6e-0000-1000-8000-00805f9b34fb": resp = "TEMPERATURE"; break;
+                case "00002a6f-0000-1000-8000-00805f9b34fb": resp = "HUMIDITY"; break;
+                case "c8546913-bfd9-45eb-8dde-9f8754f4a32e": resp = "AMBIENT_LIGHT_REACT"; break;
+                case "c8546913-bf01-45eb-8dde-9f8754f4a32e": resp = "LIGHT_SENSE"; break;
+                case "c8546913-bf02-45eb-8dde-9f8754f4a32e": resp = "SOUND_LEVEL"; break;
+                case "c8546913-bf03-45eb-8dde-9f8754f4a32e": resp = "ENV_CONTROL_POINT"; break;
+                case "efd658ae-c401-ef33-76e7-91b00019103b": resp = "CO2_READING"; break;
+                case "efd658ae-c402-ef33-76e7-91b00019103b": resp = "TVOC_READING"; break;
+                case "efd658ae-c403-ef33-76e7-91b00019103b": resp = "AIR_QUALITY_CONTROL_POINT"; break;
+                case "f598dbc5-2f01-4ec5-9936-b3d1aa4f957f": resp = "HALL_STATE"; break;
+                case "f598dbc5-2f02-4ec5-9936-b3d1aa4f957f": resp = "HALL_FIELD_STRENGTH"; break;
+                case "f598dbc5-2f03-4ec5-9936-b3d1aa4f957f": resp = "HALL_CONTROL_POINT"; break;
+                case "c4c1f6e2-4be5-11e5-885d-feff819cdc9f": resp = "ACCELERATION"; break;
+                case "b7c4b694-bee3-45dd-ba9f-f3b5e994f49a": resp = "ORIENTATION"; break;
+                case "71e30b8c-4131-4703-b0a0-b0bbba75856b": resp = "CALIBRATE"; break;
+                case "fcb89c40-c601-59f3-7dc3-5ece444a401b": resp = "PUSH_BUTTONS"; break;
+                case "fcb89c40-c602-59f3-7dc3-5ece444a401b": resp = "LEDS"; break;
+                case "fcb89c40-c603-59f3-7dc3-5ece444a401b": resp = "RGB_LEDS"; break;
+                case "fcb89c40-c604-59f3-7dc3-5ece444a401b": resp = "UI_CONTROL_POINT"; break;
+                case "00002a56-0000-1000-8000-00805f9b34fb": resp = "DIGITAL"; break;
+            default : resp = "UNKNOW";
+        }
+
+        return resp;
+    }
+
+    /***
+     * Retrona el nobre de el serivicio a partir de su UUID
+     * @param uuid UUID de el Servicio
+     * @return
+     */
+    static String getServiceName(UUID uuid)
+    {
+        String resp;
+        switch (uuid.toString()){
+            case "00001800-0000-1000-8000-00805f9b34fb" :  resp = "SERVICE_GENERIC_ACCESS"          ; break;
+            case "00001801-0000-1000-8000-00805f9b34fb" :  resp = "SERVICE_GENERIC_ATTRIBUTE"       ; break;
+            case "0000180a-0000-1000-8000-00805f9b34fb" :  resp = "SERVICE_DEVICE_INFORMATION"      ; break;
+            case "0000180f-0000-1000-8000-00805f9b34fb" :  resp = "SERVICE_BATTERY"                 ; break;
+            case "00001815-0000-1000-8000-00805f9b34fb" :  resp = "SERVICE_AUTOMATION_IO"           ; break;
+            case "00001816-0000-1000-8000-00805f9b34fb" :  resp = "SERVICE_CSC"                     ; break;
+            case "0000181a-0000-1000-8000-00805f9b34fb" :  resp = "SERVICE_ENVIRONMENT_SENSING"     ; break;
+            case "a4e649f4-4be5-11e5-885d-feff819cdc9f" :  resp = "SERVICE_ACCELERATION_ORIENTATION"; break;
+            case "d24c4f4e-17a7-4548-852c-abf51127368b" :  resp = "SERVICE_AMBIENT_LIGHT"           ; break;
+            case "efd658ae-c400-ef33-76e7-91b00019103b" :  resp = "SERVICE_INDOOR_AIR_QUALITY"      ; break;
+            case "f598dbc5-2f00-4ec5-9936-b3d1aa4f957f" :  resp = "SERVICE_HALL_EFFECT"             ; break;
+            case "fcb89c40-c600-59f3-7dc3-5ece444a401b" :  resp = "SERVICE_USER_INTERFACE"          ; break;
+            case "ec61a454-ed00-a5e8-b8f9-de9ec026ec51" :  resp = "SERVICE_POWER_MANAGEMENT"        ; break;
+            default : resp = "UNKNOW";
+        }
+
+        return resp;
     }
 }

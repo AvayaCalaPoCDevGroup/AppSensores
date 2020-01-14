@@ -94,9 +94,9 @@ public class FragmentDetalleSensorPuck extends BaseVistaFargment {
             //
             bluetoothLeScanner = Adapter.getBluetoothLeScanner();
             ArrayList<ScanFilter> filters = new ArrayList<>();
-            ScanFilter filter = new ScanFilter.Builder().setDeviceAddress("D4:81:CA:E1:7A:DC").build();
+            //ScanFilter filter = new ScanFilter.Builder().setDeviceAddress("D4:81:CA:E1:7A:DC").build(); //SensorPuck
             //ScanFilter filter = new ScanFilter.Builder().setDeviceAddress("74:1C:E4:5E:4E:32").build();
-            filters.add(filter);
+            //filters.add(filter);
             ScanSettings scansattings = new ScanSettings.Builder().setScanMode(ScanSettings.SCAN_MODE_BALANCED).setReportDelay(0).build();
             bluetoothLeScanner.startScan(filters,scansattings,ScanCallback);
             //bluetoothLeScanner.startScan(ScanCallback);

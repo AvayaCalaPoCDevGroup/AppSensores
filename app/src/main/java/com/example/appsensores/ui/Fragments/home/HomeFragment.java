@@ -108,6 +108,9 @@ public class HomeFragment extends Fragment {
                     case TELEFONO :
                         Navigation.findNavController(getView()).navigate(R.id.action_nav_home_to_fragmentDetalleTel,bundle);
                         break;
+                    case THUNDERBOARD:
+                        Navigation.findNavController(getView()).navigate(R.id.action_nav_home_to_fragmentThunderBoard,bundle);
+                        break;
                     default:
                         Navigation.findNavController(getView()).navigate(R.id.action_nav_home_to_fragmentDetalleSensorPuck,bundle);
                         break;

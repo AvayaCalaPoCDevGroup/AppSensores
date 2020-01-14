@@ -17,6 +17,9 @@
         <action
             android:id="@+id/action_nav_home_to_fragmentDetalleTel"
             app:destination="@id/fragmentDetalleTel" />
+        <action
+            android:id="@+id/action_nav_home_to_fragmentThunderBoard"
+            app:destination="@id/fragmentThunderBoard" />
     </fragment>
     <fragment
         android:id="@+id/nav_acercade"
@@ -38,6 +41,11 @@
         android:name="com.example.appsensores.ui.Fragments.vista_sensor.FragmentDetalleTel"
         android:label="fragment_fragment_detalle_tel"
         tools:layout="@layout/fragment_fragment_detalle_tel" />
+    <fragment
+        android:id="@+id/fragmentThunderBoard"
+        android:name="com.example.appsensores.ui.Fragments.vista_sensor.FragmentThunderBoard"
+        android:label="fragment_detalle_thunder"
+        tools:layout="@layout/fragment_detalle_thunder" />
     <!--
     <fragment
         android:id="@+id/nav_gallery"

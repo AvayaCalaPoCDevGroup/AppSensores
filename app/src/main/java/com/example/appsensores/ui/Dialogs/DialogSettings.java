@@ -45,7 +45,7 @@ public class DialogSettings extends Dialog {
         btn_dialog_settings_ok.setOnClickListener(v -> {
             if (et_dialog_settings_token.getText().toString().equals("")) {
                 toastMessage(getContext().getResources().getString(R.string.dialog_settins_adv_token));
-            } else if (Integer.parseInt(et_dialog_settings_intervalo.getText().toString()) < 5) {
+            } else if (Integer.parseInt(et_dialog_settings_intervalo.getText().toString()) < 3) {
                 toastMessage(getContext().getResources().getString(R.string.dialog_settins_adv_intervalo));
             } else {
                 //guardamos en Shared preferences
