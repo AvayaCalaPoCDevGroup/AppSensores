@@ -16,6 +16,7 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.media.audiofx.AudioEffect;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.example.appsensores.Models.Dispositivos.DispoThunderBoard;
 
@@ -156,6 +157,12 @@ public class GattClient {
                 gatt.writeDescriptor(listDescriptors.get(nextDescriptor++));
                 Log.e("onDescriptorWrite", "descriptor" + nextDescriptor + " UUID" + listDescriptors.get(nextDescriptor).getCharacteristic().getUuid().toString());
             }
+        }
+
+        @Override
+        public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
+            super.onCharacteristicWrite(gatt, characteristic, status);
+
         }
 
         private void readCharacteristic(BluetoothGattCharacteristic characteristic) {
@@ -335,11 +342,25 @@ public class GattClient {
                     bleManager.selectedDeviceStatusMonitor.onNext(new StatusEvent(device));*/
                 } else if (ThunderBoardUuids.UUID_CHARACTERISTIC_DIGITAL.equals(characteristic.getUuid())) {
                     //LEDS?????????????????????????????????????
-                    /*Timber.d("value: %02x", ba[0]);
-                    ThunderBoardSensorIo sensor = device.getSensorIo();
-                    sensor.isSensorDataChanged = true;
-                    sensor.setSwitch(ba[0]);
-                    bleManager.selectedDeviceMonitor.onNext(device);*/
+                    Log.d("Switches","value: " + ba[0]);
+                    switch(ba[0]){
+                        case 0b00000000:
+                            mDispoThunderBoard.sw0 = 0;
+                            mDispoThunderBoard.sw1 = 0;
+                            break;
+                        case 0b00000001:
+                            mDispoThunderBoard.sw0 = 1;
+                            mDispoThunderBoard.sw1 = 0;
+                            break;
+                        case 0b00000100:
+                            mDispoThunderBoard.sw0 = 0;
+                            mDispoThunderBoard.sw1 = 1;
+                            break;
+                        case 0b00000101:
+                            mDispoThunderBoard.sw0 = 1;
+                            mDispoThunderBoard.sw1 = 1;
+                            break;
+                    }
                 } else if (ThunderBoardUuids.UUID_CHARACTERISTIC_CSC_MEASUREMENT.equals(uuid)) {
                     /*byte wheelRevolutionDataPresent = ba[0];
                     int cumulativeWheelRevolutions = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT32,
@@ -439,9 +460,45 @@ public class GattClient {
         }
     }
 
+    /***
+     * Metodo para solocitar informacion de las caracteristicas que no envian notificacion
+     */
     public void requestDataThunderBoard(){
-        if(mBluetoothGatt != null && nextDescriptor == listDescriptors.size()){  //Si Gatt no es null y ya se madaron todos los descriptores
+        if(mBluetoothGatt != null && nextDescriptor == listDescriptors.size() && listDescriptors.size() > 0 ){  //Si Gatt no es null y ya se madaron todos los descriptores
             mBluetoothGatt.readCharacteristic(listCharacteristics.get(nextCharacteristic++));
+        }
+    }
+
+    /***
+     * Metodo para mandar un valor a la characteristica UUID_SERVICE_AUTOMATION_IO
+     * @param commando paramentro con byte (en int) que contiene la informacion de os leds a encender
+     */
+    public void sendDataLeds(int commando){
+        if(mBluetoothGatt != null){
+            BluetoothGattService service = mBluetoothGatt.getService(ThunderBoardUuids.UUID_SERVICE_AUTOMATION_IO);
+            int property = BluetoothGattCharacteristic.PROPERTY_WRITE;
+            List<BluetoothGattCharacteristic> results = new ArrayList<>();
+            for (BluetoothGattCharacteristic c : service.getCharacteristics()) {
+                int props = c.getProperties();
+                if (ThunderBoardUuids.UUID_CHARACTERISTIC_DIGITAL.equals(c.getUuid())
+                        && (property == (property & props))) {
+                    results.add(c);
+                }
+            }
+            //BluetoothGattCharacteristic characteristic = service.getCharacteristic(ThunderBoardUuids.UUID_CHARACTERISTIC_DIGITAL);
+            BluetoothGattCharacteristic characteristic = results.get(0);
+            characteristic.setValue(commando, BluetoothGattCharacteristic.FORMAT_UINT8, 0);
+            characteristic.setWriteType(BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT);
+
+            while(nextCharacteristic != 0){
+                //Este while es para esperar a que se acaben de leer las caracteristicas sin descriptores
+                if(nextCharacteristic >= listCharacteristics.size()) break;
+            }
+
+            boolean resp = mBluetoothGatt.writeCharacteristic(characteristic);
+            if(resp){
+                //Toast.makeText(mContext,"OK", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 

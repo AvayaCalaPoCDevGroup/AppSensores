@@ -22,6 +22,6 @@ public class DispoThunderBoard extends BaseDispositivo {
 
     public int batteryLevel;
 
-
-
+    public int sw0;
+    public int sw1;
 }

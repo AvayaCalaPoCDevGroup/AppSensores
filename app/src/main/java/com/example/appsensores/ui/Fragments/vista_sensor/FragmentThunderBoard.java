@@ -6,13 +6,16 @@ import android.bluetooth.le.BluetoothLeScanner;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -46,6 +49,8 @@ public class FragmentThunderBoard extends BaseVistaFargment {
     private TextView tv_fragmentdetalle_thunder_ax;
     private TextView tv_fragmentdetalle_thunder_ay;
     private TextView tv_fragmentdetalle_thunder_az;
+    private TextView tv_fragmentdetalle_thunder_sw0;
+    private TextView tv_fragmentdetalle_thunder_sw1;
 
     private Switch sw_fragmentdetalle_thunder_temperatura;
     private Switch sw_fragmentdetalle_thunder_humedad;
@@ -58,6 +63,9 @@ public class FragmentThunderBoard extends BaseVistaFargment {
     private Switch sw_fragmentdetalle_thunder_ax;
     private Switch sw_fragmentdetalle_thunder_ay;
     private Switch sw_fragmentdetalle_thunder_az;
+
+    private ToggleButton tb_fragmentdetalle_thunder_ledblue;
+    private ToggleButton tb_fragmentdetalle_thunder_ledgreen;
 
 
     @Nullable
@@ -109,6 +117,8 @@ public class FragmentThunderBoard extends BaseVistaFargment {
         tv_fragmentdetalle_thunder_ax =             view.findViewById(R.id.tv_fragmentdetalle_thunder_ax);
         tv_fragmentdetalle_thunder_ay =             view.findViewById(R.id.tv_fragmentdetalle_thunder_ay);
         tv_fragmentdetalle_thunder_az =             view.findViewById(R.id.tv_fragmentdetalle_thunder_az);
+        tv_fragmentdetalle_thunder_sw0 =            view.findViewById(R.id.tv_fragmentdetalle_thunder_sw0);
+        tv_fragmentdetalle_thunder_sw1 =            view.findViewById(R.id.tv_fragmentdetalle_thunder_sw1);
 
         sw_fragmentdetalle_thunder_temperatura =    view.findViewById(R.id.sw_fragmentdetalle_thunder_temperatura);
         sw_fragmentdetalle_thunder_humedad =        view.findViewById(R.id.sw_fragmentdetalle_thunder_humedad);
@@ -133,6 +143,12 @@ public class FragmentThunderBoard extends BaseVistaFargment {
         sw_fragmentdetalle_thunder_ax.setOnCheckedChangeListener(swListener);
         sw_fragmentdetalle_thunder_ay.setOnCheckedChangeListener(swListener);
         sw_fragmentdetalle_thunder_az.setOnCheckedChangeListener(swListener);
+
+        tb_fragmentdetalle_thunder_ledblue = view.findViewById(R.id.tb_fragmentdetalle_thunder_ledblue);
+        tb_fragmentdetalle_thunder_ledgreen = view.findViewById(R.id.tb_fragmentdetalle_thunder_ledgreen);
+
+        tb_fragmentdetalle_thunder_ledblue.setOnCheckedChangeListener(listener_tb);
+        tb_fragmentdetalle_thunder_ledgreen.setOnCheckedChangeListener(listener_tb);
 
         //Agregamos los switches en la clase padre para que sean afectados con la accion del switch general
         addSwitchToList(sw_fragmentdetalle_thunder_temperatura);
@@ -173,18 +189,44 @@ public class FragmentThunderBoard extends BaseVistaFargment {
         });
     }
 
+    CompoundButton.OnCheckedChangeListener listener_tb = new CompoundButton.OnCheckedChangeListener() {
+        @Override
+        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+            int comando = 0;
+            if(buttonView == tb_fragmentdetalle_thunder_ledblue){
+                if (isChecked) comando = 1;
+                if (tb_fragmentdetalle_thunder_ledgreen.isChecked()) comando |= 4;
+            } else if (buttonView == tb_fragmentdetalle_thunder_ledgreen){
+                if (isChecked) comando = 4;
+                if (tb_fragmentdetalle_thunder_ledblue.isChecked()) comando |= 1;
+            }
+
+            mGattClient.sendDataLeds(comando);
+        }
+    };
+
+    /***
+     * Metodo para actualizar la UI con los valores actuales del dispositivo
+     * @param dispo
+     */
     private void updateUI(DispoThunderBoard dispo) {
         tv_fragmentdetalle_thunder_temperatura.setText((sw_fragmentdetalle_thunder_temperatura.isChecked() ? dispo.Temperature : 0) + "°C");
         tv_fragmentdetalle_thunder_humedad.setText(( sw_fragmentdetalle_thunder_humedad.isChecked() ? dispo.Humidity : 0) + "%");
         tv_fragmentdetalle_thunder_lux.setText(( sw_fragmentdetalle_thunder_lux.isChecked() ? dispo.AmbientLight : 0) + " lux");
         tv_fragmentdetalle_thunder_uv.setText(""+ ( sw_fragmentdetalle_thunder_uv.isChecked() ? dispo.UV_Index : 0));
-        tv_fragmentdetalle_thunder_voltaje.setText(( sw_fragmentdetalle_thunder_voltaje.isChecked() ? dispo.batteryLevel : 0) + " volts");
+        tv_fragmentdetalle_thunder_voltaje.setText(( sw_fragmentdetalle_thunder_voltaje.isChecked() ? dispo.batteryLevel : 0) + " %");
         tv_fragmentdetalle_thunder_ox.setText(""+(sw_fragmentdetalle_thunder_ox.isChecked() ? dispo.Orientation_x : 0));
         tv_fragmentdetalle_thunder_oy.setText(""+(sw_fragmentdetalle_thunder_oy.isChecked() ? dispo.Orientation_y : 0));
         tv_fragmentdetalle_thunder_oz.setText(""+(sw_fragmentdetalle_thunder_oz.isChecked() ? dispo.Orientation_z : 0));
         tv_fragmentdetalle_thunder_ax.setText(""+(sw_fragmentdetalle_thunder_ax.isChecked() ? dispo.Acelereation_x : 0));
         tv_fragmentdetalle_thunder_ay.setText(""+(sw_fragmentdetalle_thunder_ay.isChecked() ? dispo.Acelereation_y : 0));
         tv_fragmentdetalle_thunder_az.setText(""+(sw_fragmentdetalle_thunder_az.isChecked() ? dispo.Acelereation_z : 0));
+
+        Drawable drawOn = getActivity().getDrawable(R.drawable.ic_lights_on_red);
+        Drawable drawOff = getActivity().getDrawable(R.drawable.ic_lights_off);
+
+        tv_fragmentdetalle_thunder_sw0.setBackground(dispo.sw0 == 0 ? drawOff : drawOn);
+        tv_fragmentdetalle_thunder_sw1.setBackground(dispo.sw1 == 0 ? drawOff : drawOn);
     }
 
     @Override
