@@ -33,6 +33,7 @@
     <string name="dialog_agregar_dispositivo_mac">Mac Address</string>
     <string name="dialog_agregar_dispositivo_token">Token</string>
     <string name="dialog_agregar_dispositivo_ok">ACEPTAR</string>
+    <string name="dialog_agregar_dispositivo_search"> + </string>
 
 
     <string name="dialog_settins_title">Ajustes</string>
@@ -40,6 +41,10 @@
     <string name="dialog_settins_intervalo">Intervalo de actualizacion con Tago (min 5seg)</string>
     <string name="dialog_settins_adv_token">El token es ecesario para continuar.</string>
     <string name="dialog_settins_adv_intervalo">El intervalo es requerido y mayor o igual a 5 seg.</string>
+    <string name="dialog_wait_title">Informacion</string>
+    <string name="dialog_wait_msg">Enviando comandos...</string>
+
+    <string name="dialog_scan_devices_title">Elige un Dispositivo</string>
 
     <!--encabezado vista dispositivo fragment-->
     <string name="encabezado_fragment_base_dispo_info">Informacion del Dispositivo</string>

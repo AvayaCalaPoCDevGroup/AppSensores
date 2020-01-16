@@ -1,5 +1,6 @@
 package com.example.appsensores.ui.Fragments.vista_sensor;
 
+import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;
 import android.bluetooth.le.BluetoothLeScanner;
@@ -8,13 +9,13 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
@@ -23,8 +24,8 @@ import androidx.annotation.Nullable;
 import com.example.appsensores.Clases.GattClient;
 import com.example.appsensores.Clases.STimer;
 import com.example.appsensores.Clases.Utils;
-import com.example.appsensores.Models.Dispositivos.DispoSensorPuck;
 import com.example.appsensores.Models.Dispositivos.DispoThunderBoard;
+import com.example.appsensores.Models.ValuesTago;
 import com.example.appsensores.R;
 
 public class FragmentThunderBoard extends BaseVistaFargment {
@@ -103,6 +104,12 @@ public class FragmentThunderBoard extends BaseVistaFargment {
     }
 
     @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+    }
+
+    @Override
     protected void setControles(View view) {
         mGattClient = new GattClient(mDispoThunderBoard);
 
@@ -163,7 +170,7 @@ public class FragmentThunderBoard extends BaseVistaFargment {
         addSwitchToList(sw_fragmentdetalle_thunder_ay);
         addSwitchToList(sw_fragmentdetalle_thunder_az);
 
-        mGattClient.onCreate(getContext(), "00:0B:57:1C:63:50", new GattClient.OnCounterReadListener() {
+        mGattClient.onCreate(getContext(), "00:0B:57:1C:63:50", new GattClient.OnReadListener() {
             @Override
             public void onReadValues(final DispoThunderBoard dispo) {
                 getActivity().runOnUiThread(new Runnable() {
@@ -201,7 +208,13 @@ public class FragmentThunderBoard extends BaseVistaFargment {
                 if (tb_fragmentdetalle_thunder_ledblue.isChecked()) comando |= 1;
             }
 
-            mGattClient.sendDataLeds(comando);
+            ProgressDialog dialog = ProgressDialog.show(getContext(), getResources().getString(R.string.dialog_wait_title), getResources().getString(R.string.dialog_wait_msg), true);
+            mGattClient.sendDataLeds(comando, new Handler(msg -> {
+                if(msg.what == -1)
+                    dialog.dismiss();
+                return true;
+            }));
+
         }
     };
 
@@ -238,6 +251,7 @@ public class FragmentThunderBoard extends BaseVistaFargment {
     public void onDestroyView() {
         super.onDestroyView();
         mGattClient.onDestroy();
+        mSTimer.stop();
     }
 
     /* Esto se llama una vez por segundo en la UI thread */
@@ -252,5 +266,23 @@ public class FragmentThunderBoard extends BaseVistaFargment {
     };
 
     private void sendData() {
+        ValuesTago[] values = {
+                new ValuesTago("Temperatura", ""    +( sw_fragmentdetalle_thunder_temperatura.isChecked() ? mDispoThunderBoard.Temperature : 0)),
+                new ValuesTago("Humidity", ""       +( sw_fragmentdetalle_thunder_humedad.isChecked() ? mDispoThunderBoard.Humidity : 0)),
+                new ValuesTago("AmbientLight", ""   +( sw_fragmentdetalle_thunder_lux.isChecked() ? mDispoThunderBoard.AmbientLight : 0)),
+                new ValuesTago("UV_Index", ""       +( sw_fragmentdetalle_thunder_uv.isChecked() ? mDispoThunderBoard.UV_Index : 0)),
+                new ValuesTago("BatteryLevel", ""   +( sw_fragmentdetalle_thunder_voltaje.isChecked() ? mDispoThunderBoard.batteryLevel : 0)),
+                new ValuesTago("Orientation_x", ""  +( sw_fragmentdetalle_thunder_ox.isChecked() ? mDispoThunderBoard.Orientation_x : 0)),
+                new ValuesTago("Orientation_y", ""  +( sw_fragmentdetalle_thunder_oy.isChecked() ? mDispoThunderBoard.Orientation_y : 0)),
+                new ValuesTago("Orientation_z", ""  +( sw_fragmentdetalle_thunder_oz.isChecked() ? mDispoThunderBoard.Orientation_z : 0)),
+                new ValuesTago("Acceleration_x", ""  +( sw_fragmentdetalle_thunder_ax.isChecked() ? mDispoThunderBoard.Acelereation_x : 0)),
+                new ValuesTago("Acceleration_y", ""  +( sw_fragmentdetalle_thunder_ay.isChecked() ? mDispoThunderBoard.Acelereation_y : 0)),
+                new ValuesTago("Acceleration_z", ""  +( sw_fragmentdetalle_thunder_az.isChecked() ? mDispoThunderBoard.Acelereation_z : 0)),
+                new ValuesTago("SW0", ""  + mDispoThunderBoard.sw0),
+                new ValuesTago("SW1", ""  + mDispoThunderBoard.sw1)
+
+        };
+
+        new EnviarInformacionTago("899f40eb-1fbd-4d15-90f5-c6a81cb25ea0").execute(values);
     }
 }

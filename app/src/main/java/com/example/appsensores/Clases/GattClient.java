@@ -14,9 +14,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
-import android.media.audiofx.AudioEffect;
+import android.os.AsyncTask;
+import android.os.Handler;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.example.appsensores.Models.Dispositivos.DispoThunderBoard;
 
@@ -34,15 +34,16 @@ public class GattClient {
     private ArrayList<BluetoothGattDescriptor> listDescriptors = new ArrayList<BluetoothGattDescriptor>();
     private ArrayList<BluetoothGattCharacteristic> listCharacteristics = new ArrayList<>();
     private DispoThunderBoard mDispoThunderBoard;
+    public static boolean IS_READING_CHARACTERISTICS = false;
 
-    public interface OnCounterReadListener {
+    public interface OnReadListener {
         void onReadValues(DispoThunderBoard dispo);
 
         void onConnected(boolean success);
     }
 
     private Context mContext;
-    private OnCounterReadListener mListener;
+    private OnReadListener mListener;
     private String mDeviceAddress;
 
     private BluetoothManager mBluetoothManager;
@@ -70,23 +71,6 @@ public class GattClient {
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 boolean connected = false;
 
-                /*for(BluetoothGattService gattService : gatt.getServices()){
-                    for (BluetoothGattCharacteristic characteristic : gattService.getCharacteristics() ) {
-                        gatt.setCharacteristicNotification(characteristic,true);
-                        //for(BluetoothGattDescriptor descriptor : characteristic.getDescriptors()){
-                        {
-                            BluetoothGattDescriptor descriptor = characteristic.getDescriptor(ThunderBoardUuids.UUID_DESCRIPTOR_CLIENT_CHARACTERISTIC_CONFIGURATION);
-                            if (descriptor != null) {
-                                descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
-                                connected = gatt.writeDescriptor(descriptor);
-                            }
-                        }
-                        //}
-                    }
-                }*/
-
-                //BluetoothGattService service = gatt.getService(ThunderBoardUuids.UUID_SERVICE_ACCELERATION_ORIENTATION);
-
                 for(BluetoothGattService gattService : gatt.getServices()){
                     Log.e("SERVICE", Utils.getServiceName(gattService.getUuid()));
                     for (BluetoothGattCharacteristic characteristic : gattService.getCharacteristics() ) {
@@ -107,25 +91,12 @@ public class GattClient {
                 //desencadenamos el envio de descriptores
                 gatt.writeDescriptor(listDescriptors.get(nextDescriptor++));
 
-                //Llenaos la lista con las caracteristicas que no tienen notificacion
+                //Llenamos la lista con las caracteristicas que no tienen notificacion
                 listCharacteristics.add(gatt.getService(ThunderBoardUuids.UUID_SERVICE_ENVIRONMENT_SENSING).getCharacteristic(ThunderBoardUuids.UUID_CHARACTERISTIC_HUMIDITY));
                 listCharacteristics.add(gatt.getService(ThunderBoardUuids.UUID_SERVICE_ENVIRONMENT_SENSING).getCharacteristic(ThunderBoardUuids.UUID_CHARACTERISTIC_TEMPERATURE));
                 listCharacteristics.add(gatt.getService(ThunderBoardUuids.UUID_SERVICE_ENVIRONMENT_SENSING).getCharacteristic(ThunderBoardUuids.UUID_CHARACTERISTIC_UV_INDEX));
                 listCharacteristics.add(gatt.getService(ThunderBoardUuids.UUID_SERVICE_AMBIENT_LIGHT).getCharacteristic(ThunderBoardUuids.UUID_CHARACTERISTIC_AMBIENT_LIGHT_REACT));
 
-                /*BluetoothGattService service = gatt.getService(ThunderBoardUuids.UUID_SERVICE_ACCELERATION_ORIENTATION);
-                if (service != null) {
-                    BluetoothGattCharacteristic characteristic = service.getCharacteristic(CHARACTERISTIC_COUNTER_UUID);
-                    if (characteristic != null) {
-                        gatt.setCharacteristicNotification(characteristic, true);
-
-                        BluetoothGattDescriptor descriptor = characteristic.getDescriptor(DESCRIPTOR_CONFIG);
-                        if (descriptor != null) {
-                            descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
-                            connected = gatt.writeDescriptor(descriptor);
-                        }
-                    }
-                }*/
                 mListener.onConnected(connected);
             } else {
                 Log.w(TAG, "onServicesDiscovered received: " + status);
@@ -139,6 +110,8 @@ public class GattClient {
                 gatt.readCharacteristic(listCharacteristics.get(nextCharacteristic++));
             } else {
                 nextCharacteristic = 0;
+                IS_READING_CHARACTERISTICS = false;
+                Log.e("onCharacteristicRead", "Se terminaron de leer las caracteristicas");
             }
         }
 
@@ -149,13 +122,9 @@ public class GattClient {
 
         @Override
         public void onDescriptorWrite(BluetoothGatt gatt, BluetoothGattDescriptor descriptor, int status) {
-            /*if (DESCRIPTOR_CONFIG.equals(descriptor.getUuid())) {
-                BluetoothGattCharacteristic characteristic = gatt.getService(SERVICE_UUID).getCharacteristic(CHARACTERISTIC_COUNTER_UUID);
-                gatt.readCharacteristic(characteristic);
-            }*/
             if(nextDescriptor<listDescriptors.size()){
                 gatt.writeDescriptor(listDescriptors.get(nextDescriptor++));
-                Log.e("onDescriptorWrite", "descriptor" + nextDescriptor + " UUID" + listDescriptors.get(nextDescriptor).getCharacteristic().getUuid().toString());
+                //Log.e("onDescriptorWrite", "descriptor" + nextDescriptor + " UUID" + listDescriptors.get(nextDescriptor).getCharacteristic().getUuid().toString());
             }
         }
 
@@ -165,6 +134,10 @@ public class GattClient {
 
         }
 
+        /***
+         * Metodo para filtrar la informacion recibida de las caracteristicas que se leen a solicitud
+         * @param characteristic
+         */
         private void readCharacteristic(BluetoothGattCharacteristic characteristic) {
             /*if (CHARACTERISTIC_COUNTER_UUID.equals(characteristic.getUuid())) {
                 UUID uuid = characteristic.getUuid();
@@ -319,6 +292,10 @@ public class GattClient {
             }
         }
 
+        /***
+         * Metodo para filtrar la informacion recibida de las caracteristicas que mandan notificaciones automatics
+         * @param characteristic
+         */
         private void readCharacteristicChanged(BluetoothGattCharacteristic characteristic){
             UUID uuid = characteristic.getUuid();
             // leave for debugging purposes
@@ -437,7 +414,14 @@ public class GattClient {
         }
     };
 
-    public void onCreate(Context context, String deviceAddress, OnCounterReadListener listener) throws RuntimeException {
+    /***
+     * Metodo para inicializar los componentes para la conexion con el dispositivo BLE GATT
+     * @param context Contexto
+     * @param deviceAddress MacAddress del dispositivo BLE GATT
+     * @param listener Listener
+     * @throws RuntimeException
+     */
+    public void onCreate(Context context, String deviceAddress, OnReadListener listener) throws RuntimeException {
         mContext = context;
         mListener = listener;
         mDeviceAddress = deviceAddress;
@@ -465,15 +449,24 @@ public class GattClient {
      */
     public void requestDataThunderBoard(){
         if(mBluetoothGatt != null && nextDescriptor == listDescriptors.size() && listDescriptors.size() > 0 ){  //Si Gatt no es null y ya se madaron todos los descriptores
+            IS_READING_CHARACTERISTICS = true;
+            //desencadenamos la lectura de caracteristicas
             mBluetoothGatt.readCharacteristic(listCharacteristics.get(nextCharacteristic++));
         }
     }
 
     /***
      * Metodo para mandar un valor a la characteristica UUID_SERVICE_AUTOMATION_IO
-     * @param commando paramentro con byte (en int) que contiene la informacion de os leds a encender
+     * @param commando Comando en int que contiene el arreglo de bits para encender/apagar los leds
+     * @param localHandler Handler para notificar al hilo que ejecuta este metodo que ya se enviaron los comandos al dispositivo
+     *                     Exemplo:
+     *                      mGattClient.sendDataLeds(comando, new Handler(msg -> {
+     *                          if(msg.what == -1)
+     *                          dialog.dismiss();
+     *                          return true;
+     *                      }));
      */
-    public void sendDataLeds(int commando){
+    public void sendDataLeds(int commando, Handler localHandler){
         if(mBluetoothGatt != null){
             BluetoothGattService service = mBluetoothGatt.getService(ThunderBoardUuids.UUID_SERVICE_AUTOMATION_IO);
             int property = BluetoothGattCharacteristic.PROPERTY_WRITE;
@@ -490,18 +483,23 @@ public class GattClient {
             characteristic.setValue(commando, BluetoothGattCharacteristic.FORMAT_UINT8, 0);
             characteristic.setWriteType(BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT);
 
-            while(nextCharacteristic != 0){
-                //Este while es para esperar a que se acaben de leer las caracteristicas sin descriptores
-                if(nextCharacteristic >= listCharacteristics.size()) break;
-            }
+            //Ejecuto este codigo en otro hilo para no detener el incremento en el conteo de caracteristicas [nextCharacteristic]
+            AsyncTask.execute(() -> {
+                while(IS_READING_CHARACTERISTICS){
+                    //Este while es para esperar a que se acaben de leer las caracteristicas sin descriptores
+                    //Log.e("sendDataLeds", "Bucle while, aqui no deberia quedarse infinitamente, nextCharacteristic = " + nextCharacteristic);
+                }
 
-            boolean resp = mBluetoothGatt.writeCharacteristic(characteristic);
-            if(resp){
-                //Toast.makeText(mContext,"OK", Toast.LENGTH_SHORT).show();
-            }
+                boolean resp = mBluetoothGatt.writeCharacteristic(characteristic);
+                Log.e("sendDataLeds", "Respuesta de la solicitud d eescritura: " + resp);
+                localHandler.sendEmptyMessage(-1);
+            });
         }
     }
 
+    /***
+     * Solicitud de terminar la conexion con el cliente BLE GATT
+     */
     public void onDestroy() {
         mListener = null;
 
@@ -513,14 +511,11 @@ public class GattClient {
         mContext.unregisterReceiver(mBluetoothReceiver);
     }
 
-    public void writeInteractor() {
-        /*BluetoothGattCharacteristic interactor = mBluetoothGatt
-                .getService(SERVICE_UUID)
-                .getCharacteristic(CHARACTERISTIC_INTERACTOR_UUID);
-        interactor.setValue("!");
-        mBluetoothGatt.writeCharacteristic(interactor);*/
-    }
-
+    /***
+     * Se verifica el soporte de Bluetooth
+     * @param bluetoothAdapter
+     * @return
+     */
     private boolean checkBluetoothSupport(BluetoothAdapter bluetoothAdapter) {
         if (bluetoothAdapter == null) {
             Log.w(TAG, "Bluetooth is not supported");
@@ -535,6 +530,9 @@ public class GattClient {
         return true;
     }
 
+    /***
+     * Metido para iniciar la conexion con el dispositivo BLE GATT
+     */
     private void startClient() {
         BluetoothDevice bluetoothDevice = mBluetoothAdapter.getRemoteDevice(mDeviceAddress);
         mBluetoothGatt = bluetoothDevice.connectGatt(mContext, false, mGattCallback);
@@ -545,6 +543,9 @@ public class GattClient {
         }
     }
 
+    /***
+     * Metodo para detener el cliente BLE GATT
+     */
     private void stopClient() {
         if (mBluetoothGatt != null) {
             mBluetoothGatt.close();

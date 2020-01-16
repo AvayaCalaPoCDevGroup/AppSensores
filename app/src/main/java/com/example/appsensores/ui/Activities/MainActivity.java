@@ -1,5 +1,12 @@
 package com.example.appsensores.ui.Activities;
 
+import android.Manifest;
+import android.app.Activity;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothManager;
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -8,6 +15,7 @@ import com.example.appsensores.ui.Dialogs.DialogSettings;
 import com.example.appsensores.ui.Fragments.acercade.AcercaDeFragment;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -47,6 +55,64 @@ public class MainActivity extends AppCompatActivity implements AcercaDeFragment.
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
 
+        CheckPermissions();
+    }
+
+    private void CheckPermissions() {
+        if (getApplicationContext().checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED){
+            if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this,
+                    Manifest.permission.ACCESS_FINE_LOCATION)){
+                ActivityCompat.requestPermissions(MainActivity.this,
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+            }else{
+                ActivityCompat.requestPermissions(MainActivity.this,
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+            }
+        }
+        BluetoothManager Manager = (BluetoothManager)getSystemService( Context.BLUETOOTH_SERVICE );
+        BluetoothAdapter Adapter = Manager.getAdapter();
+        if ( Adapter==null || !Adapter.isEnabled() )
+        {
+            /* Solicitar al usuario encender el Bluetooth */
+            Intent EnableIntent = new Intent( BluetoothAdapter.ACTION_REQUEST_ENABLE );
+            startActivityForResult( EnableIntent, 123 );
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case 123:
+                if (resultCode == Activity.RESULT_OK) {
+
+                } else {
+                    finish();
+                }
+                break;
+
+            default:
+                super.onActivityResult(requestCode, resultCode, data);
+                break;
+        }
+
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                                           int[] grantResults){
+        switch (requestCode){
+            case 1: {
+                if (grantResults.length>0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                    if (getApplicationContext().checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)==PackageManager.PERMISSION_GRANTED){
+                        Toast.makeText(this, "Permission Granted", Toast.LENGTH_SHORT).show();
+                    }
+                }else{
+                    Toast.makeText(this, "Permission Denied", Toast.LENGTH_SHORT).show();
+                    finish();
+                }
+                return;
+            }
+        }
     }
 
     @Override

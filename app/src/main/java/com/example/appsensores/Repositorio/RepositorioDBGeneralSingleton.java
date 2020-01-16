@@ -98,11 +98,43 @@ public class RepositorioDBGeneralSingleton {
         return resp;
     }
 
+    /***
+     * Metodo para recuperar un dispositivo pasando como parametro su ID
+     * @param idDispositivo
+     * @return el objeto {@link BaseDispositivo}, null si ni se encuentra en la DB
+     */
     public BaseDispositivo getDeviceById(int idDispositivo) {
         BaseDispositivo dispositivo = null;
 
         db = dbGeneralHandler.getWritableDatabase();
         String query = "SELECT * FROM " + DBGeneralHandler.TABLE_DISPOSITIVOS + "  WHERE " + dbGeneralHandler.KEY_DISPOSITIVOS_ID + " = " + idDispositivo + " LIMIT 1";
+
+        Cursor cursor = db.rawQuery(query, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                dispositivo = new BaseDispositivo();
+                dispositivo.setId(Integer.parseInt(cursor.getString(0)));
+                dispositivo.setNombre(cursor.getString(1));
+                dispositivo.setMacAddress(cursor.getString(2));
+                dispositivo.setToken(cursor.getString(3));
+                dispositivo.setTipoDispositivo(cursor.getInt(4));
+            } while (cursor.moveToNext());
+        }
+        db.close();
+        return dispositivo;
+    }
+
+    /***
+     * Metodo para obtener un device a traves de su MAC ADDRESS
+     * @param mac_address
+     * @return el oobjeto {@link BaseDispositivo} , null si no se encuentra en la DB
+     */
+    public BaseDispositivo getDeviceByMAC(String mac_address) {
+        BaseDispositivo dispositivo = null;
+
+        db = dbGeneralHandler.getWritableDatabase();
+        String query = "SELECT * FROM " + DBGeneralHandler.TABLE_DISPOSITIVOS + "  WHERE " + dbGeneralHandler.KEY_DISPOSITIVOS_MACADDRESS + " = '" + mac_address + "' LIMIT 1";
 
         Cursor cursor = db.rawQuery(query, null);
 

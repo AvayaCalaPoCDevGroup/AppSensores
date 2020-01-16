@@ -156,10 +156,17 @@ public abstract class BaseVistaFargment extends Fragment {
      */
     protected class EnviarInformacionTago extends AsyncTask<ValuesTago[],Void,String >{
 
+        String token = "";
+
+        public EnviarInformacionTago(String token){
+            this.token = token;
+        }
+
         @Override
         protected String doInBackground(ValuesTago[]... lists) {
             String json = new Gson().toJson(lists[0]);
-            String resp = WebMethods.getStringPOSTmethodTago(WebMethods.IP_SERVER, " 8e8d61d2-a77c-4313-9472-a5492674939a",json);
+            //String resp = WebMethods.getStringPOSTmethodTago(WebMethods.IP_SERVER, " 8e8d61d2-a77c-4313-9472-a5492674939a",json);
+            String resp = WebMethods.getStringPOSTmethodTago(WebMethods.IP_SERVER, token,json);
             return resp;
         }
 

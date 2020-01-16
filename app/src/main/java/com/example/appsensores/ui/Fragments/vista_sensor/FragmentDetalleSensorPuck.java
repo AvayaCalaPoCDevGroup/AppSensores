@@ -243,7 +243,7 @@ public class FragmentDetalleSensorPuck extends BaseVistaFargment {
                 new ValuesTago("HRM_Rate", ""+( sw_fragmentdetalle_puck_hrmrate.isChecked() ? mDispoSensorPuck.HRM_Rate : 0))
         };
 
-        new EnviarInformacionTago().execute(values);
+        new EnviarInformacionTago("8e8d61d2-a77c-4313-9472-a5492674939a").execute(values);
     }
 
 

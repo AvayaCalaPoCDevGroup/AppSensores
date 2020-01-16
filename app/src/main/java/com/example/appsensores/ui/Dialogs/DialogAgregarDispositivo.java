@@ -29,6 +29,7 @@ public class DialogAgregarDispositivo extends Dialog {
     private EditText et_dialog_agregar_dispositivo_mac;
     private EditText et_dialog_agregar_dispositivo_token;
     private Button btn_dialog_agregar_dispositivo_ok;
+    private Button btn_dialog_agregar_dispositivo_search;
 
     private ArrayList<String> lisTipoDispo = new ArrayList<String>();
 
@@ -51,8 +52,10 @@ public class DialogAgregarDispositivo extends Dialog {
         et_dialog_agregar_dispositivo_mac = findViewById(R.id.et_dialog_agregar_dispositivo_mac);
         et_dialog_agregar_dispositivo_token = findViewById(R.id.et_dialog_agregar_dispositivo_token);
         btn_dialog_agregar_dispositivo_ok = findViewById(R.id.btn_dialog_agregar_dispositivo_ok);
+        btn_dialog_agregar_dispositivo_search = findViewById(R.id.btn_dialog_agregar_dispositivo_search);
 
         spnr_dialog_agregar_dispositivo_tipo.setAdapter(new ArrayAdapter<String>(getContext(),R.layout.support_simple_spinner_dropdown_item,lisTipoDispo));
+        spnr_dialog_agregar_dispositivo_tipo.setEnabled(false);
 
         btn_dialog_agregar_dispositivo_ok.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -69,6 +72,17 @@ public class DialogAgregarDispositivo extends Dialog {
                 RepositorioDBGeneralSingleton.getInstance(getContext()).addDevice(dispositivo);
                 dismiss();
             }
+        });
+
+        DialogSearchDevices dialogSearchDevices = new DialogSearchDevices(getContext());
+        dialogSearchDevices.setOnDismissListener(dialog -> {
+            String macAddress = ((DialogSearchDevices)dialog).DeviceSelected.getMacAddress();
+            int position = ((DialogSearchDevices)dialog).DeviceSelected.getTipoDispositivo();
+            et_dialog_agregar_dispositivo_mac.setText(macAddress);
+            spnr_dialog_agregar_dispositivo_tipo.setSelection(position);
+        });
+        btn_dialog_agregar_dispositivo_search.setOnClickListener(v -> {
+            dialogSearchDevices.show();
         });
     }
 
