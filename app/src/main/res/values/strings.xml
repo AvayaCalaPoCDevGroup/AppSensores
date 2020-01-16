@@ -17,13 +17,22 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="fragment_acercade_info">Aplicacion de Sensores \n Avaya 2020</string>
 
+    <!--Fragment titulos-->
+    <string name="fragment_detalle_sensorpuck">Sensor Puck:</string>
+    <string name="fragment_detalle_Thunderboard">ThunderBoard:</string>
+    <string name="fragment_detalle_Telefono">Telefono:</string>
+
     <!--Strings de Fragment_Home-->
     <string name="fragment_home_elige">Elige un dispositivo:</string>
-    <string name="fragment_detalle_sensorpuck">Detalle de dispositivo:</string>
+
     <string name="fragment_home_Eliminar">¿Deseas elimiar este dispositivo?</string>
     <string name="fragment_home_Eliminar_si">Si</string>
     <string name="fragment_home_Eliminar_no">No</string>
     <string name="fragment_home_EliminarTelefono">Este Dispositivo no se puede borrar</string>
+
+    <string name="fragment_thunder_noConnection">No se pudo establecer la conexion</string>
+    <string name="fragment_thunder_led_info">Presiona para encender/apagar los LEDs</string>
+    <string name="fragment_thunder_sw_info">Presiona los push buttons del dispositivo Thunderboard</string>
 
 
     <!--Dialogos-->
@@ -34,17 +43,27 @@
     <string name="dialog_agregar_dispositivo_token">Token</string>
     <string name="dialog_agregar_dispositivo_ok">ACEPTAR</string>
     <string name="dialog_agregar_dispositivo_search"> + </string>
+    <string name="dialog_agregar_dispositivo_msg"> Buscando dispositivos, enciende un dispositivo y aparecera en esta lista… </string>
+    <string name="dialog_agregar_dispositivo_spnr"> Elige una opcion </string>
+    <string name="dialog_agregar_dispositivo_warn1"> El Nombre es requerido </string>
+    <string name="dialog_agregar_dispositivo_warn2"> El Mac addres es requerido </string>
+    <string name="dialog_agregar_dispositivo_warn3"> El Mac Addres debe tener 17 caracteres </string>
+    <string name="dialog_agregar_dispositivo_warn4"> El Token es requerido </string>
+    <string name="dialog_agregar_dispositivo_warn5"> Debes elegir un tipo de dispositivo </string>
+    <string name="dialog_agregar_dispositivo_warn6"> El Token ya existe en otro dispositivo </string>
+
 
 
     <string name="dialog_settins_title">Ajustes</string>
     <string name="dialog_settins_token">Ingresa el Token del Telefono</string>
     <string name="dialog_settins_intervalo">Intervalo de actualizacion con Tago (min 5seg)</string>
     <string name="dialog_settins_adv_token">El token es ecesario para continuar.</string>
-    <string name="dialog_settins_adv_intervalo">El intervalo es requerido y mayor o igual a 5 seg.</string>
+    <string name="dialog_settins_adv_intervalo">El intervalo es requerido y mayor o igual a %d seg.</string>
     <string name="dialog_wait_title">Informacion</string>
     <string name="dialog_wait_msg">Enviando comandos...</string>
 
     <string name="dialog_scan_devices_title">Elige un Dispositivo</string>
+    <string name="dialog_loading_msg_conectando">Conectando con dispositivo.</string>
 
     <!--encabezado vista dispositivo fragment-->
     <string name="encabezado_fragment_base_dispo_info">Informacion del Dispositivo</string>

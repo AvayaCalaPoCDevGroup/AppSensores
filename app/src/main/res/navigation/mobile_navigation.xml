@@ -39,12 +39,12 @@
     <fragment
         android:id="@+id/fragmentDetalleTel"
         android:name="com.example.appsensores.ui.Fragments.vista_sensor.FragmentDetalleTel"
-        android:label="fragment_fragment_detalle_tel"
+        android:label="@string/fragment_detalle_Telefono"
         tools:layout="@layout/fragment_fragment_detalle_tel" />
     <fragment
         android:id="@+id/fragmentThunderBoard"
         android:name="com.example.appsensores.ui.Fragments.vista_sensor.FragmentThunderBoard"
-        android:label="fragment_detalle_thunder"
+        android:label="@string/fragment_detalle_Thunderboard"
         tools:layout="@layout/fragment_detalle_thunder" />
     <!--
     <fragment

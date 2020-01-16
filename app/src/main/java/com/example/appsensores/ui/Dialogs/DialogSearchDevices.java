@@ -58,6 +58,7 @@ public class DialogSearchDevices extends Dialog {
         adapterDispositivos = new ArrayAdapter(getContext(),R.layout.list_unit_dispositivos,lisDispoString);
         lv_dialogSearchDevices.setAdapter(adapterDispositivos);
         lv_dialogSearchDevices.setOnItemClickListener((parent, view, position, id) -> {
+            //establecemos el device seleccionado, este sera consultado en Ondismiss() de la clase que llamo este dialog
             DeviceSelected = listDispoScaneados.get(position);
             dismiss();
         });

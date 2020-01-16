@@ -1,5 +1,6 @@
 package com.example.appsensores.ui.Fragments.vista_sensor;
 
+import android.app.AlertDialog;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -22,14 +23,20 @@ import com.example.appsensores.Models.ValuesTago;
 import com.example.appsensores.R;
 import com.example.appsensores.Repositorio.RepositorioDBGeneralSingleton;
 import com.example.appsensores.WebMethods.WebMethods;
+import com.example.appsensores.ui.Dialogs.DialogSettings;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
 
 
-public abstract class BaseVistaFargment extends Fragment {
+public abstract class BaseVistaFargment extends Fragment implements DialogSettings.IsettinsListener {
 
     protected BaseDispositivo dispositivoBase;
+
+    /***
+     * Dialog para mostrar en las conexiones
+     */
+    protected AlertDialog dialogCargando;
 
     private TextView tv_fragmentvista_nombre;
     private Switch sw_fragmnetvista_gral;
@@ -56,8 +63,7 @@ public abstract class BaseVistaFargment extends Fragment {
         Log.d("baseVistaFragent", "Paso por Oncreate");
         int idDispositivo = getArguments().getInt("idSensor");
         dispositivoBase = RepositorioDBGeneralSingleton.getInstance(getContext()).getDeviceById(idDispositivo);
-
-
+        DialogSettings.setOnSettingsChangedListener(this);
     }
 
     @Nullable
@@ -90,6 +96,11 @@ public abstract class BaseVistaFargment extends Fragment {
         tv_fragment_base_dispo_tipo.setText((EnumTipoDispo.values()[dispositivoBase.getTipoDispositivo()]).toString());
         tv_fragment_base_dispo_mac.setText(dispositivoBase.getMacAddress());
         tv_fragment_base_dispo_token.setText(dispositivoBase.getToken());
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setCancelable(false);
+        builder.setView(R.layout.dialog_loading);
+        dialogCargando = builder.create();
 
         setControles(view);
     }

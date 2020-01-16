@@ -7,11 +7,13 @@ import android.database.sqlite.SQLiteOpenHelper;
 import androidx.annotation.Nullable;
 
 import com.example.appsensores.Models.Dispositivos.BaseDispositivo;
+import com.example.appsensores.R;
 
 public class DBGeneralHandler extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "GeneralDB";
     private static final int DATABASE_VERSION = 1;
+    private Context mContext;
 
     //TABLA Dispositivos
     public static String TABLE_DISPOSITIVOS = "Dispositivos";
@@ -23,6 +25,7 @@ public class DBGeneralHandler extends SQLiteOpenHelper {
 
     public DBGeneralHandler(@Nullable Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
+        this.mContext = context;
     }
 
     @Override
@@ -36,12 +39,14 @@ public class DBGeneralHandler extends SQLiteOpenHelper {
                 + ")";
         db.execSQL(CREATE_DISPOSITIVOS_TABLE);
 
+        String thisPhoneName = mContext.getResources().getString(R.string.fragment_detalle_Telefono);
+
         String SEED = "insert into " + TABLE_DISPOSITIVOS + " ( " +
                 KEY_DISPOSITIVOS_NOMBRE + "," +
                 KEY_DISPOSITIVOS_MACADDRESS + "," +
                 KEY_DISPOSITIVOS_TOKEN + "," +
                 KEY_DISPOSITIVOS_TIPODISPOSITIVO +
-                ") values('Telefono', 'abcd', 'token', 0)";
+                ") values('"+thisPhoneName+"', 'abcd', 'token', 0)";
         db.execSQL(SEED);
 
     }

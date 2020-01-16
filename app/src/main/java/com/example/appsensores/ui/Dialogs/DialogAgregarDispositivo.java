@@ -40,7 +40,7 @@ public class DialogAgregarDispositivo extends Dialog {
         setContentView(R.layout.dialog_agregar_dispositivo);
         
         //Dispositivos en duro, ya que son pocos.
-        lisTipoDispo.add("Elige una opcion.");
+        lisTipoDispo.add(getContext().getResources().getString(R.string.dialog_agregar_dispositivo_spnr));
         lisTipoDispo.add("SENSOR PUCK");
         lisTipoDispo.add("THUNDERBOARD");
         setViews();
@@ -76,6 +76,8 @@ public class DialogAgregarDispositivo extends Dialog {
 
         DialogSearchDevices dialogSearchDevices = new DialogSearchDevices(getContext());
         dialogSearchDevices.setOnDismissListener(dialog -> {
+            if(((DialogSearchDevices)dialog).DeviceSelected == null) //Consultamos si se eligio algun dispositivo del dialog scanner
+                return;
             String macAddress = ((DialogSearchDevices)dialog).DeviceSelected.getMacAddress();
             int position = ((DialogSearchDevices)dialog).DeviceSelected.getTipoDispositivo();
             et_dialog_agregar_dispositivo_mac.setText(macAddress);
@@ -90,19 +92,22 @@ public class DialogAgregarDispositivo extends Dialog {
         String msg = "";
         boolean resp = true;
         if (et_dialog_agregar_dispositivo_nombre.getText().toString().equals("")) {
-            msg = "El Nombre es requerido";
+            msg = getContext().getResources().getString(R.string.dialog_agregar_dispositivo_warn1);
             resp = false;
         } else if (et_dialog_agregar_dispositivo_mac.getText().toString().equals("")) {
-            msg = "El Mac addres es requerido";
+            msg = getContext().getResources().getString(R.string.dialog_agregar_dispositivo_warn2);
             resp = false;
         } else if (et_dialog_agregar_dispositivo_mac.getText().toString().length() != 17) {
-            msg = "El Mac Addres debe tener 17 caracteres";
+            msg = getContext().getResources().getString(R.string.dialog_agregar_dispositivo_warn3);
             resp = false;
         } else if (et_dialog_agregar_dispositivo_token.getText().toString().equals("")) {
-            msg = "El Token es requerido";
+            msg = getContext().getResources().getString(R.string.dialog_agregar_dispositivo_warn4);
             resp = false;
         } else if (spnr_dialog_agregar_dispositivo_tipo.getSelectedItemPosition() == 0) {
-            msg = "Debes elegir un tipo de dispositivo";
+            msg = getContext().getResources().getString(R.string.dialog_agregar_dispositivo_warn5);
+            resp = false;
+        } else if (RepositorioDBGeneralSingleton.getInstance(getContext()).getDeviceToken(et_dialog_agregar_dispositivo_token.getText().toString()) != null){
+            msg = getContext().getResources().getString(R.string.dialog_agregar_dispositivo_warn6);
             resp = false;
         }
 

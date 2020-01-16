@@ -20,6 +20,7 @@ import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -42,7 +43,6 @@ public class FragmentDetalleSensorPuck extends BaseVistaFargment {
     private BluetoothLeScanner bluetoothLeScanner;
     private DispoSensorPuck mDispoSensorPuck;
 
-    private SharedPreferences sharedPreferencesAvaya;
     private STimer mSTimer;
 
     private TextView tv_fragmentdetalle_puck_temperatura;
@@ -68,8 +68,6 @@ public class FragmentDetalleSensorPuck extends BaseVistaFargment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_detalle_sensorpuck, container, false);
-
-        sharedPreferencesAvaya = getContext().getSharedPreferences(Utils.AVAYA_SHARED_PREFERENCES,0);
 
         mDispoSensorPuck = new DispoSensorPuck();
         mDispoSensorPuck.setId(dispositivoBase.getId());
@@ -105,7 +103,7 @@ public class FragmentDetalleSensorPuck extends BaseVistaFargment {
         //Iniciamos el timer
         mSTimer = new STimer();
         mSTimer.setOnAlarmListener( OnPuckTick );
-        mSTimer.setPeriod( sharedPreferencesAvaya.getInt(Utils.AVAYA_INTERVALO,5*1000));
+        mSTimer.setPeriod( STimer.CURRENT_PERIOD );
 
         mSTimer.start();
 
@@ -243,8 +241,13 @@ public class FragmentDetalleSensorPuck extends BaseVistaFargment {
                 new ValuesTago("HRM_Rate", ""+( sw_fragmentdetalle_puck_hrmrate.isChecked() ? mDispoSensorPuck.HRM_Rate : 0))
         };
 
-        new EnviarInformacionTago("8e8d61d2-a77c-4313-9472-a5492674939a").execute(values);
+        new EnviarInformacionTago(mDispoSensorPuck.getToken()).execute(values);
     }
 
 
+    @Override
+    public void onSettingsChanged() {
+        if(mSTimer != null)
+            mSTimer.setPeriod( STimer.CURRENT_PERIOD );
+    }
 }

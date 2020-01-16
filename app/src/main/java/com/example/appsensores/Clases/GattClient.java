@@ -40,6 +40,8 @@ public class GattClient {
         void onReadValues(DispoThunderBoard dispo);
 
         void onConnected(boolean success);
+
+        void onFailedConnection();
     }
 
     private Context mContext;
@@ -60,9 +62,10 @@ public class GattClient {
             if (newState == BluetoothProfile.STATE_CONNECTED) {
                 Log.i(TAG, "Connected to GATT client. Attempting to start service discovery");
                 gatt.discoverServices();
+                mListener.onConnected(true);
             } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
                 Log.i(TAG, "Disconnected from GATT client");
-                mListener.onConnected(false);
+                mListener.onFailedConnection();
             }
         }
 
@@ -538,7 +541,8 @@ public class GattClient {
         mBluetoothGatt = bluetoothDevice.connectGatt(mContext, false, mGattCallback);
 
         if (mBluetoothGatt == null) {
-            Log.w(TAG, "Unable to create GATT client");
+            Log.e(TAG, "Unable to create GATT client");
+            mListener.onFailedConnection();
             return;
         }
     }

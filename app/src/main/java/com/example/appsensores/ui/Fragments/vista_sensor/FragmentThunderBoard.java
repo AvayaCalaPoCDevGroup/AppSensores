@@ -10,16 +10,19 @@ import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 
 import com.example.appsensores.Clases.GattClient;
 import com.example.appsensores.Clases.STimer;
@@ -34,7 +37,6 @@ public class FragmentThunderBoard extends BaseVistaFargment {
     private BluetoothLeScanner bluetoothLeScanner;
     private DispoThunderBoard mDispoThunderBoard;
 
-    private SharedPreferences sharedPreferencesAvaya;
     private STimer mSTimer;
 
     private GattClient mGattClient;
@@ -74,8 +76,6 @@ public class FragmentThunderBoard extends BaseVistaFargment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_detalle_thunder, container, false);
 
-        sharedPreferencesAvaya = getContext().getSharedPreferences(Utils.AVAYA_SHARED_PREFERENCES,0);
-
         mDispoThunderBoard = new DispoThunderBoard();
         mDispoThunderBoard.setId(dispositivoBase.getId());
         mDispoThunderBoard.setNombre(dispositivoBase.getNombre());
@@ -96,7 +96,7 @@ public class FragmentThunderBoard extends BaseVistaFargment {
         //Iniciamos el timer
         mSTimer = new STimer();
         mSTimer.setOnAlarmListener( OnPuckTick );
-        mSTimer.setPeriod( sharedPreferencesAvaya.getInt(Utils.AVAYA_INTERVALO,5*1000));
+        mSTimer.setPeriod( STimer.CURRENT_PERIOD );
 
         mSTimer.start();
 
@@ -170,6 +170,9 @@ public class FragmentThunderBoard extends BaseVistaFargment {
         addSwitchToList(sw_fragmentdetalle_thunder_ay);
         addSwitchToList(sw_fragmentdetalle_thunder_az);
 
+        dialogCargando.show();
+        ((TextView)dialogCargando.findViewById(R.id.dialog_loading_msg)).setText(R.string.dialog_loading_msg_conectando);
+
         mGattClient.onCreate(getContext(), "00:0B:57:1C:63:50", new GattClient.OnReadListener() {
             @Override
             public void onReadValues(final DispoThunderBoard dispo) {
@@ -186,10 +189,19 @@ public class FragmentThunderBoard extends BaseVistaFargment {
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        /*mButton.setEnabled(success);
-                        if (!success) {
-                            Toast.makeText(InteractActivity.this, "Connection error", Toast.LENGTH_LONG).show();
-                        }*/
+                        dialogCargando.dismiss();
+                    }
+                });
+            }
+
+            @Override
+            public void onFailedConnection() {
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(getContext(), getResources().getString(R.string.fragment_thunder_noConnection), Toast.LENGTH_SHORT).show();
+                        dialogCargando.dismiss();
+                        getActivity().onBackPressed();
                     }
                 });
             }
@@ -235,11 +247,16 @@ public class FragmentThunderBoard extends BaseVistaFargment {
         tv_fragmentdetalle_thunder_ay.setText(""+(sw_fragmentdetalle_thunder_ay.isChecked() ? dispo.Acelereation_y : 0));
         tv_fragmentdetalle_thunder_az.setText(""+(sw_fragmentdetalle_thunder_az.isChecked() ? dispo.Acelereation_z : 0));
 
-        Drawable drawOn = getActivity().getDrawable(R.drawable.ic_lights_on_red);
-        Drawable drawOff = getActivity().getDrawable(R.drawable.ic_lights_off);
 
-        tv_fragmentdetalle_thunder_sw0.setBackground(dispo.sw0 == 0 ? drawOff : drawOn);
-        tv_fragmentdetalle_thunder_sw1.setBackground(dispo.sw1 == 0 ? drawOff : drawOn);
+        try{
+            Drawable drawOn = getActivity().getDrawable(R.drawable.ic_lights_on_red);
+            Drawable drawOff = getActivity().getDrawable(R.drawable.ic_lights_off);
+            tv_fragmentdetalle_thunder_sw0.setBackground(dispo.sw0 == 0 ? drawOff : drawOn);
+            tv_fragmentdetalle_thunder_sw1.setBackground(dispo.sw1 == 0 ? drawOff : drawOn);
+        } catch (Exception ex) {
+            Log.e("FragmentThunder", "Error -> " + ex.getMessage());
+        }
+
     }
 
     @Override
@@ -283,6 +300,12 @@ public class FragmentThunderBoard extends BaseVistaFargment {
 
         };
 
-        new EnviarInformacionTago("899f40eb-1fbd-4d15-90f5-c6a81cb25ea0").execute(values);
+        new EnviarInformacionTago(mDispoThunderBoard.getToken()).execute(values);
+    }
+
+    @Override
+    public void onSettingsChanged() {
+        if(mSTimer != null)
+            mSTimer.setPeriod( STimer.CURRENT_PERIOD );
     }
 }

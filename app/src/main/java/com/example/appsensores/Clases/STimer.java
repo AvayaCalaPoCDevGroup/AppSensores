@@ -16,6 +16,7 @@ public class STimer {
      * The minimal value for the period of a timer (in milliseconds).
      */
     public static final int MinPeriod = 10;
+    public static int CURRENT_PERIOD = 3000;
 
     /**
      *  Interface definition for a callback to be invoked when a timer expires ("alarm").

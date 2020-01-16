@@ -124,7 +124,6 @@ public class MainActivity extends AppCompatActivity implements AcercaDeFragment.
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        Toast.makeText(this,"Menu Settings", Toast.LENGTH_SHORT).show();
         switch (item.getItemId()){
             case R.id.action_settings:
                 DialogSettings dialogSettings = new DialogSettings(this);

@@ -1,0 +1,87 @@
+<resources>
+    <string name="app_name">AppSensores</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">App Sensores</string>
+    <string name="nav_header_subtitle">Avaya</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="menu_inicio">Home</string>
+    <string name="menu_gallery">Gallery</string>
+    <string name="menu_slideshow">Slideshow</string>
+    <string name="menu_tools">Tools</string>
+    <string name="menu_acercade">About</string>
+    <string name="menu_send">Send</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="fragment_acercade_info">Sensor App \n Avaya 2020</string>
+
+    <!--Fragment titulos-->
+    <string name="fragment_detalle_sensorpuck">Sensor Puck:</string>
+    <string name="fragment_detalle_Thunderboard">ThunderBoard:</string>
+    <string name="fragment_detalle_Telefono">This Phone:</string>
+
+    <!--Strings de Fragment_Home-->
+    <string name="fragment_home_elige">Chose a device:</string>
+
+    <string name="fragment_home_Eliminar">Do you want to remove this device?</string>
+    <string name="fragment_home_Eliminar_si">Yes</string>
+    <string name="fragment_home_Eliminar_no">No</string>
+    <string name="fragment_home_EliminarTelefono">This Device cannot be deleted.</string>
+
+    <string name="fragment_thunder_noConnection">Could not connect</string>
+    <string name="fragment_thunder_led_info">Press to turn on / off the LEDs</string>
+    <string name="fragment_thunder_sw_info">Press the push buttons on the Thunderboard device</string>
+
+
+    <!--Dialogos-->
+    <string name="dialog_agregar_dispositivo_title">ADD DEVICE</string>
+    <string name="dialog_agregar_dispositivo_tipo">Device type</string>
+    <string name="dialog_agregar_dispositivo_nombre">Device Name</string>
+    <string name="dialog_agregar_dispositivo_mac">Mac Address</string>
+    <string name="dialog_agregar_dispositivo_token">Token</string>
+    <string name="dialog_agregar_dispositivo_ok">OK</string>
+    <string name="dialog_agregar_dispositivo_search"> + </string>
+    <string name="dialog_agregar_dispositivo_msg"> Searching for devices, turn on a device and it will appear in this list... </string>
+    <string name="dialog_agregar_dispositivo_spnr"> Choose an option </string>
+    <string name="dialog_agregar_dispositivo_warn1"> Name is required </string>
+    <string name="dialog_agregar_dispositivo_warn2"> The Mac Addres is required </string>
+    <string name="dialog_agregar_dispositivo_warn3"> The Mac Address must have 17 characters </string>
+    <string name="dialog_agregar_dispositivo_warn4"> Token is required </string>
+    <string name="dialog_agregar_dispositivo_warn5"> You must choose a device type </string>
+    <string name="dialog_agregar_dispositivo_warn6"> Token already exists on another device </string>
+
+
+    <string name="dialog_settins_title">Settings</string>
+    <string name="dialog_settins_token">Enter the Phone Token</string>
+    <string name="dialog_settins_intervalo">Update interval with Tago (min 5sec)</string>
+    <string name="dialog_settins_adv_token">The token is necessary to continue.</string>
+    <string name="dialog_settins_adv_intervalo">The interval is required and greater than or equal a %d sec.</string>
+    <string name="dialog_wait_title">Information</string>
+    <string name="dialog_wait_msg">Send commands...</string>
+
+    <string name="dialog_scan_devices_title">Chose a device</string>
+    <string name="dialog_loading_msg_conectando">Connecting with device.</string>
+
+    <!--encabezado vista dispositivo fragment-->
+    <string name="encabezado_fragment_base_dispo_info">Device Info</string>
+
+    <!--Measures-->
+    <string name="measure_temperatura">Temperature</string>
+    <string name="measure_humedad">Relative humidity</string>
+    <string name="measure_lux">Ambient light</string>
+    <string name="measure_uv">UV Indes</string>
+    <string name="measure_voltaje">Voltage</string>
+    <string name="measure_hrmrate">Heart rate</string>
+    <string name="measure_orientation_x">Orientation X</string>
+    <string name="measure_orientation_y">Orientation Y</string>
+    <string name="measure_orientation_z">Orientation Z</string>
+    <string name="measure_aceleration_x">Acceleration X</string>
+    <string name="measure_aceleration_y">Acceleration Y</string>
+    <string name="measure_aceleration_z">Acceleration Z</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+</resources>

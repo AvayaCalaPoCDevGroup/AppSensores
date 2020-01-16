@@ -47,6 +47,23 @@ public class RepositorioDBGeneralSingleton {
     }
 
     /***
+     * Update valores de un dispositivo
+     * @param device Dispositivo a agregar, el cual debe contener un Id existente en la base de datos
+     */
+    public synchronized void updateDevice(BaseDispositivo device){
+        db = dbGeneralHandler.getWritableDatabase();
+
+        ContentValues dispoValues = new ContentValues();
+        dispoValues.put(DBGeneralHandler.KEY_DISPOSITIVOS_NOMBRE,device.getNombre());
+        dispoValues.put(DBGeneralHandler.KEY_DISPOSITIVOS_MACADDRESS,device.getMacAddress().toUpperCase());
+        dispoValues.put(DBGeneralHandler.KEY_DISPOSITIVOS_TOKEN,device.getToken());
+        dispoValues.put(DBGeneralHandler.KEY_DISPOSITIVOS_TIPODISPOSITIVO,device.getTipoDispositivo());
+
+        db.update(DBGeneralHandler.TABLE_DISPOSITIVOS, dispoValues, DBGeneralHandler.KEY_DISPOSITIVOS_ID + "=?", new String[] {""+device.getId()});
+        db.close();
+    }
+
+    /***
      * Obtiene todos los dispositivos que estan en la tabla Dispositivos
      * @return
      */
@@ -135,6 +152,33 @@ public class RepositorioDBGeneralSingleton {
 
         db = dbGeneralHandler.getWritableDatabase();
         String query = "SELECT * FROM " + DBGeneralHandler.TABLE_DISPOSITIVOS + "  WHERE " + dbGeneralHandler.KEY_DISPOSITIVOS_MACADDRESS + " = '" + mac_address + "' LIMIT 1";
+
+        Cursor cursor = db.rawQuery(query, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                dispositivo = new BaseDispositivo();
+                dispositivo.setId(Integer.parseInt(cursor.getString(0)));
+                dispositivo.setNombre(cursor.getString(1));
+                dispositivo.setMacAddress(cursor.getString(2));
+                dispositivo.setToken(cursor.getString(3));
+                dispositivo.setTipoDispositivo(cursor.getInt(4));
+            } while (cursor.moveToNext());
+        }
+        db.close();
+        return dispositivo;
+    }
+
+    /***
+     * Metodo para obtener un device a traves de su TOKEN
+     * @param token
+     * @return el oobjeto {@link BaseDispositivo} , null si no se encuentra en la DB
+     */
+    public BaseDispositivo getDeviceToken(String token) {
+        BaseDispositivo dispositivo = null;
+
+        db = dbGeneralHandler.getWritableDatabase();
+        String query = "SELECT * FROM " + DBGeneralHandler.TABLE_DISPOSITIVOS + "  WHERE " + dbGeneralHandler.KEY_DISPOSITIVOS_TOKEN + " = '" + token + "' LIMIT 1";
 
         Cursor cursor = db.rawQuery(query, null);
 
