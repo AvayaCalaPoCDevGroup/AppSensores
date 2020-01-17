@@ -43,10 +43,10 @@
     <string name="dialog_agregar_dispositivo_token">Token</string>
     <string name="dialog_agregar_dispositivo_ok">OK</string>
     <string name="dialog_agregar_dispositivo_search"> + </string>
-    <string name="dialog_agregar_dispositivo_msg"> Searching for devices, turn on a device and it will appear in this list... </string>
+    <string name="dialog_agregar_dispositivo_msg"> Searching for devices, turn on a device and it will appear in this list.. </string>
     <string name="dialog_agregar_dispositivo_spnr"> Choose an option </string>
     <string name="dialog_agregar_dispositivo_warn1"> Name is required </string>
-    <string name="dialog_agregar_dispositivo_warn2"> The Mac Addres is required </string>
+    <string name="dialog_agregar_dispositivo_warn2"> The Mac Address is required </string>
     <string name="dialog_agregar_dispositivo_warn3"> The Mac Address must have 17 characters </string>
     <string name="dialog_agregar_dispositivo_warn4"> Token is required </string>
     <string name="dialog_agregar_dispositivo_warn5"> You must choose a device type </string>
