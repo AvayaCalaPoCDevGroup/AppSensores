@@ -11,8 +11,12 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
+import com.example.appsensores.BuildConfig;
 import com.example.appsensores.R;
+
+import org.w3c.dom.Text;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -23,6 +27,8 @@ import com.example.appsensores.R;
 public class AcercaDeFragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
+    private TextView tv_about_code;
+    private TextView tv_about_version;
 
     public AcercaDeFragment() {
         // Required empty public constructor
@@ -39,6 +45,11 @@ public class AcercaDeFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        tv_about_code = view.findViewById(R.id.tv_about_code);
+        tv_about_version = view.findViewById(R.id.tv_about_version);
+
+        tv_about_code.setText("Version Code : " + BuildConfig.VERSION_CODE);
+        tv_about_version.setText("Version Name : " + BuildConfig.VERSION_NAME);
 
     }
 
