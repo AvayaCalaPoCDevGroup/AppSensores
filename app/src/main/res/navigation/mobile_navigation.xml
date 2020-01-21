@@ -35,17 +35,32 @@
             android:name="idSensor"
             app:argType="integer"
             android:defaultValue="0" />
+        <action
+            android:id="@+id/action_fragmentDetalleSensorPuck_to_fragmentRules"
+            app:destination="@id/fragmentRules" />
     </fragment>
     <fragment
         android:id="@+id/fragmentDetalleTel"
         android:name="com.example.appsensores.ui.Fragments.vista_sensor.FragmentDetalleTel"
         android:label="@string/fragment_detalle_Telefono"
-        tools:layout="@layout/fragment_fragment_detalle_tel" />
+        tools:layout="@layout/fragment_fragment_detalle_tel" >
+        <action
+            android:id="@+id/action_fragmentDetalleTel_to_fragmentRules"
+            app:destination="@id/fragmentRules" />
+    </fragment>
     <fragment
         android:id="@+id/fragmentThunderBoard"
         android:name="com.example.appsensores.ui.Fragments.vista_sensor.FragmentThunderBoard"
         android:label="@string/fragment_detalle_Thunderboard"
-        tools:layout="@layout/fragment_detalle_thunder" />
+        tools:layout="@layout/fragment_detalle_thunder" >
+        <action
+            android:id="@+id/action_fragmentThunderBoard_to_fragmentRules"
+            app:destination="@id/fragmentRules" />
+    </fragment>
+    <fragment
+        android:id="@+id/fragmentRules"
+        android:name="com.example.appsensores.ui.Fragments.Rules.FragmentRules"
+        android:label="FragmentRules" />
     <!--
     <fragment
         android:id="@+id/nav_gallery"

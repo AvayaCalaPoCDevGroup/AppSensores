@@ -16,18 +16,23 @@ import com.example.appsensores.Clases.Utils;
 import com.example.appsensores.Models.Dispositivos.BaseDispositivo;
 import com.example.appsensores.R;
 import com.example.appsensores.Repositorio.RepositorioDBGeneralSingleton;
+import com.example.appsensores.ui.Activities.MainActivity;
+import com.google.zxing.integration.android.IntentIntegrator;
 
-public class DialogSettings extends Dialog {
+public class DialogSettings extends Dialog implements MainActivity.IScanListener {
 
     private EditText et_dialog_settings_token;
     private EditText et_dialog_settings_intervalo;
     private Button btn_dialog_settings_ok;
+    private Button btn_dialog_settings_scan;
+    private MainActivity mMainActivity;
 
     private SharedPreferences sharedPreferencesAvaya;
     public static IsettinsListener mIsettinsListener;
 
-    public DialogSettings(@NonNull Context context) {
+    public DialogSettings(@NonNull Context context, MainActivity mainActivity) {
         super(context);
+        this.mMainActivity = mainActivity;
     }
 
     @Override
@@ -39,6 +44,7 @@ public class DialogSettings extends Dialog {
         sharedPreferencesAvaya = getContext().getSharedPreferences(Utils.AVAYA_SHARED_PREFERENCES,0);
 
         setViews();
+        mMainActivity.setOnScanListener(this);
     }
 
     public static void setOnSettingsChangedListener(IsettinsListener l){
@@ -49,6 +55,7 @@ public class DialogSettings extends Dialog {
         et_dialog_settings_token = findViewById(R.id.et_dialog_settings_token);
         et_dialog_settings_intervalo = findViewById(R.id.et_dialog_settings_intervalo);
         btn_dialog_settings_ok = findViewById(R.id.btn_dialog_settings_ok);
+        btn_dialog_settings_scan = findViewById(R.id.btn_dialog_settings_scan);
 
         //Obtenemos la informacion del telefono, por default siempre es el id 1
         BaseDispositivo deviceTel = RepositorioDBGeneralSingleton.getInstance(getContext()).getDeviceById(1);
@@ -74,10 +81,19 @@ public class DialogSettings extends Dialog {
                 dismiss();
             }
         });
+
+        btn_dialog_settings_scan.setOnClickListener(v -> {
+            new IntentIntegrator(mMainActivity).initiateScan();
+        });
     }
 
     private void toastMessage(String msg){
         Toast.makeText(getContext(),msg,Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onScanResult(String msg) {
+        et_dialog_settings_token.setText(msg);
     }
 
     public interface IsettinsListener {

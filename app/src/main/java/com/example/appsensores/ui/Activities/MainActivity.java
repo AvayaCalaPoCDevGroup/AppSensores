@@ -28,13 +28,48 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import org.eclipse.paho.android.service.MqttAndroidClient;
+import org.eclipse.paho.client.mqttv3.IMqttActionListener;
+import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
+import org.eclipse.paho.client.mqttv3.IMqttToken;
+import org.eclipse.paho.client.mqttv3.MqttCallback;
+import org.eclipse.paho.client.mqttv3.MqttClient;
+import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
+import org.eclipse.paho.client.mqttv3.MqttException;
+import org.eclipse.paho.client.mqttv3.MqttMessage;
+
+import java.util.Properties;
+
 public class MainActivity extends AppCompatActivity implements AcercaDeFragment.OnFragmentInteractionListener {
 
     private AppBarConfiguration mAppBarConfiguration;
+    public interface IScanListener {
+        void onScanResult(String msg);
+    }
+    private IScanListener mIScanListener;
+
+    protected MqttAndroidClient client;
+    private MqttCallback mqttCallback = new MqttCallback() {
+        @Override
+        public void connectionLost(Throwable cause) {
+
+        }
+
+        @Override
+        public void messageArrived(String topic, MqttMessage message) throws Exception {
+
+        }
+
+        @Override
+        public void deliveryComplete(IMqttDeliveryToken token) {
+
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,9 +91,88 @@ public class MainActivity extends AppCompatActivity implements AcercaDeFragment.
         NavigationUI.setupWithNavController(navigationView, navController);
 
         CheckPermissions();
+        StartMQTT();
+        client.setCallback(mqttCallback);
     }
 
+    public void setMqttCalbback(MqttCallback l){
+        client.setCallback(l);
+    }
+
+    private void StartMQTT() {
+        String clientId = MqttClient.generateClientId();
+        client = new MqttAndroidClient(this.getApplicationContext(), "tcp://mqtt.tago.io:1883", clientId);
+        MqttConnectOptions options = new MqttConnectOptions();
+        String password = "ecfd35e5-2f4b-4e8a-bc62-8ee3b10d5d1f";
+        options.setUserName("token");
+        options.setPassword(password.toCharArray());
+        options.setCleanSession(true);
+
+        try {
+            IMqttToken token = client.connect(options);
+            token.setActionCallback(new IMqttActionListener() {
+                @Override
+                public void onSuccess(IMqttToken asyncActionToken) {
+                    // We are connected
+                    //Toast.makeText(getApplicationContext(), "Connected with tago broker", Toast.LENGTH_SHORT).show();
+                    suscribeTopics();
+                }
+
+                @Override
+                public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
+                    // Something went wrong e.g. connection timeout or firewall problems
+                    Toast.makeText(getApplicationContext(), "Fail conection with tago broker", Toast.LENGTH_SHORT).show();
+
+                }
+            });
+        } catch (MqttException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Metodo para suscribirse a los topics necesarios para encender los leds de thunderboard
+     */
+    private void suscribeTopics(){
+        String[] topic = {"home/avaya/thunder", "home/avaya/thunderg"};
+        int[] qos = {1,1};
+        try {
+            IMqttToken subToken = client.subscribe(topic, qos);
+            subToken.setActionCallback(new IMqttActionListener() {
+                @Override
+                public void onSuccess(IMqttToken asyncActionToken) {
+                    //Toast.makeText(getApplicationContext(), "Suscrito al topic", Toast.LENGTH_SHORT).show();
+                }
+
+                @Override
+                public void onFailure(IMqttToken asyncActionToken,
+                                      Throwable exception) {
+                    // The subscription could not be performed, maybe the user was not
+                    // authorized to subscribe on the specified topic e.g. using wildcards
+                    Toast.makeText(getApplicationContext(), "Error al suscribir", Toast.LENGTH_SHORT).show();
+                }
+
+            });
+        } catch (MqttException e) {
+            e.printStackTrace();
+        }
+    }
+
+
     private void CheckPermissions() {
+        chkLocationPermission();
+
+        BluetoothManager Manager = (BluetoothManager)getSystemService( Context.BLUETOOTH_SERVICE );
+        BluetoothAdapter Adapter = Manager.getAdapter();
+        if ( Adapter==null || !Adapter.isEnabled() )
+        {
+            /* Solicitar al usuario encender el Bluetooth */
+            Intent EnableIntent = new Intent( BluetoothAdapter.ACTION_REQUEST_ENABLE );
+            startActivityForResult( EnableIntent, 123 );
+        }
+    }
+
+    private void chkLocationPermission(){
         if (getApplicationContext().checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED){
             if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this,
                     Manifest.permission.ACCESS_FINE_LOCATION)){
@@ -68,14 +182,21 @@ public class MainActivity extends AppCompatActivity implements AcercaDeFragment.
                 ActivityCompat.requestPermissions(MainActivity.this,
                         new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
             }
+        } else {
+            chkCameraPermission();
         }
-        BluetoothManager Manager = (BluetoothManager)getSystemService( Context.BLUETOOTH_SERVICE );
-        BluetoothAdapter Adapter = Manager.getAdapter();
-        if ( Adapter==null || !Adapter.isEnabled() )
-        {
-            /* Solicitar al usuario encender el Bluetooth */
-            Intent EnableIntent = new Intent( BluetoothAdapter.ACTION_REQUEST_ENABLE );
-            startActivityForResult( EnableIntent, 123 );
+    }
+
+    private void chkCameraPermission(){
+        if (getApplicationContext().checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED){
+            if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this,
+                    Manifest.permission.CAMERA)){
+                ActivityCompat.requestPermissions(MainActivity.this,
+                        new String[]{Manifest.permission.CAMERA}, 2);
+            }else{
+                ActivityCompat.requestPermissions(MainActivity.this,
+                        new String[]{Manifest.permission.CAMERA}, 2);
+            }
         }
     }
 
@@ -89,7 +210,13 @@ public class MainActivity extends AppCompatActivity implements AcercaDeFragment.
                     finish();
                 }
                 break;
-
+            case 49374:
+                if (resultCode == Activity.RESULT_OK) {
+                    if(mIScanListener != null){
+                        mIScanListener.onScanResult(data.getStringExtra("SCAN_RESULT"));
+                    }
+                }
+                break;
             default:
                 super.onActivityResult(requestCode, resultCode, data);
                 break;
@@ -101,17 +228,27 @@ public class MainActivity extends AppCompatActivity implements AcercaDeFragment.
     public void onRequestPermissionsResult(int requestCode, String[] permissions,
                                            int[] grantResults){
         switch (requestCode){
-            case 1: {
+            case 1:
                 if (grantResults.length>0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
                     if (getApplicationContext().checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)==PackageManager.PERMISSION_GRANTED){
+                        Toast.makeText(this, "Permission Granted", Toast.LENGTH_SHORT).show();
+                        chkCameraPermission();
+                    }
+                }else{
+                    Toast.makeText(this, "Permission Denied", Toast.LENGTH_SHORT).show();
+                    finish();
+                }
+                break;
+            case 2:
+                if (grantResults.length>0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                    if (getApplicationContext().checkSelfPermission(Manifest.permission.CAMERA)==PackageManager.PERMISSION_GRANTED){
                         Toast.makeText(this, "Permission Granted", Toast.LENGTH_SHORT).show();
                     }
                 }else{
                     Toast.makeText(this, "Permission Denied", Toast.LENGTH_SHORT).show();
                     finish();
                 }
-                return;
-            }
+                break;
         }
     }
 
@@ -126,7 +263,7 @@ public class MainActivity extends AppCompatActivity implements AcercaDeFragment.
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()){
             case R.id.action_settings:
-                DialogSettings dialogSettings = new DialogSettings(this);
+                DialogSettings dialogSettings = new DialogSettings(this, MainActivity.this);
                 dialogSettings.show();
                 break;
                 default:
@@ -145,5 +282,13 @@ public class MainActivity extends AppCompatActivity implements AcercaDeFragment.
     @Override
     public void onFragmentInteraction(Uri uri) {
 
+    }
+
+    /***
+     * Metodo para establecer el callback que manejara las lecturas de el lector de qrs
+     * @param l
+     */
+    public void setOnScanListener(IScanListener l){
+        mIScanListener = l;
     }
 }

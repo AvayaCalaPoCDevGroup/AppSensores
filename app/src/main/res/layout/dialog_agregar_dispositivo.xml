@@ -67,6 +67,13 @@
         android:layout_height="wrap_content"
         android:padding="5dp"
         android:text="@string/dialog_agregar_dispositivo_token"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
+        android:layout_marginRight="15dp"
+        android:orientation="horizontal">
     <EditText
         android:id="@+id/et_dialog_agregar_dispositivo_token"
         android:layout_width="match_parent"
@@ -74,7 +81,15 @@
         android:layout_marginTop="5dp"
         android:layout_marginBottom="5dp"
         android:layout_marginRight="15dp"
-        android:layout_marginLeft="15dp"/>
+        android:layout_marginLeft="15dp"
+        android:layout_weight="1"/>
+        <Button
+            android:id="@+id/btn_dialog_agregar_dispositivo_scan"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/dialog_agregar_dispositivo_search"
+            android:layout_weight="4"/>
+    </LinearLayout>
     <Button
         android:id="@+id/btn_dialog_agregar_dispositivo_ok"
         android:layout_width="match_parent"

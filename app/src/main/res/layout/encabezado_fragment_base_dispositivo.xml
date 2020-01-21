@@ -28,13 +28,26 @@
             android:layout_weight="1" />
     </LinearLayout>
 
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="15dp"
-        android:gravity="center"
-        android:padding="10dp"
-        android:text="@string/encabezado_fragment_base_dispo_info" />
+        android:orientation="horizontal">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="15dp"
+            android:gravity="center"
+            android:padding="10dp"
+            android:layout_weight="1"
+            android:text="@string/encabezado_fragment_base_dispo_info" />
+        <Button
+            android:id="@+id/btn_fragmentvista_rules"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:text="@string/fragment_vista_btn_rules"/>
+    </LinearLayout>
+
 
     <LinearLayout
         android:layout_width="match_parent"

@@ -17,6 +17,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -25,6 +26,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
+import androidx.navigation.Navigation;
 
 import com.example.appsensores.Clases.STimer;
 import com.example.appsensores.Clases.Utils;
@@ -108,6 +110,17 @@ public class FragmentDetalleSensorPuck extends BaseVistaFargment {
         mSTimer.start();
 
         return root;
+    }
+
+    @Override
+    public void setListenerForRulesButton(Button button) {
+        button.setOnClickListener(v -> {
+            Bundle bundle = new Bundle();
+            bundle.putInt("idSensor", dispositivoBase.getId());
+
+            Navigation.findNavController(getView()).navigate(R.id.action_fragmentDetalleSensorPuck_to_fragmentRules,bundle);
+
+        });
     }
 
     @Override

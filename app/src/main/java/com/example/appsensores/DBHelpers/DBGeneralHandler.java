@@ -23,6 +23,15 @@ public class DBGeneralHandler extends SQLiteOpenHelper {
     public static String KEY_DISPOSITIVOS_TOKEN = "Token";
     public static String KEY_DISPOSITIVOS_TIPODISPOSITIVO = "TipoDispositivo";
 
+    //TABLA RULES
+    public static String TABLE_RULES = "Rules";
+    public static String KEY_RULES_ID = "id";
+    public static String KEY_RULES_DISPOID = "DispositivoId";
+    public static String KEY_RULES_RULEID = "RuleId";
+    public static String KEY_RULES_SENSORID = "SensorId";
+    public static String KEY_RULES_VALUE1 = "Value1";
+    public static String KEY_RULES_VALUE2 = "Value2";
+
     public DBGeneralHandler(@Nullable Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
         this.mContext = context;
@@ -38,6 +47,16 @@ public class DBGeneralHandler extends SQLiteOpenHelper {
                 + KEY_DISPOSITIVOS_TIPODISPOSITIVO + " INT"
                 + ")";
         db.execSQL(CREATE_DISPOSITIVOS_TABLE);
+
+        String CREATE_RULES_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_RULES + "("
+                + KEY_RULES_ID + " INTEGER PRIMARY KEY,"
+                + KEY_RULES_DISPOID + " INTEGER,"
+                + KEY_RULES_RULEID + " INTEGER,"
+                + KEY_RULES_SENSORID + " INTEGER,"
+                + KEY_RULES_VALUE1 + " FLOAT,"
+                + KEY_RULES_VALUE2 + " FLOAT"
+                + ")";
+        db.execSQL(CREATE_RULES_TABLE);
 
         String thisPhoneName = mContext.getResources().getString(R.string.fragment_detalle_Telefono);
 

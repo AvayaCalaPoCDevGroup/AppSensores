@@ -8,6 +8,7 @@ import android.util.Log;
 
 import com.example.appsensores.DBHelpers.DBGeneralHandler;
 import com.example.appsensores.Models.Dispositivos.BaseDispositivo;
+import com.example.appsensores.Models.Rule;
 
 import java.util.ArrayList;
 
@@ -195,4 +196,73 @@ public class RepositorioDBGeneralSingleton {
         db.close();
         return dispositivo;
     }
+
+    public synchronized ArrayList<Rule> getAllRules(){
+        ArrayList<Rule> rules = new ArrayList<Rule>();
+
+        db = dbGeneralHandler.getWritableDatabase();
+        String query = "SELECT * FROM " + DBGeneralHandler.TABLE_RULES + " ORDER BY " + DBGeneralHandler.KEY_RULES_ID;
+
+        Cursor cursor = db.rawQuery(query, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                Rule rule = new Rule();
+
+                rule.id = Integer.parseInt(cursor.getString(0));
+                rule.DispositivoId = cursor.getInt(1);
+                rule.RuleId = cursor.getInt(2);
+                rule.SensorId = cursor.getInt(3);
+                rule.Value1 = cursor.getFloat(4);
+                rule.Value2 = cursor.getFloat(5);
+
+                rules.add(rule);
+            } while (cursor.moveToNext());
+        }
+        db.close();
+
+        return rules;
+    }
+
+    public synchronized ArrayList<Rule> getRulesByDispositivo(int DispoId){
+        ArrayList<Rule> rules = new ArrayList<Rule>();
+
+        db = dbGeneralHandler.getWritableDatabase();
+        String query = "SELECT * FROM " + DBGeneralHandler.TABLE_RULES + " WHERE " + DBGeneralHandler.KEY_RULES_DISPOID + " = " + DispoId + " ORDER BY " + DBGeneralHandler.KEY_RULES_ID;
+
+        Cursor cursor = db.rawQuery(query, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                Rule rule = new Rule();
+
+                rule.id = Integer.parseInt(cursor.getString(0));
+                rule.DispositivoId = cursor.getInt(1);
+                rule.RuleId = cursor.getInt(2);
+                rule.SensorId = cursor.getInt(3);
+                rule.Value1 = cursor.getFloat(4);
+                rule.Value2 = cursor.getFloat(5);
+
+                rules.add(rule);
+            } while (cursor.moveToNext());
+        }
+        db.close();
+
+        return rules;
+    }
+
+    public synchronized void addRule(Rule rule){
+        db = dbGeneralHandler.getWritableDatabase();
+
+        ContentValues dispoValues = new ContentValues();
+        dispoValues.put(DBGeneralHandler.KEY_RULES_DISPOID,rule.DispositivoId);
+        dispoValues.put(DBGeneralHandler.KEY_RULES_SENSORID,rule.SensorId);
+        dispoValues.put(DBGeneralHandler.KEY_RULES_RULEID,rule.RuleId);
+        dispoValues.put(DBGeneralHandler.KEY_RULES_VALUE1,rule.Value1);
+        dispoValues.put(DBGeneralHandler.KEY_RULES_VALUE2,rule.Value2);
+
+        db.insert(DBGeneralHandler.TABLE_RULES,null, dispoValues);
+        db.close();
+    }
 }
+

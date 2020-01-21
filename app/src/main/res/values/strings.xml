@@ -34,6 +34,8 @@
     <string name="fragment_thunder_led_info">Presiona para encender/apagar los LEDs</string>
     <string name="fragment_thunder_sw_info">Presiona los push buttons del dispositivo Thunderboard</string>
 
+    <string name="fragment_rules_title">Reglas del dispositivo:</string>
+    <string name="fragment_vista_btn_rules">Reglas</string>
 
     <!--Dialogos-->
     <string name="dialog_agregar_dispositivo_title">AGREGAR DISPOSITIVO</string>
@@ -61,6 +63,10 @@
     <string name="dialog_settins_adv_intervalo">El intervalo es requerido y mayor o igual a %d seg.</string>
     <string name="dialog_wait_title">Informacion</string>
     <string name="dialog_wait_msg">Enviando comandos...</string>
+    <string name="dialog_addrule_val1">Ingresa el Valor1</string>
+    <string name="dialog_addrule_val2">Ingresa el Valor2</string>
+    <string name="dialog_addrule_title">Agregar Regla</string>
+    <string name="dialog_addrule_instruccion">Elige un sensor y tipo de regla</string>
 
     <string name="dialog_scan_devices_title">Elige un Dispositivo</string>
     <string name="dialog_loading_msg_conectando">Conectando con dispositivo.</string>
@@ -81,6 +87,7 @@
     <string name="measure_aceleration_x">Aceleracion X</string>
     <string name="measure_aceleration_y">Aceleracion Y</string>
     <string name="measure_aceleration_z">Aceleracion Z</string>
+    <string name="measure_proximidad">Proximidad</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

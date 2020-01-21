@@ -69,7 +69,7 @@ public class HomeFragment extends Fragment {
             public void onClick(View view) {
                 /*Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();*/
-                DialogAgregarDispositivo dialogAgregarDispositivo = new DialogAgregarDispositivo(getContext());
+                DialogAgregarDispositivo dialogAgregarDispositivo = new DialogAgregarDispositivo(getContext(), getActivity());
                 dialogAgregarDispositivo.setCancelable(true);
                 dialogAgregarDispositivo.setOnDismissListener(new DialogInterface.OnDismissListener() {
                     @Override

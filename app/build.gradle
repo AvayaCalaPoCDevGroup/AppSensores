@@ -21,6 +21,15 @@ android {
         sourceCompatibility = 1.8
         targetCompatibility = 1.8
     }
+    repositories {
+
+        maven {
+            url "https://repo.eclipse.org/content/repositories/paho-releases/"
+        }
+
+        jcenter()
+    }
+
 }
 
 dependencies {
@@ -32,8 +41,15 @@ dependencies {
     implementation 'androidx.navigation:navigation-ui:2.0.0'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.0.0'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation 'com.google.zxing:core:3.2.1'
+    //implementation 'com.google.zxing:android-core:3.3.0'
+    implementation 'com.journeyapps:zxing-android-embedded:3.0.2@aar'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
     implementation 'com.google.code.gson:gson:2.8.5'
+    compile('org.eclipse.paho:org.eclipse.paho.android.service:1.0.2') {
+        exclude module: 'support-v4'
+    }
+    //compile ('org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.0.2')
 }

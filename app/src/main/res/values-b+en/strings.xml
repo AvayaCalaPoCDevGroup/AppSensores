@@ -34,6 +34,8 @@
     <string name="fragment_thunder_led_info">Press to turn on / off the LEDs</string>
     <string name="fragment_thunder_sw_info">Press the push buttons on the Thunderboard device</string>
 
+    <string name="fragment_rules_title">Device Rules:</string>
+    <string name="fragment_vista_btn_rules">Rules</string>
 
     <!--Dialogos-->
     <string name="dialog_agregar_dispositivo_title">ADD DEVICE</string>
@@ -60,6 +62,10 @@
     <string name="dialog_settins_adv_intervalo">The interval is required and greater than or equal a %d sec.</string>
     <string name="dialog_wait_title">Information</string>
     <string name="dialog_wait_msg">Send commands...</string>
+    <string name="dialog_addrule_val1">Set Value 1</string>
+    <string name="dialog_addrule_val2">Set Value 2</string>
+    <string name="dialog_addrule_title">Add Rule</string>
+    <string name="dialog_addrule_instruccion">Choose sensor and rule type</string>
 
     <string name="dialog_scan_devices_title">Chose a device</string>
     <string name="dialog_loading_msg_conectando">Connecting with device.</string>
@@ -71,7 +77,7 @@
     <string name="measure_temperatura">Temperature</string>
     <string name="measure_humedad">Relative humidity</string>
     <string name="measure_lux">Ambient light</string>
-    <string name="measure_uv">UV Indes</string>
+    <string name="measure_uv">UV Index</string>
     <string name="measure_voltaje">Voltage</string>
     <string name="measure_hrmrate">Heart rate</string>
     <string name="measure_orientation_x">Orientation X</string>
@@ -80,6 +86,7 @@
     <string name="measure_aceleration_x">Acceleration X</string>
     <string name="measure_aceleration_y">Acceleration Y</string>
     <string name="measure_aceleration_z">Acceleration Z</string>
+    <string name="measure_proximidad">Proximity</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

@@ -1,5 +1,6 @@
 package com.example.appsensores.ui.Dialogs;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
@@ -16,12 +17,17 @@ import androidx.annotation.NonNull;
 import com.example.appsensores.Models.Dispositivos.BaseDispositivo;
 import com.example.appsensores.R;
 import com.example.appsensores.Repositorio.RepositorioDBGeneralSingleton;
+import com.example.appsensores.ui.Activities.MainActivity;
+import com.google.zxing.integration.android.IntentIntegrator;
 
 import java.util.ArrayList;
 
-public class DialogAgregarDispositivo extends Dialog {
-    public DialogAgregarDispositivo(@NonNull Context context) {
+public class DialogAgregarDispositivo extends Dialog implements MainActivity.IScanListener {
+
+    private Activity mActivity;
+    public DialogAgregarDispositivo(@NonNull Context context, Activity mActivity) {
         super(context);
+        this.mActivity = mActivity;
     }
 
     private Spinner spnr_dialog_agregar_dispositivo_tipo;
@@ -30,6 +36,7 @@ public class DialogAgregarDispositivo extends Dialog {
     private EditText et_dialog_agregar_dispositivo_token;
     private Button btn_dialog_agregar_dispositivo_ok;
     private Button btn_dialog_agregar_dispositivo_search;
+    private Button btn_dialog_agregar_dispositivo_scan;
 
     private ArrayList<String> lisTipoDispo = new ArrayList<String>();
 
@@ -44,6 +51,7 @@ public class DialogAgregarDispositivo extends Dialog {
         lisTipoDispo.add("SENSOR PUCK");
         lisTipoDispo.add("THUNDERBOARD");
         setViews();
+        ((MainActivity)mActivity).setOnScanListener(this);
     }
 
     private void setViews() {
@@ -53,6 +61,7 @@ public class DialogAgregarDispositivo extends Dialog {
         et_dialog_agregar_dispositivo_token = findViewById(R.id.et_dialog_agregar_dispositivo_token);
         btn_dialog_agregar_dispositivo_ok = findViewById(R.id.btn_dialog_agregar_dispositivo_ok);
         btn_dialog_agregar_dispositivo_search = findViewById(R.id.btn_dialog_agregar_dispositivo_search);
+        btn_dialog_agregar_dispositivo_scan = findViewById(R.id.btn_dialog_agregar_dispositivo_scan);
 
         spnr_dialog_agregar_dispositivo_tipo.setAdapter(new ArrayAdapter<String>(getContext(),R.layout.support_simple_spinner_dropdown_item,lisTipoDispo));
         spnr_dialog_agregar_dispositivo_tipo.setEnabled(false);
@@ -86,6 +95,9 @@ public class DialogAgregarDispositivo extends Dialog {
         btn_dialog_agregar_dispositivo_search.setOnClickListener(v -> {
             dialogSearchDevices.show();
         });
+        btn_dialog_agregar_dispositivo_scan.setOnClickListener(v -> {
+            new IntentIntegrator(mActivity).initiateScan();
+        });
     }
 
     private boolean ValidarDispositivo() {
@@ -115,5 +127,10 @@ public class DialogAgregarDispositivo extends Dialog {
             Toast.makeText(getContext(), msg, Toast.LENGTH_SHORT).show();
 
         return resp;
+    }
+
+    @Override
+    public void onScanResult(String msg) {
+        et_dialog_agregar_dispositivo_token.setText(msg);
     }
 }

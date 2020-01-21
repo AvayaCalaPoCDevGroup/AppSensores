@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -16,6 +17,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 
 import com.example.appsensores.Clases.Enums.EnumTipoDispo;
 import com.example.appsensores.Models.Dispositivos.BaseDispositivo;
@@ -44,6 +46,8 @@ public abstract class BaseVistaFargment extends Fragment implements DialogSettin
     private TextView tv_fragment_base_dispo_tipo;
     private TextView tv_fragment_base_dispo_mac;
     private TextView tv_fragment_base_dispo_token;
+
+    private Button btn_fragmentvista_rules;
 
     private ArrayList<Switch> listSwitches = new ArrayList<>();
 
@@ -91,6 +95,7 @@ public abstract class BaseVistaFargment extends Fragment implements DialogSettin
         tv_fragment_base_dispo_tipo = view.findViewById(R.id.tv_fragment_base_dispo_tipo);
         tv_fragment_base_dispo_mac = view.findViewById(R.id.tv_fragment_base_dispo_mac);
         tv_fragment_base_dispo_token = view.findViewById(R.id.tv_fragment_base_dispo_token);
+        btn_fragmentvista_rules = view.findViewById(R.id.btn_fragmentvista_rules);
 
         tv_fragmentvista_nombre.setText(dispositivoBase.getNombre());
         tv_fragment_base_dispo_tipo.setText((EnumTipoDispo.values()[dispositivoBase.getTipoDispositivo()]).toString());
@@ -101,9 +106,15 @@ public abstract class BaseVistaFargment extends Fragment implements DialogSettin
         builder.setCancelable(false);
         builder.setView(R.layout.dialog_loading);
         dialogCargando = builder.create();
-
         setControles(view);
+        setListenerForRulesButton(btn_fragmentvista_rules);
     }
+
+    /**
+     * Metodo abstracto para que las clases que heredan establezcan el id de navegacion hacia el fragment rules
+     * @param button
+     */
+    public abstract void setListenerForRulesButton(Button button);
 
     /***
      * Aqui se deben inicializar los controles propios de la clase que hereda de BaseVistaFragment

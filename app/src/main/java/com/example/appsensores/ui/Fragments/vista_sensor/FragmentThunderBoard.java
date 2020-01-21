@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -23,6 +24,7 @@ import android.widget.ToggleButton;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 
 import com.example.appsensores.Clases.GattClient;
 import com.example.appsensores.Clases.STimer;
@@ -30,8 +32,13 @@ import com.example.appsensores.Clases.Utils;
 import com.example.appsensores.Models.Dispositivos.DispoThunderBoard;
 import com.example.appsensores.Models.ValuesTago;
 import com.example.appsensores.R;
+import com.example.appsensores.ui.Activities.MainActivity;
 
-public class FragmentThunderBoard extends BaseVistaFargment {
+import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
+import org.eclipse.paho.client.mqttv3.MqttCallback;
+import org.eclipse.paho.client.mqttv3.MqttMessage;
+
+public class FragmentThunderBoard extends BaseVistaFargment implements MqttCallback {
 
     private BluetoothAdapter Adapter;
     private BluetoothLeScanner bluetoothLeScanner;
@@ -101,6 +108,17 @@ public class FragmentThunderBoard extends BaseVistaFargment {
         mSTimer.start();
 
         return root;
+    }
+
+    @Override
+    public void setListenerForRulesButton(Button button) {
+        button.setOnClickListener(v -> {
+            Bundle bundle = new Bundle();
+            bundle.putInt("idSensor", dispositivoBase.getId());
+
+            Navigation.findNavController(getView()).navigate(R.id.action_fragmentThunderBoard_to_fragmentRules,bundle);
+
+        });
     }
 
     @Override
@@ -190,6 +208,7 @@ public class FragmentThunderBoard extends BaseVistaFargment {
                     @Override
                     public void run() {
                         dialogCargando.dismiss();
+                        ((MainActivity)getActivity()).setMqttCalbback(FragmentThunderBoard.this);
                     }
                 });
             }
@@ -307,5 +326,37 @@ public class FragmentThunderBoard extends BaseVistaFargment {
     public void onSettingsChanged() {
         if(mSTimer != null)
             mSTimer.setPeriod( STimer.CURRENT_PERIOD );
+    }
+
+    @Override
+    public void connectionLost(Throwable cause) {
+
+    }
+
+    @Override
+    public void messageArrived(String topic, MqttMessage msg) throws Exception {
+
+        String message = msg.toString();
+
+        if(topic.equals("home/avaya/thunder")){
+            if(message.equals("{\"option\"  : 1000 }")){
+                tb_fragmentdetalle_thunder_ledblue.setChecked(false);
+            } else if (message.equals("{\"option\"  : 1001 }")){
+                tb_fragmentdetalle_thunder_ledblue.setChecked(true);
+            }
+            //tb_fragmentdetalle_thunder_ledblue.setChecked(!tb_fragmentdetalle_thunder_ledblue.isChecked());
+        } else if(topic.equals("home/avaya/thunderg")){
+            if(message.equals("{\"option\" : 1000 }")){
+                tb_fragmentdetalle_thunder_ledgreen.setChecked(false);
+            } else if (message.equals("{\"option\" : 1001 }")){
+                tb_fragmentdetalle_thunder_ledgreen.setChecked(true);
+            }
+            //tb_fragmentdetalle_thunder_ledblue.setChecked(!tb_fragmentdetalle_thunder_ledblue.isChecked());
+        }
+    }
+
+    @Override
+    public void deliveryComplete(IMqttDeliveryToken token) {
+
     }
 }
