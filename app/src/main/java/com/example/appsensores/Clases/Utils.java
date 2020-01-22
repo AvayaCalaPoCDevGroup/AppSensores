@@ -12,6 +12,12 @@ public class Utils {
     public static final String AVAYA_SHARED_PREFERENCES = "AVAYA_PREFERENCES";
     public static final String AVAYA_INTERVALO = "AVAYA_INTERVALO";
 
+    public static final String AVAYA_SHARED_MAIL = "AVAYA_SHARED_MAIL";
+    public static final String AVAYA_SHARED_FAMILY = "AVAYA_SHARED_FAMILY";
+    public static final String AVAYA_SHARED_TYPE = "AVAYA_SHARED_TYPE";
+    public static final String AVAYA_SHARED_VERSION = "AVAYA_SHARED_VERSION";
+    public static final String AVAYA_SHARED_URL = "AVAYA_SHARED_URL";
+
     public static final int ENVIRONMENTAL_MODE = 0;
     public static final int BIOMETRIC_MODE = 1;
 

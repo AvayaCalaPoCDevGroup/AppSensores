@@ -32,9 +32,9 @@ public class SensorTypes {
     public static String[] getRuleTypes(Context context){
         Resources res = context.getResources();
         String[] resp = {
-                "Menor que",
-                "Mayor que",
-                "Entre"
+                res.getString(R.string.rule_type_smaller),
+                res.getString(R.string.rule_type_greater),
+                res.getString(R.string.rule_type_between)
         };
 
         return resp;

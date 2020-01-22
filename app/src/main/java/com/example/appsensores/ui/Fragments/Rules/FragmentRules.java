@@ -20,6 +20,7 @@ import com.example.appsensores.Models.Dispositivos.BaseDispositivo;
 import com.example.appsensores.Models.Rule;
 import com.example.appsensores.R;
 import com.example.appsensores.Repositorio.RepositorioDBGeneralSingleton;
+import com.example.appsensores.ui.Activities.MainActivity;
 import com.example.appsensores.ui.Dialogs.DialogAddRule;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -88,6 +89,13 @@ public class FragmentRules extends Fragment {
                 adapterRules.notifyDataSetChanged();
             });
             dialog.show();
+        });
+
+        lv_fragment_rules.setOnItemLongClickListener((parent, view1, position, id) -> {
+            RepositorioDBGeneralSingleton.getInstance(getContext()).deleteRule(rulesList.get(position).id);
+            iniciarListas();
+            adapterRules.notifyDataSetChanged();
+            return true;
         });
     }
 

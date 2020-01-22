@@ -34,5 +34,12 @@
         android:layout_height="wrap_content"
         android:textColor="#FFFFFF"
         android:text="@string/nav_header_subtitle" />
+    <TextView
+        android:id="@+id/tv_navheader_version"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="end"
+        android:textColor="#FFFFFF"
+        android:text="#version" />
 
 </LinearLayout>

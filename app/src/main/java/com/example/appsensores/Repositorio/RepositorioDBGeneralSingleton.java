@@ -264,5 +264,22 @@ public class RepositorioDBGeneralSingleton {
         db.insert(DBGeneralHandler.TABLE_RULES,null, dispoValues);
         db.close();
     }
+
+    public synchronized boolean deleteRule(int id){
+        boolean resp = false;
+
+        db = dbGeneralHandler.getWritableDatabase();
+        try{
+            //Log.d("DELETEFON","DELETE FROM " + DBTicketsHandler.TABLE_CELULARES + " WHERE "+ DBTicketsHandler.KEY_NUMERO_CEL + " = '" + phoneNumber + "'");
+            db.execSQL("DELETE FROM " + dbGeneralHandler.TABLE_RULES + " WHERE "+ dbGeneralHandler.KEY_RULES_ID + " = " + id );
+            resp = true;
+        } catch (Exception e){
+            Log.e("deleteRule","Error al borrar regla " + e.toString());
+        }
+
+        db.close();
+
+        return resp;
+    }
 }
 

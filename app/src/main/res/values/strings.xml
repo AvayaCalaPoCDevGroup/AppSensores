@@ -2,10 +2,11 @@
     <string name="app_name">AppSensores</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="nav_header_title">App Sensores</string>
-    <string name="nav_header_subtitle">Avaya</string>
+    <string name="nav_header_title">AVAYA CALA POC DEVELOPERS GROUP</string>
+    <string name="nav_header_subtitle">App Sensores</string>
     <string name="nav_header_desc">Navigation header</string>
-    <string name="action_settings">Settings</string>
+    <string name="action_settings">Ajustes</string>
+    <string name="action_rule_settings">Ajuste de reglas</string>
 
     <string name="menu_inicio">Inicio</string>
     <string name="menu_gallery">Gallery</string>
@@ -67,9 +68,14 @@
     <string name="dialog_addrule_val2">Ingresa el Valor2</string>
     <string name="dialog_addrule_title">Agregar Regla</string>
     <string name="dialog_addrule_instruccion">Elige un sensor y tipo de regla</string>
+    <string name="dialog_addrule_norules">No hay mas sensores disponibles para este dispositivo</string>
 
     <string name="dialog_scan_devices_title">Elige un Dispositivo</string>
     <string name="dialog_loading_msg_conectando">Conectando con dispositivo.</string>
+
+    <string name="dialog_rule_settings_title">Ajuste de Reglas</string>
+    <string name="dialog_rule_settings_mail">Correo de notificaciones</string>
+
 
     <!--encabezado vista dispositivo fragment-->
     <string name="encabezado_fragment_base_dispo_info">Informacion del Dispositivo</string>
@@ -88,6 +94,11 @@
     <string name="measure_aceleration_y">Aceleracion Y</string>
     <string name="measure_aceleration_z">Aceleracion Z</string>
     <string name="measure_proximidad">Proximidad</string>
+
+    <!--Rule types-->
+    <string name="rule_type_greater">Mayor que</string>
+    <string name="rule_type_smaller">Menor que</string>
+    <string name="rule_type_between">Entre</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

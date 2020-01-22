@@ -2,6 +2,9 @@ package com.example.appsensores.WebMethods;
 
 import android.util.Log;
 
+import com.example.appsensores.Models.Parametros;
+import com.google.gson.Gson;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 
@@ -19,6 +22,41 @@ import java.util.HashMap;
 public class WebMethods {
     public static String IP_SERVER = "https://api.tago.io/data";
 
+    /***
+     * Metodo para hacer post request con un contenido multipart/form-data
+     * @param params Modelo de Parametros de Avaya
+     * @return Status Code
+     */
+    public static Integer requestPostMethodAvayaEndpoint(Parametros params, String URL, String family, String type, String version ){
+
+        String json = new Gson().toJson(params);
+        Integer response = -1;
+
+        MultipartFormDataTest multipart = null;
+        try {
+            multipart = new MultipartFormDataTest(URL, "UTF-8");
+            multipart.addFormField("family", family);
+            multipart.addFormField("type", type);
+            multipart.addFormField("version", version);
+            multipart.addFormField("eventBody", json);
+            response = multipart.finish();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+        Log.e("doinbackground", "SERVER REPLIED:");
+
+        return response;
+    }
+
+    /**
+     * Metodo para enviar informacion a tago
+     * @param url URL del endpoint
+     * @param token Token del device generado en Tago.io
+     * @param values Valores a enviar
+     * @return
+     */
     public static synchronized String getStringPOSTmethodTago(String url, String token, String values){
         String resp = "-1";
         //String postParameters = createQueryStringForParameters(parameters);

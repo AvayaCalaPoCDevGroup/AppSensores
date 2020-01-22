@@ -2,6 +2,7 @@ package com.example.appsensores.ui.Activities;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.Dialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;
 import android.content.Context;
@@ -10,7 +11,10 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 
+import com.example.appsensores.BuildConfig;
 import com.example.appsensores.R;
+import com.example.appsensores.ui.Dialogs.DialogAddRule;
+import com.example.appsensores.ui.Dialogs.DialogRuleSettings;
 import com.example.appsensores.ui.Dialogs.DialogSettings;
 import com.example.appsensores.ui.Fragments.acercade.AcercaDeFragment;
 
@@ -31,6 +35,7 @@ import androidx.appcompat.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.eclipse.paho.android.service.MqttAndroidClient;
@@ -89,6 +94,9 @@ public class MainActivity extends AppCompatActivity implements AcercaDeFragment.
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
+
+
+        ((TextView)(navigationView.getHeaderView(0).findViewById(R.id.tv_navheader_version))).setText("Ver: " + BuildConfig.VERSION_NAME);
 
         CheckPermissions();
         StartMQTT();
@@ -221,7 +229,6 @@ public class MainActivity extends AppCompatActivity implements AcercaDeFragment.
                 super.onActivityResult(requestCode, resultCode, data);
                 break;
         }
-
     }
 
     @Override
@@ -266,8 +273,10 @@ public class MainActivity extends AppCompatActivity implements AcercaDeFragment.
                 DialogSettings dialogSettings = new DialogSettings(this, MainActivity.this);
                 dialogSettings.show();
                 break;
-                default:
-                    break;
+            case R.id.action_rule_settings:
+                DialogRuleSettings dialogRuleSettings = new DialogRuleSettings(this);
+                dialogRuleSettings.show();
+                break;
         }
         return super.onOptionsItemSelected(item);
     }

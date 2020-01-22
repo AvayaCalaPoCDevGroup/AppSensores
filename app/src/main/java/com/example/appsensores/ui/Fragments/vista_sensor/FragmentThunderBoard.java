@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -298,6 +299,7 @@ public class FragmentThunderBoard extends BaseVistaFargment implements MqttCallb
         {
             mGattClient.requestDataThunderBoard();
             sendData();
+            new checkAndSendRules().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, mDispoThunderBoard);
         }
     };
 
@@ -319,7 +321,7 @@ public class FragmentThunderBoard extends BaseVistaFargment implements MqttCallb
 
         };
 
-        new EnviarInformacionTago(mDispoThunderBoard.getToken()).execute(values);
+        new EnviarInformacionTago(mDispoThunderBoard.getToken()).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,values);
     }
 
     @Override
