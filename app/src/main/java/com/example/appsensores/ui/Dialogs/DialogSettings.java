@@ -23,9 +23,14 @@ public class DialogSettings extends Dialog implements MainActivity.IScanListener
 
     private EditText et_dialog_settings_token;
     private EditText et_dialog_settings_intervalo;
+    private EditText et_dialog_settings_tokenbroker;
     private Button btn_dialog_settings_ok;
     private Button btn_dialog_settings_scan;
+    private Button btn_dialog_settings_scanbroker;
     private MainActivity mMainActivity;
+
+    private boolean SCAN_TOKEN = false;
+    private boolean SCAN_BROKER = false;
 
     private SharedPreferences sharedPreferencesAvaya;
     public static IsettinsListener mIsettinsListener;
@@ -54,13 +59,16 @@ public class DialogSettings extends Dialog implements MainActivity.IScanListener
     private void setViews() {
         et_dialog_settings_token = findViewById(R.id.et_dialog_settings_token);
         et_dialog_settings_intervalo = findViewById(R.id.et_dialog_settings_intervalo);
+        et_dialog_settings_tokenbroker = findViewById(R.id.et_dialog_settings_tokenbroker);
         btn_dialog_settings_ok = findViewById(R.id.btn_dialog_settings_ok);
         btn_dialog_settings_scan = findViewById(R.id.btn_dialog_settings_scan);
+        btn_dialog_settings_scanbroker = findViewById(R.id.btn_dialog_settings_scanbroker);
 
         //Obtenemos la informacion del telefono, por default siempre es el id 1
         BaseDispositivo deviceTel = RepositorioDBGeneralSingleton.getInstance(getContext()).getDeviceById(1);
         et_dialog_settings_token.setText(deviceTel.getToken());
         et_dialog_settings_intervalo.setText("" + (sharedPreferencesAvaya.getInt(Utils.AVAYA_INTERVALO, 3000)/1000));
+        et_dialog_settings_tokenbroker.setText(sharedPreferencesAvaya.getString(Utils.AVAYA_SHARED_BORKERTOKEN, ""));
 
         btn_dialog_settings_ok.setOnClickListener(v -> {
             if (et_dialog_settings_token.getText().toString().equals("")) {
@@ -72,6 +80,7 @@ public class DialogSettings extends Dialog implements MainActivity.IScanListener
                 SharedPreferences.Editor editor = sharedPreferencesAvaya.edit();
                 int intervalo = Integer.parseInt(et_dialog_settings_intervalo.getText().toString());
                 editor.putInt(Utils.AVAYA_INTERVALO,intervalo*1000);
+                editor.putString(Utils.AVAYA_SHARED_BORKERTOKEN, et_dialog_settings_tokenbroker.getText().toString());
                 STimer.CURRENT_PERIOD = intervalo * 1000;
                 editor.commit();
                 deviceTel.setToken(et_dialog_settings_token.getText().toString());
@@ -83,6 +92,14 @@ public class DialogSettings extends Dialog implements MainActivity.IScanListener
         });
 
         btn_dialog_settings_scan.setOnClickListener(v -> {
+            SCAN_TOKEN = true;
+            SCAN_BROKER = false;
+            new IntentIntegrator(mMainActivity).initiateScan();
+        });
+
+        btn_dialog_settings_scanbroker.setOnClickListener(v -> {
+            SCAN_TOKEN = false;
+            SCAN_BROKER = true;
             new IntentIntegrator(mMainActivity).initiateScan();
         });
     }
@@ -93,7 +110,13 @@ public class DialogSettings extends Dialog implements MainActivity.IScanListener
 
     @Override
     public void onScanResult(String msg) {
-        et_dialog_settings_token.setText(msg);
+        if(SCAN_TOKEN)
+            et_dialog_settings_token.setText(msg);
+        else if (SCAN_BROKER)
+            et_dialog_settings_tokenbroker.setText(msg);
+
+        SCAN_BROKER = false;
+        SCAN_TOKEN = false;
     }
 
     public interface IsettinsListener {

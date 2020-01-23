@@ -12,6 +12,7 @@ import android.bluetooth.le.ScanSettings;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -95,8 +96,8 @@ public class FragmentDetalleSensorPuck extends BaseVistaFargment {
             bluetoothLeScanner = Adapter.getBluetoothLeScanner();
             ArrayList<ScanFilter> filters = new ArrayList<>();
             //ScanFilter filter = new ScanFilter.Builder().setDeviceAddress("D4:81:CA:E1:7A:DC").build(); //SensorPuck
-            //ScanFilter filter = new ScanFilter.Builder().setDeviceAddress("74:1C:E4:5E:4E:32").build();
-            //filters.add(filter);
+            ScanFilter filter = new ScanFilter.Builder().setDeviceAddress(mDispoSensorPuck.getMacAddress()).build();
+            filters.add(filter);
             ScanSettings scansattings = new ScanSettings.Builder().setScanMode(ScanSettings.SCAN_MODE_BALANCED).setReportDelay(0).build();
             bluetoothLeScanner.startScan(filters,scansattings,ScanCallback);
             //bluetoothLeScanner.startScan(ScanCallback);
@@ -241,6 +242,7 @@ public class FragmentDetalleSensorPuck extends BaseVistaFargment {
                 mDispoSensorPuck.IdleCount = 0;
             }
             sendData();
+            new checkAndSendRules().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, mDispoSensorPuck);
         }
     };
 

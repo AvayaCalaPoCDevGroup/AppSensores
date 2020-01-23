@@ -7,11 +7,13 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 
 import com.example.appsensores.BuildConfig;
+import com.example.appsensores.Clases.Utils;
 import com.example.appsensores.R;
 import com.example.appsensores.ui.Dialogs.DialogAddRule;
 import com.example.appsensores.ui.Dialogs.DialogRuleSettings;
@@ -53,6 +55,10 @@ import java.util.Properties;
 public class MainActivity extends AppCompatActivity implements AcercaDeFragment.OnFragmentInteractionListener {
 
     private AppBarConfiguration mAppBarConfiguration;
+
+    String[] topic = {"home/avaya/thunder", "home/avaya/thunderg"};
+    int[] qos = {1,1};
+
     public interface IScanListener {
         void onScanResult(String msg);
     }
@@ -67,7 +73,7 @@ public class MainActivity extends AppCompatActivity implements AcercaDeFragment.
 
         @Override
         public void messageArrived(String topic, MqttMessage message) throws Exception {
-
+                Log.e("MainActivity", "Mensage arrivado a callback de onactivity : " + topic);
         }
 
         @Override
@@ -99,19 +105,23 @@ public class MainActivity extends AppCompatActivity implements AcercaDeFragment.
         ((TextView)(navigationView.getHeaderView(0).findViewById(R.id.tv_navheader_version))).setText("Ver: " + BuildConfig.VERSION_NAME);
 
         CheckPermissions();
-        StartMQTT();
-        client.setCallback(mqttCallback);
+        //StartMQTT();
+        //client.setCallback(mqttCallback);
     }
 
     public void setMqttCalbback(MqttCallback l){
         client.setCallback(l);
     }
 
-    private void StartMQTT() {
+    public void StartMQTT() {
+
+        SharedPreferences sharedPreferences = getSharedPreferences(Utils.AVAYA_SHARED_PREFERENCES,0);
+        String PassWord = sharedPreferences.getString(Utils.AVAYA_SHARED_BORKERTOKEN, "ecfd35e5-2f4b-4e8a-bc62-8ee3b10d5d1f");
+
         String clientId = MqttClient.generateClientId();
         client = new MqttAndroidClient(this.getApplicationContext(), "tcp://mqtt.tago.io:1883", clientId);
         MqttConnectOptions options = new MqttConnectOptions();
-        String password = "ecfd35e5-2f4b-4e8a-bc62-8ee3b10d5d1f";
+        String password = PassWord;
         options.setUserName("token");
         options.setPassword(password.toCharArray());
         options.setCleanSession(true);
@@ -123,14 +133,51 @@ public class MainActivity extends AppCompatActivity implements AcercaDeFragment.
                 public void onSuccess(IMqttToken asyncActionToken) {
                     // We are connected
                     //Toast.makeText(getApplicationContext(), "Connected with tago broker", Toast.LENGTH_SHORT).show();
+                    Log.e("MainActivity", "SartMQTT Succes");
                     suscribeTopics();
+                    //client.setCallback(mqttCallback);
                 }
 
                 @Override
                 public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
                     // Something went wrong e.g. connection timeout or firewall problems
+                    Log.e("MainActivity", "SartMQTT Fail -> " + exception.getCause());
                     Toast.makeText(getApplicationContext(), "Fail conection with tago broker", Toast.LENGTH_SHORT).show();
 
+                }
+            });
+        } catch (MqttException e) {
+            e.printStackTrace();
+        }
+        //Asignamos el callback para los topics
+        client.setCallback(mqttCallback);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        StartMQTT();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        StopMQTT();
+    }
+
+    public void StopMQTT() {
+        try {
+            IMqttToken disconToken = client.disconnect();
+            disconToken.setActionCallback(new IMqttActionListener() {
+                @Override
+                public void onSuccess(IMqttToken asyncActionToken) {
+                    Log.e("MainActivity", "StopMQTT Succes");
+                }
+
+                @Override
+                public void onFailure(IMqttToken asyncActionToken,
+                                      Throwable exception) {
+                    Log.e("MainActivity", "StopMQTT Fail: " + exception.getMessage());
                 }
             });
         } catch (MqttException e) {
@@ -142,14 +189,14 @@ public class MainActivity extends AppCompatActivity implements AcercaDeFragment.
      * Metodo para suscribirse a los topics necesarios para encender los leds de thunderboard
      */
     private void suscribeTopics(){
-        String[] topic = {"home/avaya/thunder", "home/avaya/thunderg"};
-        int[] qos = {1,1};
+
         try {
             IMqttToken subToken = client.subscribe(topic, qos);
             subToken.setActionCallback(new IMqttActionListener() {
                 @Override
                 public void onSuccess(IMqttToken asyncActionToken) {
                     //Toast.makeText(getApplicationContext(), "Suscrito al topic", Toast.LENGTH_SHORT).show();
+                    Log.e("MainActivity", "SartMQTT TOPICS Succes");
                 }
 
                 @Override
@@ -172,7 +219,10 @@ public class MainActivity extends AppCompatActivity implements AcercaDeFragment.
 
         BluetoothManager Manager = (BluetoothManager)getSystemService( Context.BLUETOOTH_SERVICE );
         BluetoothAdapter Adapter = Manager.getAdapter();
-        if ( Adapter==null || !Adapter.isEnabled() )
+        if(Adapter==null){
+            Toast.makeText(this, "Bluetooth is required", Toast.LENGTH_SHORT).show();
+            finish();
+        } else if (!Adapter.isEnabled() )
         {
             /* Solicitar al usuario encender el Bluetooth */
             Intent EnableIntent = new Intent( BluetoothAdapter.ACTION_REQUEST_ENABLE );
@@ -271,6 +321,10 @@ public class MainActivity extends AppCompatActivity implements AcercaDeFragment.
         switch (item.getItemId()){
             case R.id.action_settings:
                 DialogSettings dialogSettings = new DialogSettings(this, MainActivity.this);
+                /*dialogSettings.setOnDismissListener(dialog -> {
+                    MainActivity.this.StopMQTT();
+                    MainActivity.this.StartMQTT();
+                });*/
                 dialogSettings.show();
                 break;
             case R.id.action_rule_settings:

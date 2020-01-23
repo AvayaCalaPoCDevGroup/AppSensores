@@ -59,6 +59,7 @@
 
     <string name="dialog_settins_title">Ajustes</string>
     <string name="dialog_settins_token">Ingresa el Token del Telefono</string>
+    <string name="dialog_settins_tokenbroker">Ingresa el Token del Broker MQTT</string>
     <string name="dialog_settins_intervalo">Intervalo de actualizacion con Tago (min 5seg)</string>
     <string name="dialog_settins_adv_token">El token es ecesario para continuar.</string>
     <string name="dialog_settins_adv_intervalo">El intervalo es requerido y mayor o igual a %d seg.</string>

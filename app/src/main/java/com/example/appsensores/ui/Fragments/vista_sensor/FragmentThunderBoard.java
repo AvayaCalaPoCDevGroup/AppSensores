@@ -192,7 +192,7 @@ public class FragmentThunderBoard extends BaseVistaFargment implements MqttCallb
         dialogCargando.show();
         ((TextView)dialogCargando.findViewById(R.id.dialog_loading_msg)).setText(R.string.dialog_loading_msg_conectando);
 
-        mGattClient.onCreate(getContext(), "00:0B:57:1C:63:50", new GattClient.OnReadListener() {
+        mGattClient.onCreate(getContext(), mDispoThunderBoard.getMacAddress(), new GattClient.OnReadListener() {
             @Override
             public void onReadValues(final DispoThunderBoard dispo) {
                 getActivity().runOnUiThread(new Runnable() {
@@ -322,12 +322,18 @@ public class FragmentThunderBoard extends BaseVistaFargment implements MqttCallb
         };
 
         new EnviarInformacionTago(mDispoThunderBoard.getToken()).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,values);
+
     }
 
     @Override
     public void onSettingsChanged() {
         if(mSTimer != null)
             mSTimer.setPeriod( STimer.CURRENT_PERIOD );
+
+        //Establecemos de nuevo el callback de mqtt por que al cambiar los settings se reinicia la conexion
+        ((MainActivity)getActivity()).StopMQTT();
+        ((MainActivity)getActivity()).StartMQTT();
+        ((MainActivity)getActivity()).setMqttCalbback(FragmentThunderBoard.this);
     }
 
     @Override
@@ -341,9 +347,9 @@ public class FragmentThunderBoard extends BaseVistaFargment implements MqttCallb
         String message = msg.toString();
 
         if(topic.equals("home/avaya/thunder")){
-            if(message.equals("{\"option\"  : 1000 }")){
+            if(message.equals("{\"option\" : 1000 }")){
                 tb_fragmentdetalle_thunder_ledblue.setChecked(false);
-            } else if (message.equals("{\"option\"  : 1001 }")){
+            } else if (message.equals("{\"option\" : 1001 }")){
                 tb_fragmentdetalle_thunder_ledblue.setChecked(true);
             }
             //tb_fragmentdetalle_thunder_ledblue.setChecked(!tb_fragmentdetalle_thunder_ledblue.isChecked());

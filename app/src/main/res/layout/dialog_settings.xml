@@ -36,7 +36,36 @@
             android:layout_height="wrap_content"
             android:layout_weight="4"
             android:text="+"/>
+
     </LinearLayout>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="5dp"
+        android:text="@string/dialog_settins_tokenbroker"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/et_dialog_settings_tokenbroker"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginRight="15dp"
+            android:layout_marginBottom="5dp"
+            android:layout_weight="1" />
+
+        <Button
+            android:id="@+id/btn_dialog_settings_scanbroker"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="4"
+            android:text="+" />
+    </LinearLayout>
+
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -44,7 +73,7 @@
         android:text="@string/dialog_settins_intervalo"/>
 
 
-        <EditText
+    <EditText
             android:id="@+id/et_dialog_settings_intervalo"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
