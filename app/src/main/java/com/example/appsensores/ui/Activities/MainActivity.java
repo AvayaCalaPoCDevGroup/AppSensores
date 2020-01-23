@@ -167,7 +167,10 @@ public class MainActivity extends AppCompatActivity implements AcercaDeFragment.
 
     public void StopMQTT() {
         try {
+            if(!client.isConnected()) return;
+
             IMqttToken disconToken = client.disconnect();
+
             disconToken.setActionCallback(new IMqttActionListener() {
                 @Override
                 public void onSuccess(IMqttToken asyncActionToken) {
