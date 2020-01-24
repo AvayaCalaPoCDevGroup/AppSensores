@@ -14,6 +14,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.example.appsensores.Clases.Adapters.AdapterRules;
 import com.example.appsensores.Clases.Enums.EnumTipoDispo;
 import com.example.appsensores.Clases.Enums.SensorTypes;
 import com.example.appsensores.Models.Dispositivos.BaseDispositivo;
@@ -29,7 +30,6 @@ import java.util.ArrayList;
 public class FragmentRules extends Fragment {
     private BaseDispositivo dispositivoBase;
     private ArrayList<Rule> rulesList = new ArrayList<>();
-    private ArrayList<String> ruleListString = new ArrayList<>();
 
     private TextView    tv_fragmentvista_nombre;
     private Switch      sw_fragmnetvista_gral;
@@ -80,7 +80,7 @@ public class FragmentRules extends Fragment {
         tv_fragment_base_dispo_token.setText(dispositivoBase.getToken());
 
         iniciarListas();
-        final ArrayAdapter adapterRules = new ArrayAdapter(getContext(),R.layout.list_unit_dispositivos,ruleListString);
+        final AdapterRules adapterRules = new AdapterRules(getContext(),R.layout.list_unit_dispositivos, rulesList);
         lv_fragment_rules.setAdapter(adapterRules);
         fab_fragment_rules.setOnClickListener(v -> {
             DialogAddRule dialog = new DialogAddRule(getContext(), dispositivoBase);
@@ -105,23 +105,6 @@ public class FragmentRules extends Fragment {
      */
     private void iniciarListas(){
         rulesList.clear();
-        ruleListString.clear();
         rulesList.addAll(RepositorioDBGeneralSingleton.getInstance(getContext()).getRulesByDispositivo(dispositivoBase.getId()));
-
-        for (Rule unit : rulesList) {
-            String[] sensorAmbient = SensorTypes.getSensorAmbientList(getContext());
-            String[] ruleTypes = SensorTypes.getRuleTypes(getContext());
-
-            String sensor = sensorAmbient[unit.SensorId];
-            String rule = ruleTypes[unit.RuleId];
-            String value1 = ""+unit.Value1;
-            String value2 = ""+unit.Value2;
-
-            if(unit.RuleId == SensorTypes.ENTRE){
-                ruleListString.add(sensor + " " + rule + " " +value1 + " - " + value2);
-            } else {
-                ruleListString.add(sensor + " " + rule + " " +value1);
-            }
-        }
     }
 }

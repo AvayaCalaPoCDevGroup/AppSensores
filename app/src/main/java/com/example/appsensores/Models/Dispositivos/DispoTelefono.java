@@ -13,4 +13,6 @@ public class DispoTelefono extends BaseDispositivo {
     public float Proximidad;
     public float AmbientLight;
 
+    public double Lat;
+    public double Lng;
 }

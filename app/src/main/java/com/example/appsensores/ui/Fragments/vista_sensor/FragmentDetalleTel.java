@@ -1,10 +1,14 @@
 package com.example.appsensores.ui.Fragments.vista_sensor;
 
 
+import android.content.Context;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.hardware.camera2.CameraAccessException;
+import android.hardware.camera2.CameraManager;
+import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
@@ -16,10 +20,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
+import com.example.appsensores.Clases.GPSClient;
 import com.example.appsensores.Clases.STimer;
 import com.example.appsensores.Models.Dispositivos.DispoTelefono;
 import com.example.appsensores.Models.Dispositivos.DispoThunderBoard;
@@ -39,6 +46,9 @@ public class FragmentDetalleTel extends BaseVistaFargment {
 
     private SensorManager mSensorManager;
     private DispoTelefono mDispoTelefono;
+    private GPSClient gpsClient;
+    private CameraManager camManager;
+    private String cameraId = null;
 
     private TextView tv_fragmentdetalle_tel_temperatura;
     private TextView tv_fragmentdetalle_tel_humedad;
@@ -50,6 +60,8 @@ public class FragmentDetalleTel extends BaseVistaFargment {
     private TextView tv_fragmentdetalle_tel_ax;
     private TextView tv_fragmentdetalle_tel_ay;
     private TextView tv_fragmentdetalle_tel_az;
+    private TextView tv_fragmentdetalle_tel_lat;
+    private TextView tv_fragmentdetalle_tel_lng;
 
     private Switch sw_fragmentdetalle_tel_temperatura;
     private Switch sw_fragmentdetalle_tel_humedad;
@@ -61,6 +73,10 @@ public class FragmentDetalleTel extends BaseVistaFargment {
     private Switch sw_fragmentdetalle_tel_ax;
     private Switch sw_fragmentdetalle_tel_ay;
     private Switch sw_fragmentdetalle_tel_az;
+    private Switch sw_fragmentdetalle_tel_lat;
+    private Switch sw_fragmentdetalle_tel_lng;
+
+    private ToggleButton tb_fragmentdetalle_thunder_flash;
 
     private STimer mSTimer;
 
@@ -81,12 +97,17 @@ public class FragmentDetalleTel extends BaseVistaFargment {
         // Inflate the layout for this fragment
         mSensorManager = (SensorManager)getContext().getSystemService(SENSOR_SERVICE);
 
-        List<Sensor> listaSensores = mSensorManager.getSensorList(Sensor.TYPE_ALL);
+        //Iniciamos el cliente GPS
+        gpsClient = new GPSClient(getContext());
 
-
-        for(Sensor sensor: listaSensores) {
-            mSensorManager.registerListener(mSensorListener,sensor, 1000000);
+        //Instanciamos la camara
+        camManager = (CameraManager)getContext().getSystemService(Context.CAMERA_SERVICE);
+        try {
+            cameraId = camManager.getCameraIdList()[0];
+        } catch (CameraAccessException e) {
+            e.printStackTrace();
         }
+
 
         //Iniciamos el timer
         mSTimer = new STimer();
@@ -111,6 +132,7 @@ public class FragmentDetalleTel extends BaseVistaFargment {
 
     @Override
     protected void setControles(View view) {
+
         tv_fragmentdetalle_tel_temperatura =    view.findViewById(R.id.tv_fragmentdetalle_tel_temperatura);
         tv_fragmentdetalle_tel_humedad =        view.findViewById(R.id.tv_fragmentdetalle_tel_humedad);
         tv_fragmentdetalle_tel_lux =            view.findViewById(R.id.tv_fragmentdetalle_tel_lux);
@@ -121,6 +143,8 @@ public class FragmentDetalleTel extends BaseVistaFargment {
         tv_fragmentdetalle_tel_ax =             view.findViewById(R.id.tv_fragmentdetalle_tel_ax);
         tv_fragmentdetalle_tel_ay =             view.findViewById(R.id.tv_fragmentdetalle_tel_ay);
         tv_fragmentdetalle_tel_az =             view.findViewById(R.id.tv_fragmentdetalle_tel_az);
+        tv_fragmentdetalle_tel_lat =            view.findViewById(R.id.tv_fragmentdetalle_tel_lat);
+        tv_fragmentdetalle_tel_lng =            view.findViewById(R.id.tv_fragmentdetalle_tel_lng);
 
         sw_fragmentdetalle_tel_temperatura =    view.findViewById(R.id.sw_fragmentdetalle_tel_temperatura);
         sw_fragmentdetalle_tel_humedad =        view.findViewById(R.id.sw_fragmentdetalle_tel_humedad);
@@ -132,6 +156,8 @@ public class FragmentDetalleTel extends BaseVistaFargment {
         sw_fragmentdetalle_tel_ax = view.findViewById(R.id.sw_fragmentdetalle_tel_ax);
         sw_fragmentdetalle_tel_ay = view.findViewById(R.id.sw_fragmentdetalle_tel_ay);
         sw_fragmentdetalle_tel_az = view.findViewById(R.id.sw_fragmentdetalle_tel_az);
+        sw_fragmentdetalle_tel_lat = view.findViewById(R.id.sw_fragmentdetalle_tel_lat);
+        sw_fragmentdetalle_tel_lng = view.findViewById(R.id.sw_fragmentdetalle_tel_lng);
 
         sw_fragmentdetalle_tel_temperatura.setOnCheckedChangeListener(swListener);
         sw_fragmentdetalle_tel_humedad.setOnCheckedChangeListener(swListener);
@@ -143,6 +169,22 @@ public class FragmentDetalleTel extends BaseVistaFargment {
         sw_fragmentdetalle_tel_ax.setOnCheckedChangeListener(swListener);
         sw_fragmentdetalle_tel_ay.setOnCheckedChangeListener(swListener);
         sw_fragmentdetalle_tel_az.setOnCheckedChangeListener(swListener);
+        sw_fragmentdetalle_tel_lat.setOnCheckedChangeListener(swListener);
+        sw_fragmentdetalle_tel_lng.setOnCheckedChangeListener(swListener);
+
+        tb_fragmentdetalle_thunder_flash = view.findViewById(R.id.tb_fragmentdetalle_thunder_flash);
+        tb_fragmentdetalle_thunder_flash.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(camManager != null){
+                    try {
+                        camManager.setTorchMode(cameraId, isChecked);
+                    } catch (CameraAccessException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
 
         //Agregamos los switches en la clase padre para que sean afectados con la accion del switch general
         addSwitchToList(sw_fragmentdetalle_tel_temperatura);
@@ -155,6 +197,21 @@ public class FragmentDetalleTel extends BaseVistaFargment {
         addSwitchToList(sw_fragmentdetalle_tel_ax);
         addSwitchToList(sw_fragmentdetalle_tel_ay);
         addSwitchToList(sw_fragmentdetalle_tel_az);
+        addSwitchToList(sw_fragmentdetalle_tel_lat);
+        addSwitchToList(sw_fragmentdetalle_tel_lng);
+
+        List<Sensor> listaSensores = mSensorManager.getSensorList(Sensor.TYPE_ALL);
+
+
+        for(Sensor sensor: listaSensores) {
+            mSensorManager.registerListener(mSensorListener,sensor, 1000000);
+            if(sensor.getType() == Sensor.TYPE_AMBIENT_TEMPERATURE) sw_fragmentdetalle_tel_temperatura.setEnabled(true); //Serie de ifs para verificar si los sensores requeridos para las reglas se encuentran disponibles
+            else if(sensor.getType() == Sensor.TYPE_RELATIVE_HUMIDITY) sw_fragmentdetalle_tel_humedad.setEnabled(true);
+            else if(sensor.getType() == Sensor.TYPE_LIGHT) sw_fragmentdetalle_tel_lux.setEnabled(true);
+            else if(sensor.getType() == Sensor.TYPE_PROXIMITY) sw_fragmentdetalle_tel_proximity.setEnabled(true);
+            Log.e("FragmentDetalleTel", "available sensor: " + sensor.getName() + " type " + sensor.getType());
+        }
+
     }
 
     @Override
@@ -182,17 +239,18 @@ public class FragmentDetalleTel extends BaseVistaFargment {
                     mDispoTelefono.Acelereation_z = sw_fragmentdetalle_tel_ax.isChecked() ? sensorEvent.values[2] : 0;
                     UpdateUI();
                     break;
-                case Sensor.TYPE_ORIENTATION :
+                case Sensor.TYPE_GYROSCOPE :
                     mDispoTelefono.Orientation_x = sw_fragmentdetalle_tel_ox.isChecked() ? sensorEvent.values[0] : 0;
                     mDispoTelefono.Orientation_y = sw_fragmentdetalle_tel_oy.isChecked() ? sensorEvent.values[1] : 0;
                     mDispoTelefono.Orientation_z = sw_fragmentdetalle_tel_oz.isChecked() ? sensorEvent.values[2] : 0;
                     UpdateUI();
-                case Sensor.TYPE_AMBIENT_TEMPERATURE :
-                    mDispoTelefono.Temperature = sw_fragmentdetalle_tel_temperatura.isChecked() ? sensorEvent.values[0] : 0;
-                    UpdateUI();
-                    break;
+
                 case Sensor.TYPE_LIGHT :
                     mDispoTelefono.AmbientLight = sw_fragmentdetalle_tel_lux.isChecked() ? sensorEvent.values[0] : 0;
+                    UpdateUI();
+                    break;
+                case Sensor.TYPE_AMBIENT_TEMPERATURE :
+                    mDispoTelefono.Temperature = sw_fragmentdetalle_tel_temperatura.isChecked() ? sensorEvent.values[0] : 0;
                     UpdateUI();
                     break;
                 case Sensor.TYPE_RELATIVE_HUMIDITY:
@@ -222,6 +280,8 @@ public class FragmentDetalleTel extends BaseVistaFargment {
         tv_fragmentdetalle_tel_ax.setText(String.format("%.2f",mDispoTelefono.Acelereation_x));
         tv_fragmentdetalle_tel_ay.setText(String.format("%.2f",mDispoTelefono.Acelereation_y));
         tv_fragmentdetalle_tel_az.setText(String.format("%.2f",mDispoTelefono.Acelereation_z));
+        tv_fragmentdetalle_tel_lat.setText(""+mDispoTelefono.Lat);
+        tv_fragmentdetalle_tel_lng.setText(""+mDispoTelefono.Lng);
 
     }
 
@@ -230,6 +290,13 @@ public class FragmentDetalleTel extends BaseVistaFargment {
         super.onDestroyView();
         mSensorManager.unregisterListener(mSensorListener);
         mSTimer.stop();
+        if(camManager != null){
+            try {
+                camManager.setTorchMode(cameraId, false);
+            } catch (CameraAccessException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     /* Esto se llama una vez por segundo en la UI thread */
@@ -238,6 +305,12 @@ public class FragmentDetalleTel extends BaseVistaFargment {
         @Override
         public void OnAlarm( STimer source )
         {
+            Location location = gpsClient.getLastLocation();
+            double lat = location.getLatitude();
+            double lng = location.getLongitude();
+            Log.e("FragmentdetalleTel", "GPS (LAT,LNG): " + lat + " ," + lng);
+            mDispoTelefono.Lat = sw_fragmentdetalle_tel_lat.isChecked() ?  lat : 0;
+            mDispoTelefono.Lng = sw_fragmentdetalle_tel_lng.isChecked() ?  lng : 0;
             UpdateUI();
             sendData();
             new checkAndSendRules().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, mDispoTelefono);
@@ -255,7 +328,10 @@ public class FragmentDetalleTel extends BaseVistaFargment {
                 new ValuesTago("Orientation_z", ""  + mDispoTelefono.Orientation_z),
                 new ValuesTago("Acceleration_x", "" + mDispoTelefono.Acelereation_x),
                 new ValuesTago("Acceleration_y", "" + mDispoTelefono.Acelereation_y),
-                new ValuesTago("Acceleration_z", "" + mDispoTelefono.Acelereation_z)
+                new ValuesTago("Acceleration_z", "" + mDispoTelefono.Acelereation_z),
+                new ValuesTago("lat", "" + mDispoTelefono.Lat),
+                new ValuesTago("lng", "" + mDispoTelefono.Lng)
+
         };
 
         new EnviarInformacionTago(mDispoTelefono.getToken()).execute(values);

@@ -215,6 +215,8 @@ public class RepositorioDBGeneralSingleton {
                 rule.SensorId = cursor.getInt(3);
                 rule.Value1 = cursor.getFloat(4);
                 rule.Value2 = cursor.getFloat(5);
+                rule.IsEnabled = cursor.getInt(6) != 0;
+                rule.LastDate = Long.parseLong(cursor.getString(7));
 
                 rules.add(rule);
             } while (cursor.moveToNext());
@@ -242,6 +244,8 @@ public class RepositorioDBGeneralSingleton {
                 rule.SensorId = cursor.getInt(3);
                 rule.Value1 = cursor.getFloat(4);
                 rule.Value2 = cursor.getFloat(5);
+                rule.IsEnabled = cursor.getInt(6) != 0;
+                rule.LastDate = Long.parseLong(cursor.getString(7));
 
                 rules.add(rule);
             } while (cursor.moveToNext());
@@ -260,6 +264,8 @@ public class RepositorioDBGeneralSingleton {
         dispoValues.put(DBGeneralHandler.KEY_RULES_RULEID,rule.RuleId);
         dispoValues.put(DBGeneralHandler.KEY_RULES_VALUE1,rule.Value1);
         dispoValues.put(DBGeneralHandler.KEY_RULES_VALUE2,rule.Value2);
+        dispoValues.put(DBGeneralHandler.KEY_RULES_ISENABLED,rule.IsEnabled);
+        dispoValues.put(DBGeneralHandler.KEY_RULES_LASTDATE,""+rule.LastDate);
 
         db.insert(DBGeneralHandler.TABLE_RULES,null, dispoValues);
         db.close();
@@ -280,6 +286,32 @@ public class RepositorioDBGeneralSingleton {
         db.close();
 
         return resp;
+    }
+
+    public synchronized void updateRule(Rule rule){
+        db = dbGeneralHandler.getWritableDatabase();
+
+        ContentValues dispoValues = new ContentValues();
+        dispoValues.put(DBGeneralHandler.KEY_RULES_DISPOID,rule.DispositivoId);
+        dispoValues.put(DBGeneralHandler.KEY_RULES_RULEID,rule.RuleId);
+        dispoValues.put(DBGeneralHandler.KEY_RULES_SENSORID,rule.SensorId);
+        dispoValues.put(DBGeneralHandler.KEY_RULES_VALUE1,rule.Value1);
+        dispoValues.put(DBGeneralHandler.KEY_RULES_VALUE2,rule.Value2);
+        dispoValues.put(DBGeneralHandler.KEY_RULES_ISENABLED, rule.IsEnabled);
+
+        db.update(DBGeneralHandler.TABLE_RULES, dispoValues, DBGeneralHandler.KEY_RULES_ID + "=?", new String[] {""+rule.id});
+        db.close();
+    }
+
+    public synchronized void updateLastUpdateRule(long now, int idDispo){
+        db = dbGeneralHandler.getWritableDatabase();
+
+        ContentValues dispoValues = new ContentValues();
+
+        dispoValues.put(DBGeneralHandler.KEY_RULES_LASTDATE, ""+now);
+
+        db.update(DBGeneralHandler.TABLE_RULES, dispoValues, DBGeneralHandler.KEY_RULES_ID + "=?", new String[] {""+idDispo});
+        db.close();
     }
 }
 

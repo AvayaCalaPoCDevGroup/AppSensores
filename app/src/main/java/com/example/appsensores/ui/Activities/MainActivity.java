@@ -219,7 +219,6 @@ public class MainActivity extends AppCompatActivity implements AcercaDeFragment.
 
     private void CheckPermissions() {
         chkLocationPermission();
-
         BluetoothManager Manager = (BluetoothManager)getSystemService( Context.BLUETOOTH_SERVICE );
         BluetoothAdapter Adapter = Manager.getAdapter();
         if(Adapter==null){

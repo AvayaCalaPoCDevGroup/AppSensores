@@ -25,6 +25,7 @@ public class Utils {
     public static final int HRM_SAMPLE_COUNT = 5;
 
     public static final int MIN_INTERVAL_TAGO = 3;
+    public static final int MIN_INTERVAL_BEYWEEN_ALARMS_MINUTES = 1;
 
     public static void onAdvertisingData(DispoSensorPuck ThisPuck, byte type, byte[] ADData) {
 

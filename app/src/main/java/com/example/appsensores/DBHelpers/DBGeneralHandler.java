@@ -31,6 +31,8 @@ public class DBGeneralHandler extends SQLiteOpenHelper {
     public static String KEY_RULES_SENSORID = "SensorId";
     public static String KEY_RULES_VALUE1 = "Value1";
     public static String KEY_RULES_VALUE2 = "Value2";
+    public static String KEY_RULES_ISENABLED = "IsEnabled";
+    public static String KEY_RULES_LASTDATE = "LastDate";
 
     public DBGeneralHandler(@Nullable Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -54,7 +56,9 @@ public class DBGeneralHandler extends SQLiteOpenHelper {
                 + KEY_RULES_RULEID + " INTEGER,"
                 + KEY_RULES_SENSORID + " INTEGER,"
                 + KEY_RULES_VALUE1 + " FLOAT,"
-                + KEY_RULES_VALUE2 + " FLOAT"
+                + KEY_RULES_VALUE2 + " FLOAT,"
+                + KEY_RULES_ISENABLED + " INTEGER,"
+                + KEY_RULES_LASTDATE + " TEXT"
                 + ")";
         db.execSQL(CREATE_RULES_TABLE);
 

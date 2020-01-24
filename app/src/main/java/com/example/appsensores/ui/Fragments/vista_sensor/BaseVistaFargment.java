@@ -37,7 +37,9 @@ import com.example.appsensores.WebMethods.WebMethods;
 import com.example.appsensores.ui.Dialogs.DialogSettings;
 import com.google.gson.Gson;
 
+import java.sql.Time;
 import java.util.ArrayList;
+import java.util.Date;
 
 
 public abstract class BaseVistaFargment extends Fragment implements DialogSettings.IsettinsListener {
@@ -144,7 +146,8 @@ public abstract class BaseVistaFargment extends Fragment implements DialogSettin
     private void toogleControles(boolean isChecked) {
         for (Switch unit : listSwitches ) {
             PROGRAMATICALLY_SET_CHEQUED = true;
-            unit.setChecked(isChecked);
+            if(unit.isEnabled()) //Checamos si el sensor esta disponible en el dispositivo, ya que si no existe el sensor el sw no se habilita
+                unit.setChecked(isChecked);
         }
     }
 
@@ -255,38 +258,41 @@ public abstract class BaseVistaFargment extends Fragment implements DialogSettin
 
             //Iteramos sobre las reglas y checamos si alguna se cimple para mandar la alerta
             for (Rule unit : rules) {
-                 if(unit.RuleId == SensorTypes.MAYOR){
-                    if(values[unit.SensorId] > unit.Value1){
-                        if(switchStatus[unit.SensorId]) {
-                            sensortype = SensorTypes.getSensorAmbientList(getContext())[unit.SensorId];
-                            ruletype = SensorTypes.getRuleTypes(getContext())[unit.RuleId];
-                            valor1 = String.format("%.2f", unit.Value1);
-                            valor = String.format("%.2f", values[unit.SensorId]);
-                            message = "Alert -> " + sensortype + " " + valor + " " + ruletype + " " + valor1;
-                            resp = sendNotification(message);
+                if(unit.IsEnabled && !checkLastRuleSend(unit.LastDate)) { //Si la regla esta deshabilitada no mandamos la alerta y si ya paso mas de un minuto desde la ultima regla
+                    if (unit.RuleId == SensorTypes.MAYOR) {
+                        if (values[unit.SensorId] > unit.Value1) {
+                            if (switchStatus[unit.SensorId]) { //Verificamos si el switch del sensor esta habilitado
+                                sensortype = SensorTypes.getSensorAmbientList(getContext())[unit.SensorId];
+                                ruletype = SensorTypes.getRuleTypes(getContext())[unit.RuleId];
+                                valor1 = String.format("%.2f", unit.Value1);
+                                valor = String.format("%.2f", values[unit.SensorId]);
+                                message = "Alert -> " + sensortype + " " + valor + " " + ruletype + " " + valor1;
+                                resp = sendNotification(message, unit.id);
+                            }
+                        }
+                    } else if (unit.RuleId == SensorTypes.MENOR) {
+                        if (values[unit.SensorId] < unit.Value1) {
+                            if (switchStatus[unit.SensorId]) { //Verificamos si el switch del sensor esta habilitado
+                                sensortype = SensorTypes.getSensorAmbientList(getContext())[unit.SensorId];
+                                ruletype = SensorTypes.getRuleTypes(getContext())[unit.RuleId];
+                                valor1 = String.format("%.2f", unit.Value1);
+                                valor = String.format("%.2f", values[unit.SensorId]);
+                                message = "Alert -> " + sensortype + " " + valor + " " + ruletype + " " + valor1;
+                                resp = sendNotification(message, unit.id);
+                            }
                         }
                     }
-                 } else if(unit.RuleId == SensorTypes.MENOR){
-                     if(values[unit.SensorId] < unit.Value1){
-                         if(switchStatus[unit.SensorId]) {
-                             sensortype = SensorTypes.getSensorAmbientList(getContext())[unit.SensorId];
-                             ruletype = SensorTypes.getRuleTypes(getContext())[unit.RuleId];
-                             valor1 = String.format("%.2f", unit.Value1);
-                             valor = String.format("%.2f", values[unit.SensorId]);
-                             message = "Alert -> " + sensortype + " " + valor + " " + ruletype + " " + valor1;
-                             resp = sendNotification(message);
-                         }
-                     }
-                 } if(unit.RuleId == SensorTypes.ENTRE){
-                    if(values[unit.SensorId] > unit.Value1 && values[unit.SensorId] < unit.Value2){
-                        if(switchStatus[unit.SensorId]) {
-                            sensortype = SensorTypes.getSensorAmbientList(getContext())[unit.SensorId];
-                            ruletype = SensorTypes.getRuleTypes(getContext())[unit.RuleId];
-                            valor1 = String.format("%.2f", unit.Value1);
-                            valor2 = String.format("%.2f", unit.Value2);
-                            valor = String.format("%.2f", values[unit.SensorId]);
-                            message = "Alert -> " + sensortype + " " + valor + " " + ruletype + " " + valor1 + " - " + valor2;
-                            resp = sendNotification(message);
+                    if (unit.RuleId == SensorTypes.ENTRE) {
+                        if (values[unit.SensorId] > unit.Value1 && values[unit.SensorId] < unit.Value2) {
+                            if (switchStatus[unit.SensorId]) { //Verificamos si el switch del sensor esta habilitado
+                                sensortype = SensorTypes.getSensorAmbientList(getContext())[unit.SensorId];
+                                ruletype = SensorTypes.getRuleTypes(getContext())[unit.RuleId];
+                                valor1 = String.format("%.2f", unit.Value1);
+                                valor2 = String.format("%.2f", unit.Value2);
+                                valor = String.format("%.2f", values[unit.SensorId]);
+                                message = "Alert -> " + sensortype + " " + valor + " " + ruletype + " " + valor1 + " - " + valor2;
+                                resp = sendNotification(message, unit.id);
+                            }
                         }
                     }
                 }
@@ -303,11 +309,29 @@ public abstract class BaseVistaFargment extends Fragment implements DialogSettin
     }
 
     /**
+     * Metodo para checar si ya paso un minuto despues de la ultima notificacion
+     * @param lastDate
+     * @return True si aun no pasa el minuto, false si ya
+     */
+    private boolean checkLastRuleSend(long lastDate){
+        long diff = System.currentTimeMillis() - lastDate;
+        long secs = diff / 1000;
+        long min = secs/60;
+        boolean resp = min < Utils.MIN_INTERVAL_BEYWEEN_ALARMS_MINUTES;
+
+        if(resp){
+            Log.e("BaseVistaFragment", "ChekLastRuleSend no se manda la regla por que solo han pasado " + secs + " seg.");
+        }
+
+        return resp;
+    }
+
+    /**
      * Metodo para mandar la alerta al endPoint de Avaya
      * @param message
      * @return
      */
-    private int sendNotification(String message) {
+    private int sendNotification(String message, int idRule) {
         SharedPreferences sharedPreferencesAvaya = getContext().getSharedPreferences(Utils.AVAYA_SHARED_PREFERENCES,0);
 
         String _mail = sharedPreferencesAvaya.getString(Utils.AVAYA_SHARED_MAIL,"");
@@ -319,6 +343,8 @@ public abstract class BaseVistaFargment extends Fragment implements DialogSettin
         Parametros params = new Parametros();
         params.setCorreoElectronico(_mail);
         params.setParam1(message);
+
+        RepositorioDBGeneralSingleton.getInstance(getContext()).updateLastUpdateRule(System.currentTimeMillis(), idRule); //guardamos la ultima hora de la regla en la base
 
         return WebMethods.requestPostMethodAvayaEndpoint(params, _url, _family, _type, _version);
     }

@@ -76,6 +76,7 @@
 
     <string name="dialog_rule_settings_title">Ajuste de Reglas</string>
     <string name="dialog_rule_settings_mail">Correo de notificaciones</string>
+    <string name="dialog_rule_settings_delete">¿deseas eliminar esta regla?</string>
 
 
     <!--encabezado vista dispositivo fragment-->
@@ -95,6 +96,8 @@
     <string name="measure_aceleration_y">Aceleracion Y</string>
     <string name="measure_aceleration_z">Aceleracion Z</string>
     <string name="measure_proximidad">Proximidad</string>
+    <string name="measure_lat">Latitud</string>
+    <string name="measure_lng">Longitud</string>
 
     <!--Rule types-->
     <string name="rule_type_greater">Mayor que</string>
