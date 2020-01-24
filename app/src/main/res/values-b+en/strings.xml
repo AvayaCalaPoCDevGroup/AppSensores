@@ -62,6 +62,7 @@
     <string name="dialog_settins_intervalo">Update interval with Tago (min 3sec)</string>
     <string name="dialog_settins_adv_token">The token is necessary to continue.</string>
     <string name="dialog_settins_adv_intervalo">The interval is required and greater than or equal a %d sec.</string>
+    <string name="dialog_settins_intervaloRules">Minimum interval between sending rules in seconds</string>
     <string name="dialog_wait_title">Information</string>
     <string name="dialog_wait_msg">Send commands...</string>
     <string name="dialog_addrule_val1">Set Value 1</string>

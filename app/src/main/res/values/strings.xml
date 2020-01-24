@@ -63,6 +63,7 @@
     <string name="dialog_settins_intervalo">Intervalo de actualizacion con Tago (min 5seg)</string>
     <string name="dialog_settins_adv_token">El token es ecesario para continuar.</string>
     <string name="dialog_settins_adv_intervalo">El intervalo es requerido y mayor o igual a %d seg.</string>
+    <string name="dialog_settins_intervaloRules">Minimo intervalo ente envio de reglas en segundos</string>
     <string name="dialog_wait_title">Informacion</string>
     <string name="dialog_wait_msg">Enviando comandos...</string>
     <string name="dialog_addrule_val1">Ingresa el Valor1</string>

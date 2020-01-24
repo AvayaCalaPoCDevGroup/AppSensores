@@ -82,8 +82,20 @@
             android:layout_marginRight="15dp"
             android:layout_marginBottom="5dp"
             android:inputType="numberSigned" />
-
-
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="5dp"
+        android:text="@string/dialog_settins_intervaloRules"/>
+    <EditText
+        android:id="@+id/et_dialog_settings_intervalrules"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginRight="15dp"
+        android:layout_marginBottom="5dp"
+        android:inputType="numberSigned" />
     <Button
         android:id="@+id/btn_dialog_settings_ok"
         android:layout_width="match_parent"

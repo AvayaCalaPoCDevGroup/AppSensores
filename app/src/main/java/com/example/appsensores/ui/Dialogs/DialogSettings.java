@@ -24,6 +24,7 @@ public class DialogSettings extends Dialog implements MainActivity.IScanListener
     private EditText et_dialog_settings_token;
     private EditText et_dialog_settings_intervalo;
     private EditText et_dialog_settings_tokenbroker;
+    private EditText et_dialog_settings_intervalrules;
     private Button btn_dialog_settings_ok;
     private Button btn_dialog_settings_scan;
     private Button btn_dialog_settings_scanbroker;
@@ -60,6 +61,7 @@ public class DialogSettings extends Dialog implements MainActivity.IScanListener
         et_dialog_settings_token = findViewById(R.id.et_dialog_settings_token);
         et_dialog_settings_intervalo = findViewById(R.id.et_dialog_settings_intervalo);
         et_dialog_settings_tokenbroker = findViewById(R.id.et_dialog_settings_tokenbroker);
+        et_dialog_settings_intervalrules = findViewById(R.id.et_dialog_settings_intervalrules);
         btn_dialog_settings_ok = findViewById(R.id.btn_dialog_settings_ok);
         btn_dialog_settings_scan = findViewById(R.id.btn_dialog_settings_scan);
         btn_dialog_settings_scanbroker = findViewById(R.id.btn_dialog_settings_scanbroker);
@@ -69,6 +71,7 @@ public class DialogSettings extends Dialog implements MainActivity.IScanListener
         et_dialog_settings_token.setText(deviceTel.getToken());
         et_dialog_settings_intervalo.setText("" + (sharedPreferencesAvaya.getInt(Utils.AVAYA_INTERVALO, 3000)/1000));
         et_dialog_settings_tokenbroker.setText(sharedPreferencesAvaya.getString(Utils.AVAYA_SHARED_BORKERTOKEN, ""));
+        et_dialog_settings_intervalrules.setText(""+sharedPreferencesAvaya.getInt(Utils.AVAYA_SHARED_MIN_INTERVAL_BETWEEN_RULES, 60));
 
         btn_dialog_settings_ok.setOnClickListener(v -> {
             if (et_dialog_settings_token.getText().toString().equals("")) {
@@ -81,6 +84,7 @@ public class DialogSettings extends Dialog implements MainActivity.IScanListener
                 int intervalo = Integer.parseInt(et_dialog_settings_intervalo.getText().toString());
                 editor.putInt(Utils.AVAYA_INTERVALO,intervalo*1000);
                 editor.putString(Utils.AVAYA_SHARED_BORKERTOKEN, et_dialog_settings_tokenbroker.getText().toString());
+                editor.putInt(Utils.AVAYA_SHARED_MIN_INTERVAL_BETWEEN_RULES, Integer.parseInt(et_dialog_settings_intervalrules.getText().toString()));
                 STimer.CURRENT_PERIOD = intervalo * 1000;
                 editor.commit();
                 deviceTel.setToken(et_dialog_settings_token.getText().toString());

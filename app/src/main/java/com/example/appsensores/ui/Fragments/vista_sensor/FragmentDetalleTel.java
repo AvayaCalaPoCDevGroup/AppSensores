@@ -28,10 +28,17 @@ import android.widget.ToggleButton;
 
 import com.example.appsensores.Clases.GPSClient;
 import com.example.appsensores.Clases.STimer;
+import com.example.appsensores.Clases.Utils;
 import com.example.appsensores.Models.Dispositivos.DispoTelefono;
 import com.example.appsensores.Models.Dispositivos.DispoThunderBoard;
 import com.example.appsensores.Models.ValuesTago;
 import com.example.appsensores.R;
+import com.example.appsensores.ui.Activities.MainActivity;
+import com.journeyapps.barcodescanner.Util;
+
+import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
+import org.eclipse.paho.client.mqttv3.MqttCallback;
+import org.eclipse.paho.client.mqttv3.MqttMessage;
 
 import java.util.List;
 
@@ -42,7 +49,7 @@ import static android.content.Context.SENSOR_SERVICE;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class FragmentDetalleTel extends BaseVistaFargment {
+public class FragmentDetalleTel extends BaseVistaFargment implements MqttCallback {
 
     private SensorManager mSensorManager;
     private DispoTelefono mDispoTelefono;
@@ -108,6 +115,8 @@ public class FragmentDetalleTel extends BaseVistaFargment {
             e.printStackTrace();
         }
 
+        //Nos Suscribimos a los topics
+        ((MainActivity)getActivity()).setMqttCalbback(FragmentDetalleTel.this);
 
         //Iniciamos el timer
         mSTimer = new STimer();
@@ -212,6 +221,7 @@ public class FragmentDetalleTel extends BaseVistaFargment {
             Log.e("FragmentDetalleTel", "available sensor: " + sensor.getName() + " type " + sensor.getType());
         }
 
+        sw_fragmentdetalle_tel_temperatura.setEnabled(true); //habilito el sensor de temperatura por que ya no lo tomo del ambiental si no de la bateria
     }
 
     @Override
@@ -223,6 +233,10 @@ public class FragmentDetalleTel extends BaseVistaFargment {
     public void onSettingsChanged() {
         if(mSTimer != null)
             mSTimer.setPeriod( STimer.CURRENT_PERIOD );
+        //Establecemos de nuevo el callback de mqtt por que al cambiar los settings se reinicia la conexion
+        ((MainActivity)getActivity()).StopMQTT();
+        ((MainActivity)getActivity()).StartMQTT();
+        ((MainActivity)getActivity()).setMqttCalbback(FragmentDetalleTel.this);
     }
 
     // Create listener
@@ -249,10 +263,10 @@ public class FragmentDetalleTel extends BaseVistaFargment {
                     mDispoTelefono.AmbientLight = sw_fragmentdetalle_tel_lux.isChecked() ? sensorEvent.values[0] : 0;
                     UpdateUI();
                     break;
-                case Sensor.TYPE_AMBIENT_TEMPERATURE :
+                /*case Sensor.TYPE_AMBIENT_TEMPERATURE : //LO COMENTE POR QUE SON POCOS LOS TELEFONO SON SENSOR DE TEMPERATURA AMBIENTE, LO CAMBIE POR LA BATERIA DEL TELEFONO EN EL TICK DEL TIMMER
                     mDispoTelefono.Temperature = sw_fragmentdetalle_tel_temperatura.isChecked() ? sensorEvent.values[0] : 0;
                     UpdateUI();
-                    break;
+                    break;*/
                 case Sensor.TYPE_RELATIVE_HUMIDITY:
                     mDispoTelefono.Humidity = sw_fragmentdetalle_tel_humedad.isChecked() ? sensorEvent.values[0] : 0;
                     UpdateUI();
@@ -306,11 +320,12 @@ public class FragmentDetalleTel extends BaseVistaFargment {
         public void OnAlarm( STimer source )
         {
             Location location = gpsClient.getLastLocation();
-            double lat = location.getLatitude();
-            double lng = location.getLongitude();
+            double lat = location == null ? 0 : location.getLatitude();
+            double lng = location == null ? 0 : location.getLongitude();
             Log.e("FragmentdetalleTel", "GPS (LAT,LNG): " + lat + " ," + lng);
             mDispoTelefono.Lat = sw_fragmentdetalle_tel_lat.isChecked() ?  lat : 0;
             mDispoTelefono.Lng = sw_fragmentdetalle_tel_lng.isChecked() ?  lng : 0;
+            mDispoTelefono.Temperature = sw_fragmentdetalle_tel_temperatura.isEnabled()? Utils.batteryTemperature(getContext()) : 0;
             UpdateUI();
             sendData();
             new checkAndSendRules().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, mDispoTelefono);
@@ -335,5 +350,27 @@ public class FragmentDetalleTel extends BaseVistaFargment {
         };
 
         new EnviarInformacionTago(mDispoTelefono.getToken()).execute(values);
+    }
+
+    @Override
+    public void connectionLost(Throwable cause) {
+
+    }
+
+    @Override
+    public void messageArrived(String topic, MqttMessage message) throws Exception {
+        if(topic.equals(Utils.AVAYA_MQTT_TOPIC_FLASH)){
+            if(message.toString().equals(Utils.AVAYA__MQTT_PAYLOAD_OFF)){
+                tb_fragmentdetalle_thunder_flash.setChecked(false);
+            } else if (message.toString().equals(Utils.AVAYA__MQTT_PAYLOAD_ON)){
+                tb_fragmentdetalle_thunder_flash.setChecked(true);
+            }
+            //tb_fragmentdetalle_thunder_ledblue.setChecked(!tb_fragmentdetalle_thunder_ledblue.isChecked());
+        }
+    }
+
+    @Override
+    public void deliveryComplete(IMqttDeliveryToken token) {
+
     }
 }

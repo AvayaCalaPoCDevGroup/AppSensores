@@ -1,14 +1,21 @@
 package com.example.appsensores.Clases;
 
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.os.BatteryManager;
+
 import com.example.appsensores.Models.Dispositivos.DispoSensorPuck;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.UUID;
 
 import static java.util.UUID.fromString;
 
 public class Utils {
-
+    //SHARED PREFERENCES
     public static final String AVAYA_SHARED_PREFERENCES = "AVAYA_PREFERENCES";
     public static final String AVAYA_INTERVALO = "AVAYA_INTERVALO";
 
@@ -18,12 +25,23 @@ public class Utils {
     public static final String AVAYA_SHARED_VERSION = "AVAYA_SHARED_VERSION";
     public static final String AVAYA_SHARED_URL = "AVAYA_SHARED_URL";
     public static final String AVAYA_SHARED_BORKERTOKEN = "AVAYA_SHARED_BORKERTOKEN";
+    public static final String AVAYA_SHARED_MIN_INTERVAL_BETWEEN_RULES = "AVAYA_SHARED_MIN_INTERVAL_BETWEEN_RULES";
 
+    //MQTT TOPICS
+    public static final String AVAYA_MQTT_TOPIC_BLUE = "home/avaya/thunderblue";
+    public static final String AVAYA_MQTT_TOPIC_GREEN = "home/avaya/thundergreen";
+    public static final String AVAYA_MQTT_TOPIC_FLASH = "home/avaya/flash";
+    //MQTT PAYLOADS
+    public static final String AVAYA__MQTT_PAYLOAD_ON = "1001";
+    public static final String AVAYA__MQTT_PAYLOAD_OFF = "1000";
+
+    //PUCK MODES
     public static final int ENVIRONMENTAL_MODE = 0;
     public static final int BIOMETRIC_MODE = 1;
 
     public static final int HRM_SAMPLE_COUNT = 5;
 
+    //Intervalo minimo de envio de datos a tago
     public static final int MIN_INTERVAL_TAGO = 3;
     public static final int MIN_INTERVAL_BEYWEEN_ALARMS_MINUTES = 1;
 
@@ -183,5 +201,40 @@ public class Utils {
         }
 
         return resp;
+    }
+
+    /**
+     * Metodo para obtener la temperatura del CPU
+     * @return
+     */
+    public static float getCpuTemp() {
+        Process process;
+        try {
+            process = Runtime.getRuntime().exec("cat sys/class/thermal/thermal_zone0/temp");
+            process.waitFor();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            String line = reader.readLine();
+            if(line!=null) {
+                float temp = Float.parseFloat(line);
+                return temp / 1000.0f;
+            }else{
+                return 51.0f;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 0.0f;
+        }
+    }
+
+    /**
+     * Metodo para obtener la temperatura de la bateria
+     * @param context
+     * @return
+     */
+    public static float batteryTemperature(Context context)
+    {
+        Intent intent = context.registerReceiver(null, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
+        float  temp   = ((float) intent.getIntExtra(BatteryManager.EXTRA_TEMPERATURE,0)) / 10;
+        return temp;
     }
 }

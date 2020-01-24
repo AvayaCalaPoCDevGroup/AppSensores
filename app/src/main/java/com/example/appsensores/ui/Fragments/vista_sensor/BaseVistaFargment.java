@@ -13,13 +13,11 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
-import androidx.navigation.Navigation;
 
 import com.example.appsensores.Clases.Enums.EnumTipoDispo;
 import com.example.appsensores.Clases.Enums.SensorTypes;
@@ -37,10 +35,7 @@ import com.example.appsensores.WebMethods.WebMethods;
 import com.example.appsensores.ui.Dialogs.DialogSettings;
 import com.google.gson.Gson;
 
-import java.sql.Time;
 import java.util.ArrayList;
-import java.util.Date;
-
 
 public abstract class BaseVistaFargment extends Fragment implements DialogSettings.IsettinsListener {
 
@@ -61,6 +56,7 @@ public abstract class BaseVistaFargment extends Fragment implements DialogSettin
     private Button btn_fragmentvista_rules;
 
     private ArrayList<Switch> listSwitches = new ArrayList<>();
+    SharedPreferences sharedPreferencesAvaya;
 
     /***
      * Bandera para diferenciar entre set del switch por usuario o por codigo
@@ -77,6 +73,7 @@ public abstract class BaseVistaFargment extends Fragment implements DialogSettin
         super.onCreate(savedInstanceState);
         Log.d("baseVistaFragent", "Paso por Oncreate");
         int idDispositivo = getArguments().getInt("idSensor");
+        sharedPreferencesAvaya = getContext().getSharedPreferences(Utils.AVAYA_SHARED_PREFERENCES,0);
         dispositivoBase = RepositorioDBGeneralSingleton.getInstance(getContext()).getDeviceById(idDispositivo);
         DialogSettings.setOnSettingsChangedListener(this);
     }
@@ -234,7 +231,9 @@ public abstract class BaseVistaFargment extends Fragment implements DialogSettin
             ArrayList<Rule> rules = RepositorioDBGeneralSingleton.getInstance(getContext()).getRulesByDispositivo(baseDispositivos[0].getId());
             float[] values = {0,0,0,0};
 
-            String message, sensortype, ruletype, valor1, valor2, valor;
+            String message, sensorName, sensortype, ruletype, valor1, valor2, valor;
+
+            sensorName = baseDispositivos[0].getNombre();
 
             //Filtro para saber de que clase se llamo el asynctask
             if( DispoTelefono.class.isInstance(baseDispositivos[0]) ){
@@ -266,7 +265,7 @@ public abstract class BaseVistaFargment extends Fragment implements DialogSettin
                                 ruletype = SensorTypes.getRuleTypes(getContext())[unit.RuleId];
                                 valor1 = String.format("%.2f", unit.Value1);
                                 valor = String.format("%.2f", values[unit.SensorId]);
-                                message = "Alert -> " + sensortype + " " + valor + " " + ruletype + " " + valor1;
+                                message = "Alert " + sensorName + " -> " + sensortype + " " + valor + " " + ruletype + " " + valor1;
                                 resp = sendNotification(message, unit.id);
                             }
                         }
@@ -277,7 +276,7 @@ public abstract class BaseVistaFargment extends Fragment implements DialogSettin
                                 ruletype = SensorTypes.getRuleTypes(getContext())[unit.RuleId];
                                 valor1 = String.format("%.2f", unit.Value1);
                                 valor = String.format("%.2f", values[unit.SensorId]);
-                                message = "Alert -> " + sensortype + " " + valor + " " + ruletype + " " + valor1;
+                                message = "Alert " + sensorName + " -> " + sensortype + " " + valor + " " + ruletype + " " + valor1;
                                 resp = sendNotification(message, unit.id);
                             }
                         }
@@ -290,7 +289,7 @@ public abstract class BaseVistaFargment extends Fragment implements DialogSettin
                                 valor1 = String.format("%.2f", unit.Value1);
                                 valor2 = String.format("%.2f", unit.Value2);
                                 valor = String.format("%.2f", values[unit.SensorId]);
-                                message = "Alert -> " + sensortype + " " + valor + " " + ruletype + " " + valor1 + " - " + valor2;
+                                message = "Alert " + sensorName + " -> " + sensortype + " " + valor + " " + ruletype + " " + valor1 + " - " + valor2;
                                 resp = sendNotification(message, unit.id);
                             }
                         }
@@ -316,11 +315,12 @@ public abstract class BaseVistaFargment extends Fragment implements DialogSettin
     private boolean checkLastRuleSend(long lastDate){
         long diff = System.currentTimeMillis() - lastDate;
         long secs = diff / 1000;
-        long min = secs/60;
-        boolean resp = min < Utils.MIN_INTERVAL_BEYWEEN_ALARMS_MINUTES;
+        //long min = secs/60;
+        int minInterval = sharedPreferencesAvaya.getInt(Utils.AVAYA_SHARED_MIN_INTERVAL_BETWEEN_RULES, 60);
+        boolean resp = secs < minInterval;
 
         if(resp){
-            Log.e("BaseVistaFragment", "ChekLastRuleSend no se manda la regla por que solo han pasado " + secs + " seg.");
+            Log.e("BaseVistaFragment", "ChekLastRuleSend no se manda la regla por que solo han pasado " + secs + " seg., intervalo min : " + minInterval);
         }
 
         return resp;
@@ -332,8 +332,6 @@ public abstract class BaseVistaFargment extends Fragment implements DialogSettin
      * @return
      */
     private int sendNotification(String message, int idRule) {
-        SharedPreferences sharedPreferencesAvaya = getContext().getSharedPreferences(Utils.AVAYA_SHARED_PREFERENCES,0);
-
         String _mail = sharedPreferencesAvaya.getString(Utils.AVAYA_SHARED_MAIL,"");
         String _family = sharedPreferencesAvaya.getString(Utils.AVAYA_SHARED_FAMILY,"");
         String _type = sharedPreferencesAvaya.getString(Utils.AVAYA_SHARED_TYPE,"");

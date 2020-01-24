@@ -6,7 +6,6 @@ import android.bluetooth.BluetoothManager;
 import android.bluetooth.le.BluetoothLeScanner;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -34,6 +33,7 @@ import com.example.appsensores.Models.Dispositivos.DispoThunderBoard;
 import com.example.appsensores.Models.ValuesTago;
 import com.example.appsensores.R;
 import com.example.appsensores.ui.Activities.MainActivity;
+import com.journeyapps.barcodescanner.Util;
 
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttCallback;
@@ -346,17 +346,17 @@ public class FragmentThunderBoard extends BaseVistaFargment implements MqttCallb
 
         String message = msg.toString();
 
-        if(topic.equals("home/avaya/thunder")){
-            if(message.equals("{\"option\" : 1000 }")){
+        if(topic.equals(Utils.AVAYA_MQTT_TOPIC_BLUE)){
+            if(message.equals(Utils.AVAYA__MQTT_PAYLOAD_OFF)){
                 tb_fragmentdetalle_thunder_ledblue.setChecked(false);
-            } else if (message.equals("{\"option\" : 1001 }")){
+            } else if (message.equals(Utils.AVAYA__MQTT_PAYLOAD_ON)){
                 tb_fragmentdetalle_thunder_ledblue.setChecked(true);
             }
             //tb_fragmentdetalle_thunder_ledblue.setChecked(!tb_fragmentdetalle_thunder_ledblue.isChecked());
-        } else if(topic.equals("home/avaya/thunderg")){
-            if(message.equals("{\"option\" : 1000 }")){
+        } else if(topic.equals(Utils.AVAYA_MQTT_TOPIC_GREEN)){
+            if(message.equals(Utils.AVAYA__MQTT_PAYLOAD_OFF)){
                 tb_fragmentdetalle_thunder_ledgreen.setChecked(false);
-            } else if (message.equals("{\"option\" : 1001 }")){
+            } else if (message.equals(Utils.AVAYA__MQTT_PAYLOAD_ON)){
                 tb_fragmentdetalle_thunder_ledgreen.setChecked(true);
             }
             //tb_fragmentdetalle_thunder_ledblue.setChecked(!tb_fragmentdetalle_thunder_ledblue.isChecked());

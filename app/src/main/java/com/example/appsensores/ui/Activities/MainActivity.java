@@ -28,6 +28,7 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.google.android.material.navigation.NavigationView;
+import com.journeyapps.barcodescanner.Util;
 
 import androidx.drawerlayout.widget.DrawerLayout;
 
@@ -56,8 +57,11 @@ public class MainActivity extends AppCompatActivity implements AcercaDeFragment.
 
     private AppBarConfiguration mAppBarConfiguration;
 
-    String[] topic = {"home/avaya/thunder", "home/avaya/thunderg"};
-    int[] qos = {1,1};
+    /**
+     * Variable donde se definen los topics a las que se suscribe la app
+     */
+    String[] topic = {Utils.AVAYA_MQTT_TOPIC_BLUE, Utils.AVAYA_MQTT_TOPIC_GREEN, Utils.AVAYA_MQTT_TOPIC_FLASH};
+    int[] qos = {1,1,1};
 
     public interface IScanListener {
         void onScanResult(String msg);
