@@ -370,12 +370,8 @@ public abstract class BaseVistaFargment extends Fragment implements DialogSettin
         if(endPoint == Utils.ENDPOINT_BREEZE){
             return ""+WebMethods.requestPostMethodAvayaEndpoint(params, _url, _family, _type, _version);
         } else if (endPoint == Utils.ENDPOINT_ZANG){
-            HashMap<String, String> parametros = new HashMap<>();
-            parametros.put("From", _from);
-            parametros.put("To", _to);
-            parametros.put("Url", _zurlparam);
             //return ""+WebMethods.getStringPOSTmethodZang(_zurl, parametros, "ACbf889084ad63b77ddf614ddda88d2aa9","85af708098464422a6f70d3a36b2abb9");
-            return  ""+WebMethods.postDataZang();
+            return  ""+WebMethods.postDataZang(_zurl,_from,_to,_zurlparam);
         } else {
             return "Invalid endpoint";
         }

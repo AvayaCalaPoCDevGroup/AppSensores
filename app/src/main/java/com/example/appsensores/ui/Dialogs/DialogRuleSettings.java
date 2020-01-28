@@ -58,7 +58,7 @@ public class DialogRuleSettings extends Dialog {
         _url = sharedPreferencesAvaya.getString(Utils.AVAYA_SHARED_URL,"http://breeze2-132.collaboratory.avaya.com/services/EventingConnector/events");
         _from = sharedPreferencesAvaya.getString(Utils.AVAYA_SHARED_FROM, "+19892560890");
         _to = sharedPreferencesAvaya.getString(Utils.AVAYA_SHARED_TO, "");
-        _zurl = sharedPreferencesAvaya.getString(Utils.AVAYA_SHARED_ZURL, "https://api.zang.io/v2/Accounts/ACbf889084ad63b77ddf614ddda88d2aa9/Calls");
+        _zurl = sharedPreferencesAvaya.getString(Utils.AVAYA_SHARED_ZURL, "https://ACbf889084ad63b77ddf614ddda88d2aa9:85af708098464422a6f70d3a36b2abb9@api.zang.io/v2/Accounts/ACbf889084ad63b77ddf614ddda88d2aa9/Calls");
         _zurlparam = sharedPreferencesAvaya.getString(Utils.AVAYA_SHARED_ZURLPARAM, "https://workflow.zang.io/EngagementDesignerZang/wf/Admin/createThalliumInstance/iotmom/9/ACbf889084ad63b77ddf614ddda88d2aa9");
 
         setViews();

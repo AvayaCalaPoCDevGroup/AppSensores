@@ -6,6 +6,12 @@ import android.util.Log;
 import com.example.appsensores.Models.Parametros;
 import com.google.gson.Gson;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
 import org.json.JSONException;
 
@@ -21,13 +27,8 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
-
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
 
 public class WebMethods {
     public static String IP_SERVER = "https://api.tago.io/data";
@@ -208,24 +209,41 @@ public class WebMethods {
         return resp;
     }
 
-    public static String  postDataZang(){
+    /**
+     * Metodo para consumir el endpoint de Zang
+     * @param url
+     * @param from
+     * @param to
+     * @param urlPram
+     * @return
+     */
+    public static String  postDataZang(String url, String from, String to, String urlPram){
         String resp = "-1";
 
-        OkHttpClient client = new OkHttpClient().newBuilder()
-                .build();
-        MediaType mediaType = MediaType.parse("application/x-www-form-urlencoded");
-        RequestBody body = RequestBody.create(mediaType, "");
-        Request request = new Request.Builder()
-                .url("https://ACbf889084ad63b77ddf614ddda88d2aa9:85af708098464422a6f70d3a36b2abb9@api.zang.io/v2/Accounts/ACbf889084ad63b77ddf614ddda88d2aa9/Calls?From=+19892560890&To=+525552787793&Url=https://workflow.zang.io/EngagementDesignerZang/wf/Admin/createThalliumInstance/iotmom/9/ACbf889084ad63b77ddf614ddda88d2aa9")
-                .method("POST", body)
-                .addHeader("Content-Type", "application/x-www-form-urlencoded")
-                .build();
         try {
-            Response response = client.newCall(request).execute();
-            resp = response.message();
+
+            String urltorequest = url + "?From="+from+"&To="+to+"&Url="+urlPram;
+            String[] urlSplitdotdot = url.split(":");
+            String User = urlSplitdotdot[1].substring(2);
+            String Pwd = urlSplitdotdot[2].substring(0,urlSplitdotdot[2].indexOf("@"));
+
+            HttpPost request = new HttpPost(urltorequest);
+            String auth = User+":"+Pwd;
+            byte[] encodedAuth = Base64.encode(auth.getBytes(),Base64.NO_WRAP);
+            String authHeader = "Basic " + new String(encodedAuth);
+            request.setHeader("Authorization", authHeader);
+
+            HttpClient client = new DefaultHttpClient();
+            HttpResponse response = null;
+            response = client.execute(request);
+            int statusCode = response.getStatusLine().getStatusCode();
+
+        resp = ""+statusCode;
         } catch (IOException e) {
-            resp = e.getMessage();
+            e.printStackTrace();
         }
+
+
 
         return resp;
     }
