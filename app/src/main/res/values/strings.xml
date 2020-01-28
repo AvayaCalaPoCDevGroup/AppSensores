@@ -6,7 +6,7 @@
     <string name="nav_header_subtitle">App Sensores</string>
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Ajustes</string>
-    <string name="action_rule_settings">Ajuste de reglas</string>
+    <string name="action_rule_settings">Ajuste de End Points</string>
 
     <string name="menu_inicio">Inicio</string>
     <string name="menu_gallery">Gallery</string>
@@ -75,7 +75,7 @@
     <string name="dialog_scan_devices_title">Elige un Dispositivo</string>
     <string name="dialog_loading_msg_conectando">Conectando con dispositivo.</string>
 
-    <string name="dialog_rule_settings_title">Ajuste de Reglas</string>
+    <string name="dialog_rule_settings_title">Reglas de End Point</string>
     <string name="dialog_rule_settings_mail">Correo de notificaciones</string>
     <string name="dialog_rule_settings_delete">¿deseas eliminar esta regla?</string>
 

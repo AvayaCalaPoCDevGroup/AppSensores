@@ -6,7 +6,7 @@
     <string name="nav_header_subtitle">App Sensores</string>
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
-    <string name="action_rule_settings">Rule Settings</string>
+    <string name="action_rule_settings">Endpoint Settings</string>
 
     <string name="menu_inicio">Home</string>
     <string name="menu_gallery">Gallery</string>
@@ -74,7 +74,7 @@
     <string name="dialog_scan_devices_title">Chose a device</string>
     <string name="dialog_loading_msg_conectando">Connecting with device.</string>
 
-    <string name="dialog_rule_settings_title">Rule Settings</string>
+    <string name="dialog_rule_settings_title">Endpoint Settings</string>
     <string name="dialog_rule_settings_mail">Mail for notifications</string>
     <string name="dialog_rule_settings_delete">¿deseas eliminar esta regla?</string>
 
