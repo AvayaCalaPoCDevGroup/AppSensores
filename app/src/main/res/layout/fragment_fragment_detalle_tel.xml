@@ -129,7 +129,33 @@
                     android:enabled="false"
                     android:layout_weight="2"/>
             </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:orientation="horizontal">
 
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/measure_voltaje" />
+
+                <TextView
+                    android:id="@+id/tv_fragmentdetalle_tel_voltaje"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:text="TextView" />
+
+                <Switch
+                    android:id="@+id/sw_fragmentdetalle_tel_voltaje"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"/>
+            </LinearLayout>
             <!--Aqui empieza Aceleracion y orientacion-->
             <View
                 android:layout_width="match_parent"

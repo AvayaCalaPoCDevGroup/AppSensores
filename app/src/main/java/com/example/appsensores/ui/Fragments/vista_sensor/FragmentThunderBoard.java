@@ -330,10 +330,14 @@ public class FragmentThunderBoard extends BaseVistaFargment implements MqttCallb
         if(mSTimer != null)
             mSTimer.setPeriod( STimer.CURRENT_PERIOD );
 
+        try {
         //Establecemos de nuevo el callback de mqtt por que al cambiar los settings se reinicia la conexion
-        ((MainActivity)getActivity()).StopMQTT();
-        ((MainActivity)getActivity()).StartMQTT();
-        ((MainActivity)getActivity()).setMqttCalbback(FragmentThunderBoard.this);
+            ((MainActivity)getActivity()).StopMQTT();
+            ((MainActivity)getActivity()).StartMQTT();
+            ((MainActivity)getActivity()).setMqttCalbback(FragmentThunderBoard.this);
+        } catch (Exception e){
+
+        }
     }
 
     @Override

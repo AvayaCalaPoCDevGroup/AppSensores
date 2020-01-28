@@ -88,7 +88,7 @@
     <string name="measure_humedad">Humedad Relativa</string>
     <string name="measure_lux">Luz Ambiente</string>
     <string name="measure_uv">Indice UV</string>
-    <string name="measure_voltaje">Voltaje</string>
+        <string name="measure_voltaje">Voltaje</string>
     <string name="measure_hrmrate">Ritmo cardiaco</string>
     <string name="measure_orientation_x">Orientacion X</string>
     <string name="measure_orientation_y">Orientacion Y</string>

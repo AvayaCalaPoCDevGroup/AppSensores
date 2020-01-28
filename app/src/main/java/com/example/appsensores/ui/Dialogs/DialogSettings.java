@@ -5,8 +5,10 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Window;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -18,6 +20,7 @@ import com.example.appsensores.R;
 import com.example.appsensores.Repositorio.RepositorioDBGeneralSingleton;
 import com.example.appsensores.ui.Activities.MainActivity;
 import com.google.zxing.integration.android.IntentIntegrator;
+import com.journeyapps.barcodescanner.Util;
 
 public class DialogSettings extends Dialog implements MainActivity.IScanListener {
 
@@ -25,9 +28,13 @@ public class DialogSettings extends Dialog implements MainActivity.IScanListener
     private EditText et_dialog_settings_intervalo;
     private EditText et_dialog_settings_tokenbroker;
     private EditText et_dialog_settings_intervalrules;
+
     private Button btn_dialog_settings_ok;
     private Button btn_dialog_settings_scan;
     private Button btn_dialog_settings_scanbroker;
+
+    private Spinner spnr_dialog_settings_endpoint;
+
     private MainActivity mMainActivity;
 
     private boolean SCAN_TOKEN = false;
@@ -65,6 +72,10 @@ public class DialogSettings extends Dialog implements MainActivity.IScanListener
         btn_dialog_settings_ok = findViewById(R.id.btn_dialog_settings_ok);
         btn_dialog_settings_scan = findViewById(R.id.btn_dialog_settings_scan);
         btn_dialog_settings_scanbroker = findViewById(R.id.btn_dialog_settings_scanbroker);
+        spnr_dialog_settings_endpoint = findViewById(R.id.spnr_dialog_settings_endpoint);
+
+        ArrayAdapter<String> adapterEndpoints = new ArrayAdapter<String>(getContext(),R.layout.support_simple_spinner_dropdown_item, Utils.getEndPoints());
+        spnr_dialog_settings_endpoint.setAdapter(adapterEndpoints);
 
         //Obtenemos la informacion del telefono, por default siempre es el id 1
         BaseDispositivo deviceTel = RepositorioDBGeneralSingleton.getInstance(getContext()).getDeviceById(1);
@@ -72,6 +83,7 @@ public class DialogSettings extends Dialog implements MainActivity.IScanListener
         et_dialog_settings_intervalo.setText("" + (sharedPreferencesAvaya.getInt(Utils.AVAYA_INTERVALO, 3000)/1000));
         et_dialog_settings_tokenbroker.setText(sharedPreferencesAvaya.getString(Utils.AVAYA_SHARED_BORKERTOKEN, ""));
         et_dialog_settings_intervalrules.setText(""+sharedPreferencesAvaya.getInt(Utils.AVAYA_SHARED_MIN_INTERVAL_BETWEEN_RULES, 60));
+        spnr_dialog_settings_endpoint.setSelection(sharedPreferencesAvaya.getInt(Utils.AVAYA_SHARED_ENPOINT, 0));
 
         btn_dialog_settings_ok.setOnClickListener(v -> {
             if (et_dialog_settings_token.getText().toString().equals("")) {
@@ -85,6 +97,7 @@ public class DialogSettings extends Dialog implements MainActivity.IScanListener
                 editor.putInt(Utils.AVAYA_INTERVALO,intervalo*1000);
                 editor.putString(Utils.AVAYA_SHARED_BORKERTOKEN, et_dialog_settings_tokenbroker.getText().toString());
                 editor.putInt(Utils.AVAYA_SHARED_MIN_INTERVAL_BETWEEN_RULES, Integer.parseInt(et_dialog_settings_intervalrules.getText().toString()));
+                editor.putInt(Utils.AVAYA_SHARED_ENPOINT, spnr_dialog_settings_endpoint.getSelectedItemPosition());
                 STimer.CURRENT_PERIOD = intervalo * 1000;
                 editor.commit();
                 deviceTel.setToken(et_dialog_settings_token.getText().toString());

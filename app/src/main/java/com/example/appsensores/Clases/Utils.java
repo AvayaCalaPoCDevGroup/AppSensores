@@ -12,7 +12,7 @@ import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.UUID;
 
-import static java.util.UUID.fromString;
+import static android.content.Context.BATTERY_SERVICE;
 
 public class Utils {
     //SHARED PREFERENCES
@@ -24,8 +24,14 @@ public class Utils {
     public static final String AVAYA_SHARED_TYPE = "AVAYA_SHARED_TYPE";
     public static final String AVAYA_SHARED_VERSION = "AVAYA_SHARED_VERSION";
     public static final String AVAYA_SHARED_URL = "AVAYA_SHARED_URL";
+    public static final String AVAYA_SHARED_FROM = "AVAYA_SHARED_FROM";
+    public static final String AVAYA_SHARED_TO = "AVAYA_SHARED_TO";
+    public static final String AVAYA_SHARED_ZURLPARAM = "AVAYA_SHARED_ZURLPARAM";
+    public static final String AVAYA_SHARED_ZURL = "AVAYA_SHARED_ZURL";
+
     public static final String AVAYA_SHARED_BORKERTOKEN = "AVAYA_SHARED_BORKERTOKEN";
     public static final String AVAYA_SHARED_MIN_INTERVAL_BETWEEN_RULES = "AVAYA_SHARED_MIN_INTERVAL_BETWEEN_RULES";
+    public static final String AVAYA_SHARED_ENPOINT = "AVAYA_SHARED_ENPOINT";
 
     //MQTT TOPICS
     public static final String AVAYA_MQTT_TOPIC_BLUE = "home/avaya/thunderblue";
@@ -38,6 +44,10 @@ public class Utils {
     //PUCK MODES
     public static final int ENVIRONMENTAL_MODE = 0;
     public static final int BIOMETRIC_MODE = 1;
+
+    //END POINTS
+    public static final int ENDPOINT_BREEZE = 0;
+    public static final int ENDPOINT_ZANG = 1;
 
     public static final int HRM_SAMPLE_COUNT = 5;
 
@@ -236,5 +246,15 @@ public class Utils {
         Intent intent = context.registerReceiver(null, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
         float  temp   = ((float) intent.getIntExtra(BatteryManager.EXTRA_TEMPERATURE,0)) / 10;
         return temp;
+    }
+
+    public static  float batteryLevel(Context context){
+        BatteryManager bm = (BatteryManager)context.getSystemService(BATTERY_SERVICE);
+        int batLevel = bm.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY);
+        return  batLevel;
+    }
+
+    public static String[] getEndPoints(){
+        return new String[] {"Breeze", "Zang"};
     }
 }

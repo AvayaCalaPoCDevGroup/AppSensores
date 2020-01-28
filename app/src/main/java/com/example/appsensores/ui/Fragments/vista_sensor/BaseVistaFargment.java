@@ -2,6 +2,7 @@ package com.example.appsensores.ui.Fragments.vista_sensor;
 
 import android.app.AlertDialog;
 import android.content.SharedPreferences;
+import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -26,6 +27,7 @@ import com.example.appsensores.Models.Dispositivos.BaseDispositivo;
 import com.example.appsensores.Models.Dispositivos.DispoSensorPuck;
 import com.example.appsensores.Models.Dispositivos.DispoTelefono;
 import com.example.appsensores.Models.Dispositivos.DispoThunderBoard;
+import com.example.appsensores.Models.LocationTago;
 import com.example.appsensores.Models.Parametros;
 import com.example.appsensores.Models.Rule;
 import com.example.appsensores.Models.ValuesTago;
@@ -34,8 +36,11 @@ import com.example.appsensores.Repositorio.RepositorioDBGeneralSingleton;
 import com.example.appsensores.WebMethods.WebMethods;
 import com.example.appsensores.ui.Dialogs.DialogSettings;
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.journeyapps.barcodescanner.Util;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public abstract class BaseVistaFargment extends Fragment implements DialogSettings.IsettinsListener {
 
@@ -198,6 +203,14 @@ public abstract class BaseVistaFargment extends Fragment implements DialogSettin
             String json = new Gson().toJson(lists[0]);
             //String resp = WebMethods.getStringPOSTmethodTago(WebMethods.IP_SERVER, " 8e8d61d2-a77c-4313-9472-a5492674939a",json);
             String resp = WebMethods.getStringPOSTmethodTago(WebMethods.IP_SERVER, token,json);
+
+            LocationTago loc = new LocationTago("location", "myLoc");
+            loc.location = new LocationTago.LocationValues();
+            loc.location.lat = Double.valueOf(lists[0][lists[0].length-2].value);
+            loc.location.lng = Double.valueOf(lists[0][lists[0].length-1].value);
+            String jsonLocation = new Gson().toJson(loc);
+            resp = WebMethods.getStringPOSTmethodTago(WebMethods.IP_SERVER, token,jsonLocation);
+
             return resp;
         }
 
@@ -213,23 +226,23 @@ public abstract class BaseVistaFargment extends Fragment implements DialogSettin
         /**
          * Array booleano de los status de los switch de sensores, asi evitamos mandar una alerta de un sensor desactivado
          */
-        private boolean[] switchStatus = {false, false, false, false};
+        private boolean[] switchStatus = {false, false, false, false, false};
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
 
             //Leemos el status de los switch en esta variable local por que no podemos acceder directo a la UI desde InBackGround
-            for(int i = 0; i < 4; i++){
+            for(int i = 0; i < 5; i++){
                 switchStatus[i] = listSwitches.get(i).isChecked();
             }
         }
 
         @Override
         protected String doInBackground(BaseDispositivo... baseDispositivos) {
-            int resp = -1;
+            String resp = "-1";
             ArrayList<Rule> rules = RepositorioDBGeneralSingleton.getInstance(getContext()).getRulesByDispositivo(baseDispositivos[0].getId());
-            float[] values = {0,0,0,0};
+            float[] values = {0,0,0,0,0};
 
             String message, sensorName, sensortype, ruletype, valor1, valor2, valor;
 
@@ -241,16 +254,19 @@ public abstract class BaseVistaFargment extends Fragment implements DialogSettin
                 values[1] = ((DispoTelefono)baseDispositivos[0]).Humidity;
                 values[2] = ((DispoTelefono)baseDispositivos[0]).AmbientLight;
                 switchStatus[3] = false; //hardcode el switch de UV para el telefono, ya que no tiene el sensor
+                values[4] = ((DispoTelefono)baseDispositivos[0]).Voltaje;
             } else if (DispoThunderBoard.class.isInstance(baseDispositivos[0])){
                 values[0] = ((DispoThunderBoard)baseDispositivos[0]).Temperature;
                 values[1] = ((DispoThunderBoard)baseDispositivos[0]).Humidity;
                 values[2] = ((DispoThunderBoard)baseDispositivos[0]).AmbientLight;
                 values[3] = ((DispoThunderBoard)baseDispositivos[0]).UV_Index;
+                values[4] = ((DispoThunderBoard)baseDispositivos[0]).batteryLevel;
             } else if (DispoSensorPuck.class.isInstance(baseDispositivos[0])){
                 values[0] = ((DispoSensorPuck)baseDispositivos[0]).Temperature;
                 values[1] = ((DispoSensorPuck)baseDispositivos[0]).Humidity;
                 values[2] = ((DispoSensorPuck)baseDispositivos[0]).AmbientLight;
                 values[3] = ((DispoSensorPuck)baseDispositivos[0]).UV_Index;
+                values[4] = ((DispoSensorPuck)baseDispositivos[0]).Battery;
             } else {
                 return ""+resp;
             }
@@ -331,12 +347,19 @@ public abstract class BaseVistaFargment extends Fragment implements DialogSettin
      * @param message
      * @return
      */
-    private int sendNotification(String message, int idRule) {
+    private String sendNotification(String message, int idRule) {
         String _mail = sharedPreferencesAvaya.getString(Utils.AVAYA_SHARED_MAIL,"");
         String _family = sharedPreferencesAvaya.getString(Utils.AVAYA_SHARED_FAMILY,"");
         String _type = sharedPreferencesAvaya.getString(Utils.AVAYA_SHARED_TYPE,"");
         String _version = sharedPreferencesAvaya.getString(Utils.AVAYA_SHARED_VERSION,"");
         String _url = sharedPreferencesAvaya.getString(Utils.AVAYA_SHARED_URL,"");
+
+        String _from = sharedPreferencesAvaya.getString(Utils.AVAYA_SHARED_FROM, "");
+        String _to = sharedPreferencesAvaya.getString(Utils.AVAYA_SHARED_TO, "");
+        String _zurl = sharedPreferencesAvaya.getString(Utils.AVAYA_SHARED_ZURL, "");
+        String _zurlparam = sharedPreferencesAvaya.getString(Utils.AVAYA_SHARED_ZURLPARAM, "");
+
+        int endPoint = sharedPreferencesAvaya.getInt(Utils.AVAYA_SHARED_ENPOINT, 0);
 
         Parametros params = new Parametros();
         params.setCorreoElectronico(_mail);
@@ -344,7 +367,18 @@ public abstract class BaseVistaFargment extends Fragment implements DialogSettin
 
         RepositorioDBGeneralSingleton.getInstance(getContext()).updateLastUpdateRule(System.currentTimeMillis(), idRule); //guardamos la ultima hora de la regla en la base
 
-        return WebMethods.requestPostMethodAvayaEndpoint(params, _url, _family, _type, _version);
+        if(endPoint == Utils.ENDPOINT_BREEZE){
+            return ""+WebMethods.requestPostMethodAvayaEndpoint(params, _url, _family, _type, _version);
+        } else if (endPoint == Utils.ENDPOINT_ZANG){
+            HashMap<String, String> parametros = new HashMap<>();
+            parametros.put("From", _from);
+            parametros.put("To", _to);
+            parametros.put("Url", _zurlparam);
+            //return ""+WebMethods.getStringPOSTmethodZang(_zurl, parametros, "ACbf889084ad63b77ddf614ddda88d2aa9","85af708098464422a6f70d3a36b2abb9");
+            return  ""+WebMethods.postDataZang();
+        } else {
+            return "Invalid endpoint";
+        }
     }
 
     /***

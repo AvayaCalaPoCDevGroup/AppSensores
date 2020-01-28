@@ -11,6 +11,7 @@ public class SensorTypes {
     public static final int HUMEDAD = 1;
     public static final int LUZ = 2;
     public static final int UV = 3;
+    public static final int VOLTAJE = 4;
 
     public static final int MENOR = 0;
     public static final int MAYOR = 1;
@@ -24,6 +25,7 @@ public class SensorTypes {
                 res.getString(R.string.measure_humedad),
                 res.getString(R.string.measure_lux),
                 res.getString(R.string.measure_uv),
+                res.getString(R.string.measure_voltaje),
         };
 
         return resp;

@@ -61,6 +61,7 @@ public class FragmentDetalleTel extends BaseVistaFargment implements MqttCallbac
     private TextView tv_fragmentdetalle_tel_humedad;
     private TextView tv_fragmentdetalle_tel_lux;
     private TextView tv_fragmentdetalle_tel_proximity;
+    private TextView tv_fragmentdetalle_tel_voltaje;
     private TextView tv_fragmentdetalle_tel_ox;
     private TextView tv_fragmentdetalle_tel_oy;
     private TextView tv_fragmentdetalle_tel_oz;
@@ -74,6 +75,7 @@ public class FragmentDetalleTel extends BaseVistaFargment implements MqttCallbac
     private Switch sw_fragmentdetalle_tel_humedad;
     private Switch sw_fragmentdetalle_tel_lux;
     private Switch sw_fragmentdetalle_tel_proximity;
+    private Switch sw_fragmentdetalle_tel_voltaje;
     private Switch sw_fragmentdetalle_tel_ox;
     private Switch sw_fragmentdetalle_tel_oy;
     private Switch sw_fragmentdetalle_tel_oz;
@@ -146,6 +148,7 @@ public class FragmentDetalleTel extends BaseVistaFargment implements MqttCallbac
         tv_fragmentdetalle_tel_humedad =        view.findViewById(R.id.tv_fragmentdetalle_tel_humedad);
         tv_fragmentdetalle_tel_lux =            view.findViewById(R.id.tv_fragmentdetalle_tel_lux);
         tv_fragmentdetalle_tel_proximity =      view.findViewById(R.id.tv_fragmentdetalle_tel_proximity);
+        tv_fragmentdetalle_tel_voltaje =        view.findViewById(R.id.tv_fragmentdetalle_tel_voltaje);
         tv_fragmentdetalle_tel_ox =             view.findViewById(R.id.tv_fragmentdetalle_tel_ox);
         tv_fragmentdetalle_tel_oy =             view.findViewById(R.id.tv_fragmentdetalle_tel_oy);
         tv_fragmentdetalle_tel_oz =             view.findViewById(R.id.tv_fragmentdetalle_tel_oz);
@@ -158,7 +161,8 @@ public class FragmentDetalleTel extends BaseVistaFargment implements MqttCallbac
         sw_fragmentdetalle_tel_temperatura =    view.findViewById(R.id.sw_fragmentdetalle_tel_temperatura);
         sw_fragmentdetalle_tel_humedad =        view.findViewById(R.id.sw_fragmentdetalle_tel_humedad);
         sw_fragmentdetalle_tel_lux =            view.findViewById(R.id.sw_fragmentdetalle_tel_lux);
-        sw_fragmentdetalle_tel_proximity =             view.findViewById(R.id.sw_fragmentdetalle_tel_proximity);
+        sw_fragmentdetalle_tel_proximity =      view.findViewById(R.id.sw_fragmentdetalle_tel_proximity);
+        sw_fragmentdetalle_tel_voltaje=         view.findViewById(R.id.sw_fragmentdetalle_tel_voltaje);
         sw_fragmentdetalle_tel_ox = view.findViewById(R.id.sw_fragmentdetalle_tel_ox);
         sw_fragmentdetalle_tel_oy = view.findViewById(R.id.sw_fragmentdetalle_tel_oy);
         sw_fragmentdetalle_tel_oz = view.findViewById(R.id.sw_fragmentdetalle_tel_oz);
@@ -200,6 +204,7 @@ public class FragmentDetalleTel extends BaseVistaFargment implements MqttCallbac
         addSwitchToList(sw_fragmentdetalle_tel_humedad);
         addSwitchToList(sw_fragmentdetalle_tel_lux);
         addSwitchToList(sw_fragmentdetalle_tel_proximity);
+        addSwitchToList(sw_fragmentdetalle_tel_voltaje);
         addSwitchToList(sw_fragmentdetalle_tel_ox);
         addSwitchToList(sw_fragmentdetalle_tel_oy);
         addSwitchToList(sw_fragmentdetalle_tel_oz);
@@ -234,9 +239,13 @@ public class FragmentDetalleTel extends BaseVistaFargment implements MqttCallbac
         if(mSTimer != null)
             mSTimer.setPeriod( STimer.CURRENT_PERIOD );
         //Establecemos de nuevo el callback de mqtt por que al cambiar los settings se reinicia la conexion
-        ((MainActivity)getActivity()).StopMQTT();
-        ((MainActivity)getActivity()).StartMQTT();
-        ((MainActivity)getActivity()).setMqttCalbback(FragmentDetalleTel.this);
+        try{
+            ((MainActivity)getActivity()).StopMQTT();
+            ((MainActivity)getActivity()).StartMQTT();
+            ((MainActivity)getActivity()).setMqttCalbback(FragmentDetalleTel.this);
+        } catch (Exception e){
+
+        }
     }
 
     // Create listener
@@ -288,6 +297,7 @@ public class FragmentDetalleTel extends BaseVistaFargment implements MqttCallbac
         tv_fragmentdetalle_tel_humedad.setText(String.format("%.2f",mDispoTelefono.Humidity)+"%");
         tv_fragmentdetalle_tel_lux.setText( String.format("%.2f",mDispoTelefono.AmbientLight) + " lux");
         tv_fragmentdetalle_tel_proximity.setText(String.format("%.2f",mDispoTelefono.Proximidad));
+        tv_fragmentdetalle_tel_voltaje.setText(""+mDispoTelefono.Voltaje+"%");
         tv_fragmentdetalle_tel_ox.setText(String.format("%.2f",mDispoTelefono.Orientation_x ));
         tv_fragmentdetalle_tel_oy.setText(String.format("%.2f",mDispoTelefono.Orientation_y ));
         tv_fragmentdetalle_tel_oz.setText(String.format("%.2f",mDispoTelefono.Orientation_z ));
@@ -304,7 +314,7 @@ public class FragmentDetalleTel extends BaseVistaFargment implements MqttCallbac
         super.onDestroyView();
         mSensorManager.unregisterListener(mSensorListener);
         mSTimer.stop();
-        if(camManager != null){
+        if(camManager != null){ //Apagamos el flash de la camara si se quedo prendida
             try {
                 camManager.setTorchMode(cameraId, false);
             } catch (CameraAccessException e) {
@@ -319,13 +329,21 @@ public class FragmentDetalleTel extends BaseVistaFargment implements MqttCallbac
         @Override
         public void OnAlarm( STimer source )
         {
+            //obtenemos locacion
             Location location = gpsClient.getLastLocation();
             double lat = location == null ? 0 : location.getLatitude();
             double lng = location == null ? 0 : location.getLongitude();
             Log.e("FragmentdetalleTel", "GPS (LAT,LNG): " + lat + " ," + lng);
             mDispoTelefono.Lat = sw_fragmentdetalle_tel_lat.isChecked() ?  lat : 0;
             mDispoTelefono.Lng = sw_fragmentdetalle_tel_lng.isChecked() ?  lng : 0;
-            mDispoTelefono.Temperature = sw_fragmentdetalle_tel_temperatura.isEnabled()? Utils.batteryTemperature(getContext()) : 0;
+
+            //obtenemos Temperatura batteria
+            mDispoTelefono.Temperature = sw_fragmentdetalle_tel_temperatura.isChecked() ? Utils.batteryTemperature(getContext()) : 0;
+
+            //obtenemos battery level
+            mDispoTelefono.Voltaje = sw_fragmentdetalle_tel_voltaje.isChecked() ? Utils.batteryLevel(getContext()) : 0;
+
+
             UpdateUI();
             sendData();
             new checkAndSendRules().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, mDispoTelefono);
@@ -338,6 +356,7 @@ public class FragmentDetalleTel extends BaseVistaFargment implements MqttCallbac
                 new ValuesTago("Humidity", ""       + mDispoTelefono.Humidity),
                 new ValuesTago("AmbientLight", ""   + mDispoTelefono.AmbientLight),
                 new ValuesTago("Proximity", ""      + mDispoTelefono.Proximidad),
+                new ValuesTago("Battery", ""        + mDispoTelefono.Voltaje),
                 new ValuesTago("Orientation_x", ""  + mDispoTelefono.Orientation_x),
                 new ValuesTago("Orientation_y", ""  + mDispoTelefono.Orientation_y),
                 new ValuesTago("Orientation_z", ""  + mDispoTelefono.Orientation_z),
