@@ -74,7 +74,7 @@ public class DialogSettings extends Dialog implements MainActivity.IScanListener
         btn_dialog_settings_scanbroker = findViewById(R.id.btn_dialog_settings_scanbroker);
         spnr_dialog_settings_endpoint = findViewById(R.id.spnr_dialog_settings_endpoint);
 
-        ArrayAdapter<String> adapterEndpoints = new ArrayAdapter<String>(getContext(),R.layout.support_simple_spinner_dropdown_item, Utils.getEndPoints());
+        ArrayAdapter<String> adapterEndpoints = new ArrayAdapter<String>(getContext(),R.layout.support_simple_spinner_dropdown_item, Utils.getEndPoints(getContext()));
         spnr_dialog_settings_endpoint.setAdapter(adapterEndpoints);
 
         //Obtenemos la informacion del telefono, por default siempre es el id 1

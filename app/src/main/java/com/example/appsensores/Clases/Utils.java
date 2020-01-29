@@ -6,6 +6,7 @@ import android.content.IntentFilter;
 import android.os.BatteryManager;
 
 import com.example.appsensores.Models.Dispositivos.DispoSensorPuck;
+import com.example.appsensores.R;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -254,7 +255,7 @@ public class Utils {
         return  batLevel;
     }
 
-    public static String[] getEndPoints(){
-        return new String[] {"Breeze", "Zang"};
+    public static String[] getEndPoints(Context context){
+        return new String[] {"Breeze", "Zang", context.getResources().getString(R.string.endpoint_type_none)};
     }
 }

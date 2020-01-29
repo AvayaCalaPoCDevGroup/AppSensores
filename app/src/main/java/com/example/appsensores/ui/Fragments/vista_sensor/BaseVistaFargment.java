@@ -367,6 +367,7 @@ public abstract class BaseVistaFargment extends Fragment implements DialogSettin
 
         RepositorioDBGeneralSingleton.getInstance(getContext()).updateLastUpdateRule(System.currentTimeMillis(), idRule); //guardamos la ultima hora de la regla en la base
 
+        //Verificamos si se enviara por breeze o por zang
         if(endPoint == Utils.ENDPOINT_BREEZE){
             return ""+WebMethods.requestPostMethodAvayaEndpoint(params, _url, _family, _type, _version);
         } else if (endPoint == Utils.ENDPOINT_ZANG){
