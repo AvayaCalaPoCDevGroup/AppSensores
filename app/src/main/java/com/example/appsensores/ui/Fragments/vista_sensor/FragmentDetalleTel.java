@@ -27,6 +27,7 @@ import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import com.example.appsensores.Clases.GPSClient;
+import com.example.appsensores.Clases.GPSGoogleClient;
 import com.example.appsensores.Clases.STimer;
 import com.example.appsensores.Clases.Utils;
 import com.example.appsensores.Models.Dispositivos.DispoTelefono;
@@ -53,7 +54,8 @@ public class FragmentDetalleTel extends BaseVistaFargment implements MqttCallbac
 
     private SensorManager mSensorManager;
     private DispoTelefono mDispoTelefono;
-    private GPSClient gpsClient;
+    //private GPSClient gpsClient;
+    private GPSGoogleClient gpsGoogleClient;
     private CameraManager camManager;
     private String cameraId = null;
 
@@ -107,7 +109,9 @@ public class FragmentDetalleTel extends BaseVistaFargment implements MqttCallbac
         mSensorManager = (SensorManager)getContext().getSystemService(SENSOR_SERVICE);
 
         //Iniciamos el cliente GPS
-        gpsClient = new GPSClient(getContext());
+        //gpsClient = new GPSClient(getContext());
+        gpsGoogleClient = new GPSGoogleClient(getContext());
+        gpsGoogleClient.startLocationUpdates();
 
         //Instanciamos la camara
         camManager = (CameraManager)getContext().getSystemService(Context.CAMERA_SERVICE);
@@ -313,6 +317,7 @@ public class FragmentDetalleTel extends BaseVistaFargment implements MqttCallbac
     public void onDestroyView() {
         super.onDestroyView();
         mSensorManager.unregisterListener(mSensorListener);
+        gpsGoogleClient.stopLocationUpdates();
         mSTimer.stop();
         if(camManager != null){ //Apagamos el flash de la camara si se quedo prendida
             try {
@@ -330,7 +335,8 @@ public class FragmentDetalleTel extends BaseVistaFargment implements MqttCallbac
         public void OnAlarm( STimer source )
         {
             //obtenemos locacion
-            Location location = gpsClient.getLastLocation();
+            //Location location = gpsClient.getLastLocation();
+            Location location = gpsGoogleClient.getCurrentLocaton();
             double lat = location == null ? 0 : location.getLatitude();
             double lng = location == null ? 0 : location.getLongitude();
             Log.e("FragmentdetalleTel", "GPS (LAT,LNG): " + lat + " ," + lng);
