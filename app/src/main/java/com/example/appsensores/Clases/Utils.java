@@ -256,6 +256,6 @@ public class Utils {
     }
 
     public static String[] getEndPoints(Context context){
-        return new String[] {"Breeze", "Zang", context.getResources().getString(R.string.endpoint_type_none)};
+        return new String[] {"Breeze", "Avaya CPaSS", context.getResources().getString(R.string.endpoint_type_none)};
     }
 }

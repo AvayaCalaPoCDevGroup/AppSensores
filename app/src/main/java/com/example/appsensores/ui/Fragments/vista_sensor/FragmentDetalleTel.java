@@ -271,7 +271,7 @@ public class FragmentDetalleTel extends BaseVistaFargment implements MqttCallbac
                     mDispoTelefono.Orientation_y = sw_fragmentdetalle_tel_oy.isChecked() ? sensorEvent.values[1] : 0;
                     mDispoTelefono.Orientation_z = sw_fragmentdetalle_tel_oz.isChecked() ? sensorEvent.values[2] : 0;
                     UpdateUI();
-
+                    break;
                 case Sensor.TYPE_LIGHT :
                     mDispoTelefono.AmbientLight = sw_fragmentdetalle_tel_lux.isChecked() ? sensorEvent.values[0] : 0;
                     UpdateUI();
