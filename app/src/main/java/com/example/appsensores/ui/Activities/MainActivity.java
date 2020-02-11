@@ -128,7 +128,6 @@ public class MainActivity extends AppCompatActivity implements AcercaDeFragment.
         String password = PassWord;
         options.setUserName("token");
         options.setPassword(password.toCharArray());
-        options.setCleanSession(true);
 
         try {
             IMqttToken token = client.connect(options);
@@ -154,7 +153,7 @@ public class MainActivity extends AppCompatActivity implements AcercaDeFragment.
             e.printStackTrace();
         }
         //Asignamos el callback para los topics
-        client.setCallback(mqttCallback);
+        //client.setCallback(mqttCallback); Lo quite por que no es necesario tener un callback por default, lo establecen los correspondientes fragments
     }
 
     @Override

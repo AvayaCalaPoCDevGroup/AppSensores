@@ -332,7 +332,7 @@ public abstract class BaseVistaFargment extends Fragment implements DialogSettin
         long diff = System.currentTimeMillis() - lastDate;
         long secs = diff / 1000;
         //long min = secs/60;
-        int minInterval = sharedPreferencesAvaya.getInt(Utils.AVAYA_SHARED_MIN_INTERVAL_BETWEEN_RULES, 60);
+        int minInterval = sharedPreferencesAvaya.getInt(Utils.AVAYA_SHARED_MIN_INTERVAL_BETWEEN_RULES, 180);
         boolean resp = secs < minInterval;
 
         if(resp){

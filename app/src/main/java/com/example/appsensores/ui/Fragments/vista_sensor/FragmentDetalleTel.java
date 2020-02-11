@@ -26,16 +26,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
-import com.example.appsensores.Clases.GPSClient;
 import com.example.appsensores.Clases.GPSGoogleClient;
 import com.example.appsensores.Clases.STimer;
 import com.example.appsensores.Clases.Utils;
 import com.example.appsensores.Models.Dispositivos.DispoTelefono;
-import com.example.appsensores.Models.Dispositivos.DispoThunderBoard;
 import com.example.appsensores.Models.ValuesTago;
 import com.example.appsensores.R;
 import com.example.appsensores.ui.Activities.MainActivity;
-import com.journeyapps.barcodescanner.Util;
 
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttCallback;
@@ -121,9 +118,6 @@ public class FragmentDetalleTel extends BaseVistaFargment implements MqttCallbac
             e.printStackTrace();
         }
 
-        //Nos Suscribimos a los topics
-        ((MainActivity)getActivity()).setMqttCalbback(FragmentDetalleTel.this);
-
         //Iniciamos el timer
         mSTimer = new STimer();
         mSTimer.setOnAlarmListener( OnPuckTick );
@@ -143,6 +137,13 @@ public class FragmentDetalleTel extends BaseVistaFargment implements MqttCallbac
             Navigation.findNavController(getView()).navigate(R.id.action_fragmentDetalleTel_to_fragmentRules,bundle);
 
         });
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        //Nos Suscribimos a los topics, movi este codigo a onresume ya que en OnviewCreated se establecia el callback antes de que se creara la conexion con mqtt, y cuando se creaba planchaba este callback
+        ((MainActivity)getActivity()).setMqttCalbback(FragmentDetalleTel.this);
     }
 
     @Override
@@ -392,6 +393,8 @@ public class FragmentDetalleTel extends BaseVistaFargment implements MqttCallbac
             }
             //tb_fragmentdetalle_thunder_ledblue.setChecked(!tb_fragmentdetalle_thunder_ledblue.isChecked());
         }
+
+        //Toast.makeText(getContext(),"MQTT\n topic: " + topic + "\npayload: " + message.toString(), Toast.LENGTH_SHORT).show();
     }
 
     @Override
