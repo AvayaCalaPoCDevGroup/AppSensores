@@ -46,6 +46,7 @@ import org.eclipse.paho.client.mqttv3.IMqttActionListener;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.IMqttToken;
 import org.eclipse.paho.client.mqttv3.MqttCallback;
+import org.eclipse.paho.client.mqttv3.MqttCallbackExtended;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
@@ -69,10 +70,16 @@ public class MainActivity extends AppCompatActivity implements AcercaDeFragment.
     private IScanListener mIScanListener;
 
     protected MqttAndroidClient client;
-    private MqttCallback mqttCallback = new MqttCallback() {
+    private MqttCallbackExtended mqttCallback = new MqttCallbackExtended() {
+        @Override
+        public void connectComplete(boolean reconnect, String serverURI) {
+            Log.e("MainActivity", "DEFAULT MQTT CALBBACK connectComplete");
+            suscribeTopics();
+        }
+
         @Override
         public void connectionLost(Throwable cause) {
-
+            Log.e("MainActivity", "DEFAULT MQTT CALBBACK connectionLost");
         }
 
         @Override
@@ -109,7 +116,7 @@ public class MainActivity extends AppCompatActivity implements AcercaDeFragment.
         ((TextView)(navigationView.getHeaderView(0).findViewById(R.id.tv_navheader_version))).setText("Ver: " + BuildConfig.VERSION_NAME);
 
         CheckPermissions();
-        //StartMQTT();
+        StartMQTT();
         //client.setCallback(mqttCallback);
     }
 
@@ -128,6 +135,8 @@ public class MainActivity extends AppCompatActivity implements AcercaDeFragment.
         String password = PassWord;
         options.setUserName("token");
         options.setPassword(password.toCharArray());
+        options.setAutomaticReconnect(true);
+        options.setCleanSession(false);
 
         try {
             IMqttToken token = client.connect(options);
@@ -138,7 +147,8 @@ public class MainActivity extends AppCompatActivity implements AcercaDeFragment.
                     //Toast.makeText(getApplicationContext(), "Connected with tago broker", Toast.LENGTH_SHORT).show();
                     Log.e("MainActivity", "SartMQTT Succes");
                     suscribeTopics();
-                    //client.setCallback(mqttCallback);
+                    //Asignamos el callback DEFAULT para los topics
+                    client.setCallback(mqttCallback);
                 }
 
                 @Override
@@ -152,20 +162,18 @@ public class MainActivity extends AppCompatActivity implements AcercaDeFragment.
         } catch (MqttException e) {
             e.printStackTrace();
         }
-        //Asignamos el callback para los topics
-        //client.setCallback(mqttCallback); Lo quite por que no es necesario tener un callback por default, lo establecen los correspondientes fragments
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        StartMQTT();
+
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        StopMQTT();
+
     }
 
     public void StopMQTT() {
@@ -194,7 +202,7 @@ public class MainActivity extends AppCompatActivity implements AcercaDeFragment.
     /**
      * Metodo para suscribirse a los topics necesarios para encender los leds de thunderboard
      */
-    private void suscribeTopics(){
+    public void suscribeTopics(){
 
         try {
             IMqttToken subToken = client.subscribe(topic, qos);
@@ -284,6 +292,12 @@ public class MainActivity extends AppCompatActivity implements AcercaDeFragment.
                 super.onActivityResult(requestCode, resultCode, data);
                 break;
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        StopMQTT();
     }
 
     @Override

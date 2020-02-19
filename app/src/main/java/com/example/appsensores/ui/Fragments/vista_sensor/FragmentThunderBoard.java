@@ -37,9 +37,10 @@ import com.journeyapps.barcodescanner.Util;
 
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttCallback;
+import org.eclipse.paho.client.mqttv3.MqttCallbackExtended;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 
-public class FragmentThunderBoard extends BaseVistaFargment implements MqttCallback {
+public class FragmentThunderBoard extends BaseVistaFargment implements MqttCallbackExtended {
 
     private BluetoothAdapter Adapter;
     private BluetoothLeScanner bluetoothLeScanner;
@@ -109,6 +110,11 @@ public class FragmentThunderBoard extends BaseVistaFargment implements MqttCallb
         mSTimer.start();
 
         return root;
+    }
+
+    @Override
+    public void onUpdateUI() {
+        mGattClient.requestDataThunderBoard();
     }
 
     @Override
@@ -188,7 +194,7 @@ public class FragmentThunderBoard extends BaseVistaFargment implements MqttCallb
         addSwitchToList(sw_fragmentdetalle_thunder_ax);
         addSwitchToList(sw_fragmentdetalle_thunder_ay);
         addSwitchToList(sw_fragmentdetalle_thunder_az);
-
+        sw_fragmnetvista_gral.setChecked(true); //Habilito el switch general para que los valores sean visibles al inicio
         dialogCargando.show();
         ((TextView)dialogCargando.findViewById(R.id.dialog_loading_msg)).setText(R.string.dialog_loading_msg_conectando);
 
@@ -210,6 +216,7 @@ public class FragmentThunderBoard extends BaseVistaFargment implements MqttCallb
                     public void run() {
                         dialogCargando.dismiss();
                         ((MainActivity)getActivity()).setMqttCalbback(FragmentThunderBoard.this);
+                        mSTimer.sendTick(); //Justo despues mando el primer tick para llenar info
                     }
                 });
             }
@@ -297,7 +304,7 @@ public class FragmentThunderBoard extends BaseVistaFargment implements MqttCallb
         @Override
         public void OnAlarm( STimer source )
         {
-            mGattClient.requestDataThunderBoard();
+            //mGattClient.requestDataThunderBoard(); esto lo movi al tik de 1 segundo
             sendData();
             new checkAndSendRules().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, mDispoThunderBoard);
         }
@@ -342,7 +349,7 @@ public class FragmentThunderBoard extends BaseVistaFargment implements MqttCallb
 
     @Override
     public void connectionLost(Throwable cause) {
-
+        Log.e("FragmentDetalleThunder", "Coneccion with broker lost");
     }
 
     @Override
@@ -370,5 +377,11 @@ public class FragmentThunderBoard extends BaseVistaFargment implements MqttCallb
     @Override
     public void deliveryComplete(IMqttDeliveryToken token) {
 
+    }
+
+    @Override
+    public void connectComplete(boolean reconnect, String serverURI) {
+        Log.e("FragmentDetalleThunder", "Coneccion with broker complete");
+        ((MainActivity)getActivity()).suscribeTopics();
     }
 }

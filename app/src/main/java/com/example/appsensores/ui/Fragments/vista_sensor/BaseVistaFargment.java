@@ -14,6 +14,7 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -22,6 +23,7 @@ import androidx.fragment.app.Fragment;
 
 import com.example.appsensores.Clases.Enums.EnumTipoDispo;
 import com.example.appsensores.Clases.Enums.SensorTypes;
+import com.example.appsensores.Clases.STimer;
 import com.example.appsensores.Clases.Utils;
 import com.example.appsensores.Models.Dispositivos.BaseDispositivo;
 import com.example.appsensores.Models.Dispositivos.DispoSensorPuck;
@@ -52,7 +54,7 @@ public abstract class BaseVistaFargment extends Fragment implements DialogSettin
     protected AlertDialog dialogCargando;
 
     private TextView tv_fragmentvista_nombre;
-    private Switch sw_fragmnetvista_gral;
+    protected Switch sw_fragmnetvista_gral;
 
     private TextView tv_fragment_base_dispo_tipo;
     private TextView tv_fragment_base_dispo_mac;
@@ -62,6 +64,8 @@ public abstract class BaseVistaFargment extends Fragment implements DialogSettin
 
     private ArrayList<Switch> listSwitches = new ArrayList<>();
     SharedPreferences sharedPreferencesAvaya;
+
+    protected STimer timmerUI;
 
     /***
      * Bandera para diferenciar entre set del switch por usuario o por codigo
@@ -86,6 +90,12 @@ public abstract class BaseVistaFargment extends Fragment implements DialogSettin
     @Nullable
     @Override
     public abstract View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState);
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        timmerUI.stop();
+    }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -121,7 +131,21 @@ public abstract class BaseVistaFargment extends Fragment implements DialogSettin
         dialogCargando = builder.create();
         setControles(view);
         setListenerForRulesButton(btn_fragmentvista_rules);
+
+        onUpdateUI(); //primer update justo al crear
+        timmerUI = new STimer();
+        timmerUI.setPeriod(2500);
+        timmerUI.setOnAlarmListener(source -> {
+            //Log.e("BaseVistaFragment", "update ui...");
+            onUpdateUI();
+        });
+        timmerUI.start();
     }
+
+    /**
+     * Metodo que se ejecutara cada tick del timmer, las clases que heredan deben actualizar su UI aqui.
+     */
+    public abstract void onUpdateUI();
 
     /**
      * Metodo abstracto para que las clases que heredan establezcan el id de navegacion hacia el fragment rules
@@ -369,7 +393,10 @@ public abstract class BaseVistaFargment extends Fragment implements DialogSettin
 
         //Verificamos si se enviara por breeze o por zang
         if(endPoint == Utils.ENDPOINT_BREEZE){
-            return ""+WebMethods.requestPostMethodAvayaEndpoint(params, _url, _family, _type, _version);
+            int response = WebMethods.requestPostMethodAvayaEndpoint(params, _url, _family, _type, _version);
+            //if(response == -2)
+                //Toast.makeText(getContext(), )
+            return ""+response;
         } else if (endPoint == Utils.ENDPOINT_ZANG){
             //return ""+WebMethods.getStringPOSTmethodZang(_zurl, parametros, "ACbf889084ad63b77ddf614ddda88d2aa9","85af708098464422a6f70d3a36b2abb9");
             return  ""+WebMethods.postDataZang(_zurl,_from,_to,_zurlparam);

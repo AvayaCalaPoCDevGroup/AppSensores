@@ -113,6 +113,11 @@ public class FragmentDetalleSensorPuck extends BaseVistaFargment {
     }
 
     @Override
+    public void onUpdateUI() {
+        showData();
+    }
+
+    @Override
     public void setListenerForRulesButton(Button button) {
         button.setOnClickListener(v -> {
             Bundle bundle = new Bundle();
@@ -157,6 +162,9 @@ public class FragmentDetalleSensorPuck extends BaseVistaFargment {
         addSwitchToList(sw_fragmentdetalle_puck_uv);
         addSwitchToList(sw_fragmentdetalle_puck_voltaje);
         addSwitchToList(sw_fragmentdetalle_puck_hrmrate);
+
+        sw_fragmnetvista_gral.setChecked(true); //Habilito el switch general para que los valores sean visibles al inicio
+        mSTimer.sendTick(); //Justo despues mando el primer tick para llenar info
     }
 
     @Override
@@ -204,6 +212,7 @@ public class FragmentDetalleSensorPuck extends BaseVistaFargment {
         tv_advcount.setText("AdvCount: " + mDispoSensorPuck.RecvCount);
         tv_secuencecount.setText("Secuence: " + mDispoSensorPuck.Sequence);
     }
+
 
     /* Esto se llama una vez por segundo en la UI thread */
     STimer.OnAlarmListener OnPuckTick = new STimer.OnAlarmListener()

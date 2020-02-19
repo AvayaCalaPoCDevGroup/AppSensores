@@ -36,6 +36,7 @@ import com.example.appsensores.ui.Activities.MainActivity;
 
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttCallback;
+import org.eclipse.paho.client.mqttv3.MqttCallbackExtended;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 
 import java.util.List;
@@ -47,7 +48,7 @@ import static android.content.Context.SENSOR_SERVICE;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class FragmentDetalleTel extends BaseVistaFargment implements MqttCallback {
+public class FragmentDetalleTel extends BaseVistaFargment implements MqttCallbackExtended {
 
     private SensorManager mSensorManager;
     private DispoTelefono mDispoTelefono;
@@ -126,6 +127,26 @@ public class FragmentDetalleTel extends BaseVistaFargment implements MqttCallbac
         mSTimer.start();
 
         return inflater.inflate(R.layout.fragment_fragment_detalle_tel, container, false);
+    }
+
+    @Override
+    public void onUpdateUI() {
+        //obtenemos locacion
+        //Location location = gpsClient.getLastLocation();
+        Location location = gpsGoogleClient.getCurrentLocaton();
+        double lat = location == null ? 0 : location.getLatitude();
+        double lng = location == null ? 0 : location.getLongitude();
+        //Log.e("FragmentdetalleTel", "GPS (LAT,LNG): " + lat + " ," + lng);
+        mDispoTelefono.Lat = sw_fragmentdetalle_tel_lat.isChecked() ?  lat : 0;
+        mDispoTelefono.Lng = sw_fragmentdetalle_tel_lng.isChecked() ?  lng : 0;
+
+        //obtenemos Temperatura batteria
+        mDispoTelefono.Temperature = sw_fragmentdetalle_tel_temperatura.isChecked() ? Utils.batteryTemperature(getContext()) : 0;
+
+        //obtenemos battery level
+        mDispoTelefono.Voltaje = sw_fragmentdetalle_tel_voltaje.isChecked() ? Utils.batteryLevel(getContext()) : 0;
+
+        UpdateUI();
     }
 
     @Override
@@ -232,6 +253,8 @@ public class FragmentDetalleTel extends BaseVistaFargment implements MqttCallbac
         }
 
         sw_fragmentdetalle_tel_temperatura.setEnabled(true); //habilito el sensor de temperatura por que ya no lo tomo del ambiental si no de la bateria
+        sw_fragmnetvista_gral.setChecked(true); //Habilito el switch general para que los valores sean visibles al inicio
+        mSTimer.sendTick(); //Justo despues mando el primer tick para llenar info
     }
 
     @Override
@@ -317,6 +340,7 @@ public class FragmentDetalleTel extends BaseVistaFargment implements MqttCallbac
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        Log.e("FragmentDetalleTel", "ONDESTROYVIEW");
         mSensorManager.unregisterListener(mSensorListener);
         gpsGoogleClient.stopLocationUpdates();
         mSTimer.stop();
@@ -335,23 +359,6 @@ public class FragmentDetalleTel extends BaseVistaFargment implements MqttCallbac
         @Override
         public void OnAlarm( STimer source )
         {
-            //obtenemos locacion
-            //Location location = gpsClient.getLastLocation();
-            Location location = gpsGoogleClient.getCurrentLocaton();
-            double lat = location == null ? 0 : location.getLatitude();
-            double lng = location == null ? 0 : location.getLongitude();
-            Log.e("FragmentdetalleTel", "GPS (LAT,LNG): " + lat + " ," + lng);
-            mDispoTelefono.Lat = sw_fragmentdetalle_tel_lat.isChecked() ?  lat : 0;
-            mDispoTelefono.Lng = sw_fragmentdetalle_tel_lng.isChecked() ?  lng : 0;
-
-            //obtenemos Temperatura batteria
-            mDispoTelefono.Temperature = sw_fragmentdetalle_tel_temperatura.isChecked() ? Utils.batteryTemperature(getContext()) : 0;
-
-            //obtenemos battery level
-            mDispoTelefono.Voltaje = sw_fragmentdetalle_tel_voltaje.isChecked() ? Utils.batteryLevel(getContext()) : 0;
-
-
-            UpdateUI();
             sendData();
             new checkAndSendRules().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, mDispoTelefono);
         }
@@ -380,7 +387,7 @@ public class FragmentDetalleTel extends BaseVistaFargment implements MqttCallbac
 
     @Override
     public void connectionLost(Throwable cause) {
-
+        Log.e("FragmentDetalleTel", "Coneccion with broker lost");
     }
 
     @Override
@@ -400,5 +407,11 @@ public class FragmentDetalleTel extends BaseVistaFargment implements MqttCallbac
     @Override
     public void deliveryComplete(IMqttDeliveryToken token) {
 
+    }
+
+    @Override
+    public void connectComplete(boolean reconnect, String serverURI) {
+        Log.e("FragmentDetalleTel", "Coneccion with broker complete");
+        ((MainActivity)getActivity()).suscribeTopics();
     }
 }

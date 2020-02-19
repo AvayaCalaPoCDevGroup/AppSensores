@@ -30,6 +30,8 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 
+import javax.net.ssl.SSLHandshakeException;
+
 public class WebMethods {
     public static String IP_SERVER = "https://api.tago.io/data";
 
@@ -51,7 +53,10 @@ public class WebMethods {
             multipart.addFormField("version", version);
             multipart.addFormField("eventBody", json);
             response = multipart.finish();
-        } catch (IOException e) {
+        } catch (SSLHandshakeException sslex){
+            response = -2;
+        }
+        catch (IOException e) {
             e.printStackTrace();
         }
 

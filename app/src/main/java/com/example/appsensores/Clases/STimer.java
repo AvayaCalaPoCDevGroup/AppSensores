@@ -46,6 +46,10 @@ public class STimer {
         }
     };
 
+    public void sendTick(){
+        if( mOnAlarmListener!=null ) mOnAlarmListener.OnAlarm(STimer.this);
+    }
+
     /**
      * Set the period of the timer. The timer must be separately enabled before its starts generating alarm events.
      *
