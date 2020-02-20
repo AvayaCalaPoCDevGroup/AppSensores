@@ -28,6 +28,8 @@ import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 
 import javax.net.ssl.SSLHandshakeException;
@@ -55,8 +57,13 @@ public class WebMethods {
             response = multipart.finish();
         } catch (SSLHandshakeException sslex){
             response = -2;
+            Log.e("doinbackground", "Exception: " + sslex.getMessage());
         }
         catch (IOException e) {
+            e.printStackTrace();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (KeyManagementException e) {
             e.printStackTrace();
         }
 

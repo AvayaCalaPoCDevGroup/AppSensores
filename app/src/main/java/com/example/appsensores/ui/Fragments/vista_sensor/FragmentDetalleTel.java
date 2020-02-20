@@ -349,6 +349,8 @@ public class FragmentDetalleTel extends BaseVistaFargment implements MqttCallbac
                 camManager.setTorchMode(cameraId, false);
             } catch (CameraAccessException e) {
                 e.printStackTrace();
+            } catch (Exception ex){
+                ex.printStackTrace();
             }
         }
     }
