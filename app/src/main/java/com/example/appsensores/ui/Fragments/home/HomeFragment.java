@@ -102,8 +102,8 @@ public class HomeFragment extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 BaseDispositivo dispo = listDispositivos.get(position);
                 Bundle bundle = new Bundle();
-                bundle.putInt("idSensor", dispo.getId());
-                String caso = (EnumTipoDispo.values()[dispo.getTipoDispositivo()]).toString();
+                bundle.putInt("idSensor", dispo.id);
+                String caso = (EnumTipoDispo.values()[dispo.TipoDispositivo]).toString();
                 switch (EnumTipoDispo.valueOf(caso)){
                     case TELEFONO :
                         Navigation.findNavController(getView()).navigate(R.id.action_nav_home_to_fragmentDetalleTel,bundle);
@@ -128,7 +128,7 @@ public class HomeFragment extends Fragment {
         lisDispoString.clear();
         listDispositivos.addAll(RepositorioDBGeneralSingleton.getInstance(getContext()).getDevices());
         for (BaseDispositivo unit : listDispositivos) {
-            lisDispoString.add(unit.getNombre() + " - " + ((EnumTipoDispo.values()[unit.getTipoDispositivo()])));
+            lisDispoString.add(unit.Nombre + " - " + ((EnumTipoDispo.values()[unit.TipoDispositivo])));
         }
     }
 
@@ -138,8 +138,8 @@ public class HomeFragment extends Fragment {
      */
     private void deleteDevice(int index){
         BaseDispositivo device = listDispositivos.get(index);
-        if(device.getId() != 1) {
-            RepositorioDBGeneralSingleton.getInstance(getContext()).deleteDevice(device.getId());
+        if(device.id != 1) {
+            RepositorioDBGeneralSingleton.getInstance(getContext()).deleteDevice(device.id);
             iniciarListas();
         } else {
             Toast.makeText(getContext(), getResources().getString(R.string.fragment_home_EliminarTelefono),Toast.LENGTH_SHORT).show();

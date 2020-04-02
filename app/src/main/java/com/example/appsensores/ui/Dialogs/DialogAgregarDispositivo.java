@@ -73,10 +73,10 @@ public class DialogAgregarDispositivo extends Dialog implements MainActivity.ISc
                     return;
                 }
                 BaseDispositivo dispositivo = new BaseDispositivo();
-                dispositivo.setNombre(et_dialog_agregar_dispositivo_nombre.getText().toString());
-                dispositivo.setMacAddress(et_dialog_agregar_dispositivo_mac.getText().toString());
-                dispositivo.setToken(et_dialog_agregar_dispositivo_token.getText().toString());
-                dispositivo.setTipoDispositivo(spnr_dialog_agregar_dispositivo_tipo.getSelectedItemPosition());
+                dispositivo.Nombre = et_dialog_agregar_dispositivo_nombre.getText().toString();
+                dispositivo.MacAddress = et_dialog_agregar_dispositivo_mac.getText().toString();
+                dispositivo.Token = et_dialog_agregar_dispositivo_token.getText().toString();
+                dispositivo.TipoDispositivo = spnr_dialog_agregar_dispositivo_tipo.getSelectedItemPosition();
 
                 RepositorioDBGeneralSingleton.getInstance(getContext()).addDevice(dispositivo);
                 dismiss();
@@ -87,8 +87,8 @@ public class DialogAgregarDispositivo extends Dialog implements MainActivity.ISc
         dialogSearchDevices.setOnDismissListener(dialog -> {
             if(((DialogSearchDevices)dialog).DeviceSelected == null) //Consultamos si se eligio algun dispositivo del dialog scanner
                 return;
-            String macAddress = ((DialogSearchDevices)dialog).DeviceSelected.getMacAddress();
-            int position = ((DialogSearchDevices)dialog).DeviceSelected.getTipoDispositivo();
+            String macAddress = ((DialogSearchDevices)dialog).DeviceSelected.MacAddress;
+            int position = ((DialogSearchDevices)dialog).DeviceSelected.TipoDispositivo;
             et_dialog_agregar_dispositivo_mac.setText(macAddress);
             spnr_dialog_agregar_dispositivo_tipo.setSelection(position);
         });

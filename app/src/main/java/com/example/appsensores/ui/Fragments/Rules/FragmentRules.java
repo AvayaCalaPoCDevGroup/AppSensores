@@ -74,10 +74,10 @@ public class FragmentRules extends Fragment {
         lv_fragment_rules = view.findViewById(R.id.lv_fragment_rules);
         fab_fragment_rules = view.findViewById(R.id.fab_fragment_rules);
 
-        tv_fragmentvista_nombre.setText(dispositivoBase.getNombre());
-        tv_fragment_base_dispo_tipo.setText((EnumTipoDispo.values()[dispositivoBase.getTipoDispositivo()]).toString());
-        tv_fragment_base_dispo_mac.setText(dispositivoBase.getMacAddress());
-        tv_fragment_base_dispo_token.setText(dispositivoBase.getToken());
+        tv_fragmentvista_nombre.setText(dispositivoBase.Nombre);
+        tv_fragment_base_dispo_tipo.setText((EnumTipoDispo.values()[dispositivoBase.TipoDispositivo]).toString());
+        tv_fragment_base_dispo_mac.setText(dispositivoBase.MacAddress);
+        tv_fragment_base_dispo_token.setText(dispositivoBase.Token);
 
         iniciarListas();
         final AdapterRules adapterRules = new AdapterRules(getContext(),R.layout.list_unit_dispositivos, rulesList);
@@ -105,6 +105,6 @@ public class FragmentRules extends Fragment {
      */
     private void iniciarListas(){
         rulesList.clear();
-        rulesList.addAll(RepositorioDBGeneralSingleton.getInstance(getContext()).getRulesByDispositivo(dispositivoBase.getId()));
+        rulesList.addAll(RepositorioDBGeneralSingleton.getInstance(getContext()).getRulesByDispositivo(dispositivoBase.id));
     }
 }

@@ -96,7 +96,7 @@ public class DialogAddRule extends Dialog {
 
         btn_dialog_rule_ok.setOnClickListener(v -> {
             Rule rule = new Rule();
-            rule.DispositivoId = dispo.getId();
+            rule.DispositivoId = dispo.id;
             rule.RuleId = spnr_dlog_rule_ruletype.getSelectedItemPosition();
             rule.SensorId = sensorAvailableList.get(spnr_dlog_rule_sensortype.getSelectedItemPosition()).id;
             rule.Value1 = Float.parseFloat(et_dialog_rule_val1.getText().toString());
@@ -143,7 +143,7 @@ public class DialogAddRule extends Dialog {
      */
     private ArrayList<String> obtainAvailableSensors() {
         String[] allSensors = SensorTypes.getSensorAmbientList(getContext());
-        ArrayList<Rule> sensorRulesDevice = RepositorioDBGeneralSingleton.getInstance(getContext()).getRulesByDispositivo(dispo.getId());
+        ArrayList<Rule> sensorRulesDevice = RepositorioDBGeneralSingleton.getInstance(getContext()).getRulesByDispositivo(dispo.id);
         ArrayList<String> resp = new ArrayList<>();
         int i = 0;
         for (String unit : allSensors ) {

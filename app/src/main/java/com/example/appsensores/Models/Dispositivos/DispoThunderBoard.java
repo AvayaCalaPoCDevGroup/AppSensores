@@ -12,15 +12,15 @@ public class DispoThunderBoard extends BaseDispositivo {
     public float Acelereation_y;
     public float Acelereation_z;
 
-    //Environmental Service
-    public float  Humidity;
-    public float  Temperature;
-    public int    UV_Index;
-
-    //Ambient Light Service
-    public long    AmbientLight;
-
-    public int batteryLevel;
+    ////Environmental Service
+    //public float  Humidity;
+    //public float  Temperature;
+    //public int    UV_Index;
+    //
+    ////Ambient Light Service
+    //public long    AmbientLight;
+    //
+    //public int batteryLevel;
 
     public int sw0;
     public int sw1;

@@ -120,10 +120,10 @@ public abstract class BaseVistaFargment extends Fragment implements DialogSettin
         tv_fragment_base_dispo_token = view.findViewById(R.id.tv_fragment_base_dispo_token);
         btn_fragmentvista_rules = view.findViewById(R.id.btn_fragmentvista_rules);
 
-        tv_fragmentvista_nombre.setText(dispositivoBase.getNombre());
-        tv_fragment_base_dispo_tipo.setText((EnumTipoDispo.values()[dispositivoBase.getTipoDispositivo()]).toString());
-        tv_fragment_base_dispo_mac.setText(dispositivoBase.getMacAddress());
-        tv_fragment_base_dispo_token.setText(dispositivoBase.getToken());
+        tv_fragmentvista_nombre.setText(dispositivoBase.Nombre);
+        tv_fragment_base_dispo_tipo.setText((EnumTipoDispo.values()[dispositivoBase.TipoDispositivo]).toString());
+        tv_fragment_base_dispo_mac.setText(dispositivoBase.MacAddress);
+        tv_fragment_base_dispo_token.setText(dispositivoBase.Token);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setCancelable(false);
@@ -265,26 +265,26 @@ public abstract class BaseVistaFargment extends Fragment implements DialogSettin
         @Override
         protected String doInBackground(BaseDispositivo... baseDispositivos) {
             String resp = "-1";
-            ArrayList<Rule> rules = RepositorioDBGeneralSingleton.getInstance(getContext()).getRulesByDispositivo(baseDispositivos[0].getId());
+            ArrayList<Rule> rules = RepositorioDBGeneralSingleton.getInstance(getContext()).getRulesByDispositivo(baseDispositivos[0].id);
             float[] values = {0,0,0,0,0};
 
             String message, sensorName, sensortype, ruletype, valor1, valor2, valor;
 
-            sensorName = baseDispositivos[0].getNombre();
+            sensorName = baseDispositivos[0].Nombre;
 
             //Filtro para saber de que clase se llamo el asynctask
             if( DispoTelefono.class.isInstance(baseDispositivos[0]) ){
-                values[0] = ((DispoTelefono)baseDispositivos[0]).Temperature;
-                values[1] = ((DispoTelefono)baseDispositivos[0]).Humidity;
-                values[2] = ((DispoTelefono)baseDispositivos[0]).AmbientLight;
+                /*values[0] = (baseDispositivos[0]).Temperature;
+                values[1] = (baseDispositivos[0]).Humidity;
+                values[2] = (baseDispositivos[0]).AmbientLight;*/
                 switchStatus[3] = false; //hardcode el switch de UV para el telefono, ya que no tiene el sensor
-                values[4] = ((DispoTelefono)baseDispositivos[0]).Voltaje;
-            } else if (DispoThunderBoard.class.isInstance(baseDispositivos[0])){
+                //values[4] = ((DispoTelefono)baseDispositivos[0]).Battery;
+            } /*else if (DispoThunderBoard.class.isInstance(baseDispositivos[0])){
                 values[0] = ((DispoThunderBoard)baseDispositivos[0]).Temperature;
                 values[1] = ((DispoThunderBoard)baseDispositivos[0]).Humidity;
                 values[2] = ((DispoThunderBoard)baseDispositivos[0]).AmbientLight;
                 values[3] = ((DispoThunderBoard)baseDispositivos[0]).UV_Index;
-                values[4] = ((DispoThunderBoard)baseDispositivos[0]).batteryLevel;
+                values[4] = ((DispoThunderBoard)baseDispositivos[0]).Battery;
             } else if (DispoSensorPuck.class.isInstance(baseDispositivos[0])){
                 values[0] = ((DispoSensorPuck)baseDispositivos[0]).Temperature;
                 values[1] = ((DispoSensorPuck)baseDispositivos[0]).Humidity;
@@ -293,7 +293,13 @@ public abstract class BaseVistaFargment extends Fragment implements DialogSettin
                 values[4] = ((DispoSensorPuck)baseDispositivos[0]).Battery;
             } else {
                 return ""+resp;
-            }
+            }*/
+
+            values[0] = baseDispositivos[0].Temperature;
+            values[1] = baseDispositivos[0].Humidity;
+            values[2] = baseDispositivos[0].AmbientLight;
+            values[3] = baseDispositivos[0].UV_Index;
+            values[4] = baseDispositivos[0].Battery;
 
             //Iteramos sobre las reglas y checamos si alguna se cimple para mandar la alerta
             for (Rule unit : rules) {
