@@ -110,7 +110,18 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
-
-
-
+    <string name="param_mail">Correo</string>
+    <string name="param_msg">Mensaje</string>
+    <string name="dialog_select_param_title">Selecciona Parametro</string>
+    <string name="dialog_select_param_ok">Seleccionar</string>
+    <string name="dialog_select_param_adv">Debes seleccionar un parametro</string>
+    <string name="dialog_select_select">Seleccione</string>
+    <string name="dialog_addrule_adv">Los parametros E-Mail y Mensaje son obligatorios.</string>
+    <string name="dialog_addrule_addparam">Agragr Parametro</string>
+    <string name="dialog_addrule_titleparams">Selecciona un parametro para cada valor.\nLos Parametros se obtienen de el JSON de configuracion del endpoint.</string>
+    <string name="dialog_ruledetails_title">Detalle de la regla</string>
+    <string name="dlog_ruledetails_sensortype">Sensor:</string>
+    <string name="dlog_ruledetails_ruletype">Tipo de regla:</string>
+    <string name="dlog_ruledetails_val1">Valor 1</string>
+    <string name="dlog_ruledetails_val2">Valor 2</string>
 </resources>
