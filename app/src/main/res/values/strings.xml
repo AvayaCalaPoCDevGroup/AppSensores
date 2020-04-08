@@ -117,7 +117,7 @@
     <string name="dialog_select_param_adv">Debes seleccionar un parametro</string>
     <string name="dialog_select_select">Seleccione</string>
     <string name="dialog_addrule_adv">Los parametros E-Mail y Mensaje son obligatorios.</string>
-    <string name="dialog_addrule_addparam">Agragr Parametro</string>
+    <string name="dialog_addrule_addparam">Agragar Parametro</string>
     <string name="dialog_addrule_titleparams">Selecciona un parametro para cada valor.\nLos Parametros se obtienen de el JSON de configuracion del endpoint.</string>
     <string name="dialog_ruledetails_title">Detalle de la regla</string>
     <string name="dlog_ruledetails_sensortype">Sensor:</string>

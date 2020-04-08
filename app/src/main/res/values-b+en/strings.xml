@@ -117,17 +117,9 @@
     <string name="dialog_addrule_adv">The parameters for E-Mail and Message are mandatory</string>
     <string name="dialog_addrule_addparam">Add Parameter</string>
     <string name="dialog_addrule_titleparams">Select a parameter for each value.\nThe Parameters are obtained from the configuration JSON of the endpoint.</string>
-    <string name="dialog_ruledetails_title">Detalle de la regla</string>
+    <string name="dialog_ruledetails_title">Rule Details</string>
     <string name="dlog_ruledetails_sensortype">Sensor:</string>
-    <string name="dlog_ruledetails_ruletype">Tipo de regla:</string>
-    <string name="dlog_ruledetails_val1">Valor 1</string>
-    <string name="dlog_ruledetails_val2">Valor 2</string>
-    <string name="dlog_ruledetails_mail">E-Mail</string>
-    <string name="dlog_ruledetails_msg">Mensaje</string>
-    <string name="dlog_ruledetails_temp">Temperatura</string>
-    <string name="dlog_ruledetails_humidity">Humedad Relativa</string>
-    <string name="dlog_ruledetails_lux">Luz Ambiente</string>
-    <string name="dlog_ruledetails_uv">Indice UV</string>
-    <string name="dlog_ruledetails_Battery">Voltaje</string>
-
+    <string name="dlog_ruledetails_ruletype">Rule Type:</string>
+    <string name="dlog_ruledetails_val1">Value 1</string>
+    <string name="dlog_ruledetails_val2">Value 2</string>
 </resources>
