@@ -383,14 +383,25 @@ public abstract class BaseVistaFargment extends Fragment implements DialogSettin
         //Verificamos si se enviara por breeze o por zang
         if(endPoint == Utils.ENDPOINT_BREEZE){
 
-            JsonObject jsonObject = new JsonObject();
-            jsonObject.addProperty(rule.emailParam, _mail);
-            jsonObject.addProperty(rule.messageParam, message);
-            jsonObject.addProperty(rule.temperatureParam, ""+baseDispositivo.Temperature);
-            jsonObject.addProperty(rule.humidityParam, ""+baseDispositivo.Humidity);
-            jsonObject.addProperty(rule.luxParam, ""+baseDispositivo.AmbientLight);
-            jsonObject.addProperty(rule.uvParam, ""+baseDispositivo.UV_Index);
+            String jsonEndPoint = sharedPreferencesAvaya.getString(Utils.AVAYA_SHARED_JSON,"{}");
+
+            JsonObject jsonObject = new Gson().fromJson(jsonEndPoint,JsonObject.class);
+            if(!rule.emailParam.equals(""))
+                jsonObject.addProperty(rule.emailParam, _mail);
+            if(!rule.messageParam.equals(""))
+                jsonObject.addProperty(rule.messageParam, message);
+            if(!rule.temperatureParam.equals(""))
+                jsonObject.addProperty(rule.temperatureParam, ""+baseDispositivo.Temperature);
+            if(!rule.humidityParam.equals(""))
+                jsonObject.addProperty(rule.humidityParam, ""+baseDispositivo.Humidity);
+            if(!rule.luxParam.equals(""))
+                jsonObject.addProperty(rule.luxParam, ""+baseDispositivo.AmbientLight);
+            if(!rule.uvParam.equals(""))
+                jsonObject.addProperty(rule.uvParam, ""+baseDispositivo.UV_Index);
+            if(!rule.batteryParam.equals(""))
             jsonObject.addProperty(rule.batteryParam, ""+baseDispositivo.Battery);
+            
+            //jsonObject.addProperty("phone", "17863310405");
 
             String json = jsonObject.toString();
 
