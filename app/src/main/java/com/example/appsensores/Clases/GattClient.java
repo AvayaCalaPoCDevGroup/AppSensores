@@ -176,7 +176,7 @@ public class GattClient {
                 } else if (ThunderBoardUuids.UUID_CHARACTERISTIC_BATTERY_LEVEL.equals(uuid)) {
                     int batteryLevel = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 0);
                     //Timber.d("batteryLevel: %d", batteryLevel);
-                    mDispoThunderBoard.batteryLevel = batteryLevel;
+                    mDispoThunderBoard.Battery = batteryLevel;
                     //device.isBatteryConfigured = true;
                 } else if (ThunderBoardUuids.UUID_CHARACTERISTIC_POWER_SOURCE.equals(uuid)) {
                     /*int powerSource = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 0);
@@ -207,7 +207,7 @@ public class GattClient {
                     int ambientLight = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT32, 0);
                     long ambientLightLong = (ambientLight < 0) ?
                             (long) Math.abs(ambientLight) + (long) Integer.MAX_VALUE : ambientLight;
-                    mDispoThunderBoard.AmbientLight = ambientLightLong/100;
+                    mDispoThunderBoard.AmbientLight = (int)ambientLightLong/100;
                 } else if (ThunderBoardUuids.UUID_CHARACTERISTIC_SOUND_LEVEL.equals(uuid)) {
                     /*int soundLevel = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_SINT16, 0);
                     Timber.d("sound level: %d", soundLevel);
@@ -313,7 +313,7 @@ public class GattClient {
 
                 if (ThunderBoardUuids.UUID_CHARACTERISTIC_BATTERY_LEVEL.equals(uuid)) {
                     int batteryLevel = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 0);
-                    mDispoThunderBoard.batteryLevel = batteryLevel;
+                    mDispoThunderBoard.Battery = batteryLevel;
                 } else if (ThunderBoardUuids.UUID_CHARACTERISTIC_POWER_SOURCE.equals(uuid)) {
                     /*int powerSource = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 0);
                     Timber.d("Power source: %d", powerSource);

@@ -79,7 +79,7 @@ public class DialogSettings extends Dialog implements MainActivity.IScanListener
 
         //Obtenemos la informacion del telefono, por default siempre es el id 1
         BaseDispositivo deviceTel = RepositorioDBGeneralSingleton.getInstance(getContext()).getDeviceById(1);
-        et_dialog_settings_token.setText(deviceTel.getToken());
+        et_dialog_settings_token.setText(deviceTel.Token);
         et_dialog_settings_intervalo.setText("" + (sharedPreferencesAvaya.getInt(Utils.AVAYA_INTERVALO, 3000)/1000));
         et_dialog_settings_tokenbroker.setText(sharedPreferencesAvaya.getString(Utils.AVAYA_SHARED_BORKERTOKEN, ""));
         et_dialog_settings_intervalrules.setText(""+sharedPreferencesAvaya.getInt(Utils.AVAYA_SHARED_MIN_INTERVAL_BETWEEN_RULES, 180));
@@ -100,7 +100,7 @@ public class DialogSettings extends Dialog implements MainActivity.IScanListener
                 editor.putInt(Utils.AVAYA_SHARED_ENPOINT, spnr_dialog_settings_endpoint.getSelectedItemPosition());
                 STimer.CURRENT_PERIOD = intervalo * 1000;
                 editor.commit();
-                deviceTel.setToken(et_dialog_settings_token.getText().toString());
+                deviceTel.Token = et_dialog_settings_token.getText().toString();
                 RepositorioDBGeneralSingleton.getInstance(getContext()).updateDevice(deviceTel);
                 if(mIsettinsListener != null)
                     mIsettinsListener.onSettingsChanged();

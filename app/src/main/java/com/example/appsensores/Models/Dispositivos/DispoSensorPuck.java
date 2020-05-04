@@ -7,11 +7,11 @@ public class DispoSensorPuck extends BaseDispositivo {
     /* Sensor data */
     public int    MeasurementMode;
     public int    Sequence;
-    public float  Humidity;
+    /*public float  Humidity;
     public float  Temperature;
     public int    AmbientLight;
     public int    UV_Index;
-    public float  Battery;
+    public float  Battery;*/
     public int    HRM_State;
     public int    HRM_Rate;
     public int[]  HRM_Sample;

@@ -25,6 +25,7 @@ public class Utils {
     public static final String AVAYA_SHARED_TYPE = "AVAYA_SHARED_TYPE";
     public static final String AVAYA_SHARED_VERSION = "AVAYA_SHARED_VERSION";
     public static final String AVAYA_SHARED_URL = "AVAYA_SHARED_URL";
+    public static final String AVAYA_SHARED_JSON = "AVAYA_SHARED_JSON";
     public static final String AVAYA_SHARED_FROM = "AVAYA_SHARED_FROM";
     public static final String AVAYA_SHARED_TO = "AVAYA_SHARED_TO";
     public static final String AVAYA_SHARED_ZURLPARAM = "AVAYA_SHARED_ZURLPARAM";
@@ -256,6 +257,6 @@ public class Utils {
     }
 
     public static String[] getEndPoints(Context context){
-        return new String[] {"Breeze", "Avaya CPaSS", context.getResources().getString(R.string.endpoint_type_none)};
+        return new String[] {"Breeze", "Avaya CPaaS", context.getResources().getString(R.string.endpoint_type_none)};
     }
 }

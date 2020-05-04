@@ -17,6 +17,7 @@ import com.example.appsensores.Clases.Enums.SensorTypes;
 import com.example.appsensores.Models.Rule;
 import com.example.appsensores.R;
 import com.example.appsensores.Repositorio.RepositorioDBGeneralSingleton;
+import com.example.appsensores.ui.Dialogs.DialogRuleDetails;
 
 import java.util.ArrayList;
 
@@ -90,6 +91,10 @@ public class AdapterRules extends ArrayAdapter<Rule> {
             mRuleList.get(position).IsEnabled = isChecked;
             RepositorioDBGeneralSingleton.getInstance(mContext).updateRule(mRuleList.get(position));
 
+        });
+        viewHolder.tvRule.setOnClickListener(v -> {
+            DialogRuleDetails dlogDetails = new DialogRuleDetails(getContext(), R.style.custom_dialog, mRuleList.get(position));
+            dlogDetails.show();
         });
 
         return convertView;

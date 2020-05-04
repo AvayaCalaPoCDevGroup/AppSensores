@@ -108,5 +108,18 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
-
+    <string name="param_mail">E-Mail</string>
+    <string name="param_msg">Message</string>
+    <string name="dialog_select_param_title">Select Parameter</string>
+    <string name="dialog_select_param_ok">Select</string>
+    <string name="dialog_select_param_adv">You must select a parameter</string>
+    <string name="dialog_select_select">Select</string>
+    <string name="dialog_addrule_adv">The parameters for E-Mail and Message are mandatory</string>
+    <string name="dialog_addrule_addparam">Add Parameter</string>
+    <string name="dialog_addrule_titleparams">Select a parameter for each value.\nThe Parameters are obtained from the configuration JSON of the endpoint.</string>
+    <string name="dialog_ruledetails_title">Rule Details</string>
+    <string name="dlog_ruledetails_sensortype">Sensor:</string>
+    <string name="dlog_ruledetails_ruletype">Rule Type:</string>
+    <string name="dlog_ruledetails_val1">Value 1</string>
+    <string name="dlog_ruledetails_val2">Value 2</string>
 </resources>

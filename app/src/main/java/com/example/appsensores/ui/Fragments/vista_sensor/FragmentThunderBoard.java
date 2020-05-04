@@ -86,11 +86,11 @@ public class FragmentThunderBoard extends BaseVistaFargment implements MqttCallb
         View root = inflater.inflate(R.layout.fragment_detalle_thunder, container, false);
 
         mDispoThunderBoard = new DispoThunderBoard();
-        mDispoThunderBoard.setId(dispositivoBase.getId());
-        mDispoThunderBoard.setNombre(dispositivoBase.getNombre());
-        mDispoThunderBoard.setMacAddress(dispositivoBase.getMacAddress());
-        mDispoThunderBoard.setToken(dispositivoBase.getToken());
-        mDispoThunderBoard.setTipoDispositivo(dispositivoBase.getTipoDispositivo());
+        mDispoThunderBoard.id = dispositivoBase.id;
+        mDispoThunderBoard.Nombre = dispositivoBase.Nombre;
+        mDispoThunderBoard.MacAddress = dispositivoBase.MacAddress;
+        mDispoThunderBoard.Token = dispositivoBase.Token;
+        mDispoThunderBoard.TipoDispositivo = dispositivoBase.TipoDispositivo;
 
         /* Iniciar el Bluetooth*/
         BluetoothManager Manager = (BluetoothManager)getContext().getSystemService( Context.BLUETOOTH_SERVICE );
@@ -121,7 +121,7 @@ public class FragmentThunderBoard extends BaseVistaFargment implements MqttCallb
     public void setListenerForRulesButton(Button button) {
         button.setOnClickListener(v -> {
             Bundle bundle = new Bundle();
-            bundle.putInt("idSensor", dispositivoBase.getId());
+            bundle.putInt("idSensor", dispositivoBase.id);
 
             Navigation.findNavController(getView()).navigate(R.id.action_fragmentThunderBoard_to_fragmentRules,bundle);
 
@@ -198,7 +198,7 @@ public class FragmentThunderBoard extends BaseVistaFargment implements MqttCallb
         dialogCargando.show();
         ((TextView)dialogCargando.findViewById(R.id.dialog_loading_msg)).setText(R.string.dialog_loading_msg_conectando);
 
-        mGattClient.onCreate(getContext(), mDispoThunderBoard.getMacAddress(), new GattClient.OnReadListener() {
+        mGattClient.onCreate(getContext(), mDispoThunderBoard.MacAddress, new GattClient.OnReadListener() {
             @Override
             public void onReadValues(final DispoThunderBoard dispo) {
                 getActivity().runOnUiThread(new Runnable() {
@@ -266,7 +266,7 @@ public class FragmentThunderBoard extends BaseVistaFargment implements MqttCallb
         tv_fragmentdetalle_thunder_humedad.setText(( sw_fragmentdetalle_thunder_humedad.isChecked() ? dispo.Humidity : 0) + "%");
         tv_fragmentdetalle_thunder_lux.setText(( sw_fragmentdetalle_thunder_lux.isChecked() ? dispo.AmbientLight : 0) + " lux");
         tv_fragmentdetalle_thunder_uv.setText(""+ ( sw_fragmentdetalle_thunder_uv.isChecked() ? dispo.UV_Index : 0));
-        tv_fragmentdetalle_thunder_voltaje.setText(( sw_fragmentdetalle_thunder_voltaje.isChecked() ? dispo.batteryLevel : 0) + " %");
+        tv_fragmentdetalle_thunder_voltaje.setText(( sw_fragmentdetalle_thunder_voltaje.isChecked() ? dispo.Battery : 0) + " %");
         tv_fragmentdetalle_thunder_ox.setText(""+(sw_fragmentdetalle_thunder_ox.isChecked() ? dispo.Orientation_x : 0));
         tv_fragmentdetalle_thunder_oy.setText(""+(sw_fragmentdetalle_thunder_oy.isChecked() ? dispo.Orientation_y : 0));
         tv_fragmentdetalle_thunder_oz.setText(""+(sw_fragmentdetalle_thunder_oz.isChecked() ? dispo.Orientation_z : 0));
@@ -316,7 +316,7 @@ public class FragmentThunderBoard extends BaseVistaFargment implements MqttCallb
                 new ValuesTago("Humidity", ""       +( sw_fragmentdetalle_thunder_humedad.isChecked() ? mDispoThunderBoard.Humidity : 0)),
                 new ValuesTago("AmbientLight", ""   +( sw_fragmentdetalle_thunder_lux.isChecked() ? mDispoThunderBoard.AmbientLight : 0)),
                 new ValuesTago("UV_Index", ""       +( sw_fragmentdetalle_thunder_uv.isChecked() ? mDispoThunderBoard.UV_Index : 0)),
-                new ValuesTago("BatteryLevel", ""   +( sw_fragmentdetalle_thunder_voltaje.isChecked() ? mDispoThunderBoard.batteryLevel : 0)),
+                new ValuesTago("BatteryLevel", ""   +( sw_fragmentdetalle_thunder_voltaje.isChecked() ? mDispoThunderBoard.Battery : 0)),
                 new ValuesTago("Orientation_x", ""  +( sw_fragmentdetalle_thunder_ox.isChecked() ? mDispoThunderBoard.Orientation_x : 0)),
                 new ValuesTago("Orientation_y", ""  +( sw_fragmentdetalle_thunder_oy.isChecked() ? mDispoThunderBoard.Orientation_y : 0)),
                 new ValuesTago("Orientation_z", ""  +( sw_fragmentdetalle_thunder_oz.isChecked() ? mDispoThunderBoard.Orientation_z : 0)),
@@ -328,7 +328,7 @@ public class FragmentThunderBoard extends BaseVistaFargment implements MqttCallb
 
         };
 
-        new EnviarInformacionTago(mDispoThunderBoard.getToken()).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,values);
+        new EnviarInformacionTago(mDispoThunderBoard.Token).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,values);
 
     }
 

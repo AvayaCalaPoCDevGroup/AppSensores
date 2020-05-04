@@ -97,11 +97,11 @@ public class FragmentDetalleTel extends BaseVistaFargment implements MqttCallbac
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         mDispoTelefono = new DispoTelefono();
-        mDispoTelefono.setId(dispositivoBase.getId());
-        mDispoTelefono.setNombre(dispositivoBase.getNombre());
-        mDispoTelefono.setMacAddress(dispositivoBase.getMacAddress());
-        mDispoTelefono.setToken(dispositivoBase.getToken());
-        mDispoTelefono.setTipoDispositivo(dispositivoBase.getTipoDispositivo());
+        mDispoTelefono.id = dispositivoBase.id;
+        mDispoTelefono.Nombre = dispositivoBase.Nombre;
+        mDispoTelefono.MacAddress = dispositivoBase.MacAddress;
+        mDispoTelefono.Token = dispositivoBase.Token;
+        mDispoTelefono.TipoDispositivo = dispositivoBase.TipoDispositivo;
 
         // Inflate the layout for this fragment
         mSensorManager = (SensorManager)getContext().getSystemService(SENSOR_SERVICE);
@@ -144,7 +144,7 @@ public class FragmentDetalleTel extends BaseVistaFargment implements MqttCallbac
         mDispoTelefono.Temperature = sw_fragmentdetalle_tel_temperatura.isChecked() ? Utils.batteryTemperature(getContext()) : 0;
 
         //obtenemos battery level
-        mDispoTelefono.Voltaje = sw_fragmentdetalle_tel_voltaje.isChecked() ? Utils.batteryLevel(getContext()) : 0;
+        mDispoTelefono.Battery = sw_fragmentdetalle_tel_voltaje.isChecked() ? Utils.batteryLevel(getContext()) : 0;
 
         UpdateUI();
     }
@@ -153,7 +153,7 @@ public class FragmentDetalleTel extends BaseVistaFargment implements MqttCallbac
     public void setListenerForRulesButton(Button button) {
         button.setOnClickListener(v -> {
             Bundle bundle = new Bundle();
-            bundle.putInt("idSensor", dispositivoBase.getId());
+            bundle.putInt("idSensor", dispositivoBase.id);
 
             Navigation.findNavController(getView()).navigate(R.id.action_fragmentDetalleTel_to_fragmentRules,bundle);
 
@@ -297,7 +297,7 @@ public class FragmentDetalleTel extends BaseVistaFargment implements MqttCallbac
                     UpdateUI();
                     break;
                 case Sensor.TYPE_LIGHT :
-                    mDispoTelefono.AmbientLight = sw_fragmentdetalle_tel_lux.isChecked() ? sensorEvent.values[0] : 0;
+                    mDispoTelefono.AmbientLight = sw_fragmentdetalle_tel_lux.isChecked() ? (int)sensorEvent.values[0] : 0;
                     UpdateUI();
                     break;
                 /*case Sensor.TYPE_AMBIENT_TEMPERATURE : //LO COMENTE POR QUE SON POCOS LOS TELEFONO SON SENSOR DE TEMPERATURA AMBIENTE, LO CAMBIE POR LA BATERIA DEL TELEFONO EN EL TICK DEL TIMMER
@@ -323,9 +323,9 @@ public class FragmentDetalleTel extends BaseVistaFargment implements MqttCallbac
     private void UpdateUI() {
         tv_fragmentdetalle_tel_temperatura.setText(String.format("%.2f",mDispoTelefono.Temperature) + "°C");
         tv_fragmentdetalle_tel_humedad.setText(String.format("%.2f",mDispoTelefono.Humidity)+"%");
-        tv_fragmentdetalle_tel_lux.setText( String.format("%.2f",mDispoTelefono.AmbientLight) + " lux");
+        tv_fragmentdetalle_tel_lux.setText( mDispoTelefono.AmbientLight + " lux");
         tv_fragmentdetalle_tel_proximity.setText(String.format("%.2f",mDispoTelefono.Proximidad));
-        tv_fragmentdetalle_tel_voltaje.setText(""+mDispoTelefono.Voltaje+"%");
+        tv_fragmentdetalle_tel_voltaje.setText(""+mDispoTelefono.Battery+"%");
         tv_fragmentdetalle_tel_ox.setText(String.format("%.2f",mDispoTelefono.Orientation_x ));
         tv_fragmentdetalle_tel_oy.setText(String.format("%.2f",mDispoTelefono.Orientation_y ));
         tv_fragmentdetalle_tel_oz.setText(String.format("%.2f",mDispoTelefono.Orientation_z ));
@@ -372,7 +372,7 @@ public class FragmentDetalleTel extends BaseVistaFargment implements MqttCallbac
                 new ValuesTago("Humidity", ""       + mDispoTelefono.Humidity),
                 new ValuesTago("AmbientLight", ""   + mDispoTelefono.AmbientLight),
                 new ValuesTago("Proximity", ""      + mDispoTelefono.Proximidad),
-                new ValuesTago("Battery", ""        + mDispoTelefono.Voltaje),
+                new ValuesTago("Battery", ""        + mDispoTelefono.Battery),
                 new ValuesTago("Orientation_x", ""  + mDispoTelefono.Orientation_x),
                 new ValuesTago("Orientation_y", ""  + mDispoTelefono.Orientation_y),
                 new ValuesTago("Orientation_z", ""  + mDispoTelefono.Orientation_z),
@@ -384,7 +384,7 @@ public class FragmentDetalleTel extends BaseVistaFargment implements MqttCallbac
 
         };
 
-        new EnviarInformacionTago(mDispoTelefono.getToken()).execute(values);
+        new EnviarInformacionTago(mDispoTelefono.Token).execute(values);
     }
 
     @Override

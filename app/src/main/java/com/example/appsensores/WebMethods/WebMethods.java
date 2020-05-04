@@ -31,11 +31,49 @@ import java.nio.charset.StandardCharsets;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
+import java.util.Map;
 
 import javax.net.ssl.SSLHandshakeException;
 
 public class WebMethods {
     public static String IP_SERVER = "https://api.tago.io/data";
+
+    /**
+     * Metodo para hacer post request con un contenido multipart/form-data
+     * @param parametros
+     * @param URL
+     * @return Status Code
+     */
+    public static String requestPostMethodAvayaEndpoint(HashMap<String, String> parametros, String URL){
+
+        //String json = new Gson().toJson(params);
+        Log.e("WebMethods", "requestPostMethodAvayaEndpoint: " + URL);
+        String response = "-1";
+
+        MultipartFormDataTest multipart = null;
+        try {
+            multipart = new MultipartFormDataTest(URL, "UTF-8");
+            for (Map.Entry<String,String> param :parametros.entrySet()) {
+                multipart.addFormField(param.getKey(), param.getValue());
+            }
+            response = ""+multipart.finish();
+        } catch (SSLHandshakeException sslex){
+            response = "-2";
+            Log.e("doinbackground", "Exception: " + sslex.getMessage());
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (KeyManagementException e) {
+            e.printStackTrace();
+        }
+
+
+        Log.e("doinbackground", "SERVER REPLIED:");
+
+        return response;
+    }
 
     /***
      * Metodo para hacer post request con un contenido multipart/form-data

@@ -43,6 +43,7 @@ import com.journeyapps.barcodescanner.Util;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.concurrent.Semaphore;
 
 public abstract class BaseVistaFargment extends Fragment implements DialogSettings.IsettinsListener {
 
@@ -120,10 +121,10 @@ public abstract class BaseVistaFargment extends Fragment implements DialogSettin
         tv_fragment_base_dispo_token = view.findViewById(R.id.tv_fragment_base_dispo_token);
         btn_fragmentvista_rules = view.findViewById(R.id.btn_fragmentvista_rules);
 
-        tv_fragmentvista_nombre.setText(dispositivoBase.getNombre());
-        tv_fragment_base_dispo_tipo.setText((EnumTipoDispo.values()[dispositivoBase.getTipoDispositivo()]).toString());
-        tv_fragment_base_dispo_mac.setText(dispositivoBase.getMacAddress());
-        tv_fragment_base_dispo_token.setText(dispositivoBase.getToken());
+        tv_fragmentvista_nombre.setText(dispositivoBase.Nombre);
+        tv_fragment_base_dispo_tipo.setText((EnumTipoDispo.values()[dispositivoBase.TipoDispositivo]).toString());
+        tv_fragment_base_dispo_mac.setText(dispositivoBase.MacAddress);
+        tv_fragment_base_dispo_token.setText(dispositivoBase.Token);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setCancelable(false);
@@ -265,35 +266,23 @@ public abstract class BaseVistaFargment extends Fragment implements DialogSettin
         @Override
         protected String doInBackground(BaseDispositivo... baseDispositivos) {
             String resp = "-1";
-            ArrayList<Rule> rules = RepositorioDBGeneralSingleton.getInstance(getContext()).getRulesByDispositivo(baseDispositivos[0].getId());
+            ArrayList<Rule> rules = RepositorioDBGeneralSingleton.getInstance(getContext()).getRulesByDispositivo(baseDispositivos[0].id);
             float[] values = {0,0,0,0,0};
 
             String message, sensorName, sensortype, ruletype, valor1, valor2, valor;
 
-            sensorName = baseDispositivos[0].getNombre();
+            sensorName = baseDispositivos[0].Nombre;
 
             //Filtro para saber de que clase se llamo el asynctask
             if( DispoTelefono.class.isInstance(baseDispositivos[0]) ){
-                values[0] = ((DispoTelefono)baseDispositivos[0]).Temperature;
-                values[1] = ((DispoTelefono)baseDispositivos[0]).Humidity;
-                values[2] = ((DispoTelefono)baseDispositivos[0]).AmbientLight;
-                switchStatus[3] = false; //hardcode el switch de UV para el telefono, ya que no tiene el sensor
-                values[4] = ((DispoTelefono)baseDispositivos[0]).Voltaje;
-            } else if (DispoThunderBoard.class.isInstance(baseDispositivos[0])){
-                values[0] = ((DispoThunderBoard)baseDispositivos[0]).Temperature;
-                values[1] = ((DispoThunderBoard)baseDispositivos[0]).Humidity;
-                values[2] = ((DispoThunderBoard)baseDispositivos[0]).AmbientLight;
-                values[3] = ((DispoThunderBoard)baseDispositivos[0]).UV_Index;
-                values[4] = ((DispoThunderBoard)baseDispositivos[0]).batteryLevel;
-            } else if (DispoSensorPuck.class.isInstance(baseDispositivos[0])){
-                values[0] = ((DispoSensorPuck)baseDispositivos[0]).Temperature;
-                values[1] = ((DispoSensorPuck)baseDispositivos[0]).Humidity;
-                values[2] = ((DispoSensorPuck)baseDispositivos[0]).AmbientLight;
-                values[3] = ((DispoSensorPuck)baseDispositivos[0]).UV_Index;
-                values[4] = ((DispoSensorPuck)baseDispositivos[0]).Battery;
-            } else {
-                return ""+resp;
+                switchStatus[3] = false; //hardcode el switch de UV para el telefono, ya que no tiene el sensor y e este lugar esta el de proximidad
             }
+
+            values[0] = baseDispositivos[0].Temperature;
+            values[1] = baseDispositivos[0].Humidity;
+            values[2] = baseDispositivos[0].AmbientLight;
+            values[3] = baseDispositivos[0].UV_Index;
+            values[4] = baseDispositivos[0].Battery;
 
             //Iteramos sobre las reglas y checamos si alguna se cimple para mandar la alerta
             for (Rule unit : rules) {
@@ -306,7 +295,7 @@ public abstract class BaseVistaFargment extends Fragment implements DialogSettin
                                 valor1 = String.format("%.2f", unit.Value1);
                                 valor = String.format("%.2f", values[unit.SensorId]);
                                 message = "Alert " + sensorName + " -> " + sensortype + " " + valor + " " + ruletype + " " + valor1;
-                                resp = sendNotification(message, unit.id);
+                                resp = sendNotification(message, unit, baseDispositivos[0]);
                             }
                         }
                     } else if (unit.RuleId == SensorTypes.MENOR) {
@@ -317,7 +306,7 @@ public abstract class BaseVistaFargment extends Fragment implements DialogSettin
                                 valor1 = String.format("%.2f", unit.Value1);
                                 valor = String.format("%.2f", values[unit.SensorId]);
                                 message = "Alert " + sensorName + " -> " + sensortype + " " + valor + " " + ruletype + " " + valor1;
-                                resp = sendNotification(message, unit.id);
+                                resp = sendNotification(message, unit, baseDispositivos[0]);
                             }
                         }
                     }
@@ -330,7 +319,7 @@ public abstract class BaseVistaFargment extends Fragment implements DialogSettin
                                 valor2 = String.format("%.2f", unit.Value2);
                                 valor = String.format("%.2f", values[unit.SensorId]);
                                 message = "Alert " + sensorName + " -> " + sensortype + " " + valor + " " + ruletype + " " + valor1 + " - " + valor2;
-                                resp = sendNotification(message, unit.id);
+                                resp = sendNotification(message, unit, baseDispositivos[0]);
                             }
                         }
                     }
@@ -371,7 +360,7 @@ public abstract class BaseVistaFargment extends Fragment implements DialogSettin
      * @param message
      * @return
      */
-    private String sendNotification(String message, int idRule) {
+    private String sendNotification(String message, Rule rule, BaseDispositivo baseDispositivo) {
         String _mail = sharedPreferencesAvaya.getString(Utils.AVAYA_SHARED_MAIL,"");
         String _family = sharedPreferencesAvaya.getString(Utils.AVAYA_SHARED_FAMILY,"");
         String _type = sharedPreferencesAvaya.getString(Utils.AVAYA_SHARED_TYPE,"");
@@ -389,16 +378,46 @@ public abstract class BaseVistaFargment extends Fragment implements DialogSettin
         params.setCorreoElectronico(_mail);
         params.setParam1(message);
 
-        RepositorioDBGeneralSingleton.getInstance(getContext()).updateLastUpdateRule(System.currentTimeMillis(), idRule); //guardamos la ultima hora de la regla en la base
+        RepositorioDBGeneralSingleton.getInstance(getContext()).updateLastUpdateRule(System.currentTimeMillis(), rule.id); //guardamos la ultima hora de la regla en la base
 
         //Verificamos si se enviara por breeze o por zang
         if(endPoint == Utils.ENDPOINT_BREEZE){
-            int response = WebMethods.requestPostMethodAvayaEndpoint(params, _url, _family, _type, _version);
+
+            String jsonEndPoint = sharedPreferencesAvaya.getString(Utils.AVAYA_SHARED_JSON,"{}");
+
+            JsonObject jsonObject = new Gson().fromJson(jsonEndPoint,JsonObject.class);
+            if(!rule.emailParam.equals(""))
+                jsonObject.addProperty(rule.emailParam, _mail);
+            if(!rule.messageParam.equals(""))
+                jsonObject.addProperty(rule.messageParam, message);
+            if(!rule.temperatureParam.equals(""))
+                jsonObject.addProperty(rule.temperatureParam, ""+baseDispositivo.Temperature);
+            if(!rule.humidityParam.equals(""))
+                jsonObject.addProperty(rule.humidityParam, ""+baseDispositivo.Humidity);
+            if(!rule.luxParam.equals(""))
+                jsonObject.addProperty(rule.luxParam, ""+baseDispositivo.AmbientLight);
+            if(!rule.uvParam.equals(""))
+                jsonObject.addProperty(rule.uvParam, ""+baseDispositivo.UV_Index);
+            if(!rule.batteryParam.equals(""))
+            jsonObject.addProperty(rule.batteryParam, ""+baseDispositivo.Battery);
+            
+            //jsonObject.addProperty("phone", "17863310405");
+
+            String json = jsonObject.toString();
+
+
+            HashMap<String, String> eparams = new HashMap<>();
+            eparams.put("family", _family);
+            eparams.put("type", _type);
+            eparams.put("version", _version);
+            eparams.put("eventBody", json);
+
+            String response = WebMethods.requestPostMethodAvayaEndpoint(eparams, _url);
+            //int response = WebMethods.requestPostMethodAvayaEndpoint(params, _url, _family, _type, _version);
             //if(response == -2)
                 //Toast.makeText(getContext(), )
             return ""+response;
         } else if (endPoint == Utils.ENDPOINT_ZANG){
-            //return ""+WebMethods.getStringPOSTmethodZang(_zurl, parametros, "ACbf889084ad63b77ddf614ddda88d2aa9","85af708098464422a6f70d3a36b2abb9");
             return  ""+WebMethods.postDataZang(_zurl,_from,_to,_zurlparam);
         } else {
             return "Invalid endpoint";

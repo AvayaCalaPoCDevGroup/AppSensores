@@ -8,11 +8,11 @@ public class DispoTelefono extends BaseDispositivo {
     public float Acelereation_x;
     public float Acelereation_y;
     public float Acelereation_z;
-    public float Humidity;
-    public float Temperature;
+    //public float Humidity;
+    //public float Temperature;
     public float Proximidad;
-    public float AmbientLight;
-    public float Voltaje;
+    //public float AmbientLight;
+    //public float Voltaje;
 
     public double Lat;
     public double Lng;

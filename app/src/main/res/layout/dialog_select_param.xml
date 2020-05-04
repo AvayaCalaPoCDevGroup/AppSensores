@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:background="#FF0000"
+        android:textColor="#FFFFFF"
+        android:textSize="16dp"
+        android:gravity="center"
+        android:textStyle="bold"
+        android:text="@string/dialog_select_param_title"/>
+
+    <Spinner
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="5dp"
+        android:id="@+id/spnr_dialog_param"/>
+
+    <Button
+        android:id="@+id/btn_select_param_ok"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="@string/dialog_select_param_ok"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginVertical="5dp"/>
+</LinearLayout>

@@ -72,11 +72,11 @@ public class FragmentDetalleSensorPuck extends BaseVistaFargment {
         View root = inflater.inflate(R.layout.fragment_detalle_sensorpuck, container, false);
 
         mDispoSensorPuck = new DispoSensorPuck();
-        mDispoSensorPuck.setId(dispositivoBase.getId());
-        mDispoSensorPuck.setNombre(dispositivoBase.getNombre());
-        mDispoSensorPuck.setMacAddress(dispositivoBase.getMacAddress());
-        mDispoSensorPuck.setToken(dispositivoBase.getToken());
-        mDispoSensorPuck.setTipoDispositivo(dispositivoBase.getTipoDispositivo());
+        mDispoSensorPuck.id = dispositivoBase.id;
+        mDispoSensorPuck.Nombre = dispositivoBase.Nombre;
+        mDispoSensorPuck.MacAddress = dispositivoBase.MacAddress;
+        mDispoSensorPuck.Token = dispositivoBase.Token;
+        mDispoSensorPuck.TipoDispositivo = dispositivoBase.TipoDispositivo;
         mDispoSensorPuck.HRM_Sample = new int[Utils.HRM_SAMPLE_COUNT];
 
         /* Iniciar el Bluetooth*/
@@ -95,7 +95,7 @@ public class FragmentDetalleSensorPuck extends BaseVistaFargment {
             bluetoothLeScanner = Adapter.getBluetoothLeScanner();
             ArrayList<ScanFilter> filters = new ArrayList<>();
             //ScanFilter filter = new ScanFilter.Builder().setDeviceAddress("D4:81:CA:E1:7A:DC").build(); //SensorPuck
-            ScanFilter filter = new ScanFilter.Builder().setDeviceAddress(mDispoSensorPuck.getMacAddress()).build();
+            ScanFilter filter = new ScanFilter.Builder().setDeviceAddress(mDispoSensorPuck.MacAddress).build();
             filters.add(filter);
             ScanSettings scansattings = new ScanSettings.Builder().setScanMode(ScanSettings.SCAN_MODE_BALANCED).setReportDelay(0).build();
             bluetoothLeScanner.startScan(filters,scansattings,ScanCallback);
@@ -121,7 +121,7 @@ public class FragmentDetalleSensorPuck extends BaseVistaFargment {
     public void setListenerForRulesButton(Button button) {
         button.setOnClickListener(v -> {
             Bundle bundle = new Bundle();
-            bundle.putInt("idSensor", dispositivoBase.getId());
+            bundle.putInt("idSensor", dispositivoBase.id);
 
             Navigation.findNavController(getView()).navigate(R.id.action_fragmentDetalleSensorPuck_to_fragmentRules,bundle);
 
@@ -241,8 +241,6 @@ public class FragmentDetalleSensorPuck extends BaseVistaFargment {
                mDispoSensorPuck.Battery = 0;
                mDispoSensorPuck.HRM_Rate = 0;
                showData();
-
-
             }
             else /* An advertisment was received within the last second */
             {
@@ -264,7 +262,7 @@ public class FragmentDetalleSensorPuck extends BaseVistaFargment {
                 new ValuesTago("HRM_Rate", ""+( sw_fragmentdetalle_puck_hrmrate.isChecked() ? mDispoSensorPuck.HRM_Rate : 0))
         };
 
-        new EnviarInformacionTago(mDispoSensorPuck.getToken()).execute(values);
+        new EnviarInformacionTago(mDispoSensorPuck.Token).execute(values);
     }
 
 

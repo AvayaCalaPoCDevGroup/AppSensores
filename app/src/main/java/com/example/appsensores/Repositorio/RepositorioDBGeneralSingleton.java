@@ -38,10 +38,10 @@ public class RepositorioDBGeneralSingleton {
         db = dbGeneralHandler.getWritableDatabase();
 
         ContentValues dispoValues = new ContentValues();
-        dispoValues.put(DBGeneralHandler.KEY_DISPOSITIVOS_NOMBRE,device.getNombre());
-        dispoValues.put(DBGeneralHandler.KEY_DISPOSITIVOS_MACADDRESS,device.getMacAddress().toUpperCase());
-        dispoValues.put(DBGeneralHandler.KEY_DISPOSITIVOS_TOKEN,device.getToken());
-        dispoValues.put(DBGeneralHandler.KEY_DISPOSITIVOS_TIPODISPOSITIVO,device.getTipoDispositivo());
+        dispoValues.put(DBGeneralHandler.KEY_DISPOSITIVOS_NOMBRE,device.Nombre);
+        dispoValues.put(DBGeneralHandler.KEY_DISPOSITIVOS_MACADDRESS,device.MacAddress.toUpperCase());
+        dispoValues.put(DBGeneralHandler.KEY_DISPOSITIVOS_TOKEN,device.Token);
+        dispoValues.put(DBGeneralHandler.KEY_DISPOSITIVOS_TIPODISPOSITIVO,device.TipoDispositivo);
 
         db.insert(DBGeneralHandler.TABLE_DISPOSITIVOS,null, dispoValues);
         db.close();
@@ -55,12 +55,12 @@ public class RepositorioDBGeneralSingleton {
         db = dbGeneralHandler.getWritableDatabase();
 
         ContentValues dispoValues = new ContentValues();
-        dispoValues.put(DBGeneralHandler.KEY_DISPOSITIVOS_NOMBRE,device.getNombre());
-        dispoValues.put(DBGeneralHandler.KEY_DISPOSITIVOS_MACADDRESS,device.getMacAddress().toUpperCase());
-        dispoValues.put(DBGeneralHandler.KEY_DISPOSITIVOS_TOKEN,device.getToken());
-        dispoValues.put(DBGeneralHandler.KEY_DISPOSITIVOS_TIPODISPOSITIVO,device.getTipoDispositivo());
+        dispoValues.put(DBGeneralHandler.KEY_DISPOSITIVOS_NOMBRE,device.Nombre);
+        dispoValues.put(DBGeneralHandler.KEY_DISPOSITIVOS_MACADDRESS,device.MacAddress.toUpperCase());
+        dispoValues.put(DBGeneralHandler.KEY_DISPOSITIVOS_TOKEN,device.Token);
+        dispoValues.put(DBGeneralHandler.KEY_DISPOSITIVOS_TIPODISPOSITIVO,device.TipoDispositivo);
 
-        db.update(DBGeneralHandler.TABLE_DISPOSITIVOS, dispoValues, DBGeneralHandler.KEY_DISPOSITIVOS_ID + "=?", new String[] {""+device.getId()});
+        db.update(DBGeneralHandler.TABLE_DISPOSITIVOS, dispoValues, DBGeneralHandler.KEY_DISPOSITIVOS_ID + "=?", new String[] {""+device.id});
         db.close();
     }
 
@@ -80,11 +80,11 @@ public class RepositorioDBGeneralSingleton {
             do {
                 BaseDispositivo dispositivo = new BaseDispositivo();
 
-                dispositivo.setId(Integer.parseInt(cursor.getString(0)));
-                dispositivo.setNombre(cursor.getString(1));
-                dispositivo.setMacAddress(cursor.getString(2));
-                dispositivo.setToken(cursor.getString(3));
-                dispositivo.setTipoDispositivo(cursor.getInt(4));
+                dispositivo.id = Integer.parseInt(cursor.getString(0));
+                dispositivo.Nombre = cursor.getString(1);
+                dispositivo.MacAddress = cursor.getString(2);
+                dispositivo.Token = cursor.getString(3);
+                dispositivo.TipoDispositivo = cursor.getInt(4);
 
                 dispositivos.add(dispositivo);
             } while (cursor.moveToNext());
@@ -132,11 +132,11 @@ public class RepositorioDBGeneralSingleton {
         if (cursor.moveToFirst()) {
             do {
                 dispositivo = new BaseDispositivo();
-                dispositivo.setId(Integer.parseInt(cursor.getString(0)));
-                dispositivo.setNombre(cursor.getString(1));
-                dispositivo.setMacAddress(cursor.getString(2));
-                dispositivo.setToken(cursor.getString(3));
-                dispositivo.setTipoDispositivo(cursor.getInt(4));
+                dispositivo.id = Integer.parseInt(cursor.getString(0));
+                dispositivo.Nombre = cursor.getString(1);
+                dispositivo.MacAddress = cursor.getString(2);
+                dispositivo.Token = cursor.getString(3);
+                dispositivo.TipoDispositivo = cursor.getInt(4);
             } while (cursor.moveToNext());
         }
         db.close();
@@ -159,11 +159,11 @@ public class RepositorioDBGeneralSingleton {
         if (cursor.moveToFirst()) {
             do {
                 dispositivo = new BaseDispositivo();
-                dispositivo.setId(Integer.parseInt(cursor.getString(0)));
-                dispositivo.setNombre(cursor.getString(1));
-                dispositivo.setMacAddress(cursor.getString(2));
-                dispositivo.setToken(cursor.getString(3));
-                dispositivo.setTipoDispositivo(cursor.getInt(4));
+                dispositivo.id = Integer.parseInt(cursor.getString(0));
+                dispositivo.Nombre = cursor.getString(1);
+                dispositivo.MacAddress = cursor.getString(2);
+                dispositivo.Token = cursor.getString(3);
+                dispositivo.TipoDispositivo = cursor.getInt(4);
             } while (cursor.moveToNext());
         }
         db.close();
@@ -186,11 +186,11 @@ public class RepositorioDBGeneralSingleton {
         if (cursor.moveToFirst()) {
             do {
                 dispositivo = new BaseDispositivo();
-                dispositivo.setId(Integer.parseInt(cursor.getString(0)));
-                dispositivo.setNombre(cursor.getString(1));
-                dispositivo.setMacAddress(cursor.getString(2));
-                dispositivo.setToken(cursor.getString(3));
-                dispositivo.setTipoDispositivo(cursor.getInt(4));
+                dispositivo.id = Integer.parseInt(cursor.getString(0));
+                dispositivo.Nombre = cursor.getString(1);
+                dispositivo.MacAddress = cursor.getString(2);
+                dispositivo.Token = cursor.getString(3);
+                dispositivo.TipoDispositivo = cursor.getInt(4);
             } while (cursor.moveToNext());
         }
         db.close();
@@ -247,6 +247,14 @@ public class RepositorioDBGeneralSingleton {
                 rule.IsEnabled = cursor.getInt(6) != 0;
                 rule.LastDate = Long.parseLong(cursor.getString(7));
 
+                rule.emailParam = cursor.getString(8);
+                rule.messageParam = cursor.getString(9);
+                rule.temperatureParam = cursor.getString(10);
+                rule.humidityParam = cursor.getString(11);
+                rule.luxParam = cursor.getString(12);
+                rule.uvParam = cursor.getString(13);
+                rule.batteryParam = cursor.getString(14);
+
                 rules.add(rule);
             } while (cursor.moveToNext());
         }
@@ -266,6 +274,14 @@ public class RepositorioDBGeneralSingleton {
         dispoValues.put(DBGeneralHandler.KEY_RULES_VALUE2,rule.Value2);
         dispoValues.put(DBGeneralHandler.KEY_RULES_ISENABLED,rule.IsEnabled);
         dispoValues.put(DBGeneralHandler.KEY_RULES_LASTDATE,""+rule.LastDate);
+
+        dispoValues.put(DBGeneralHandler.KEY_RULES_EMAILPARAM,""+rule.emailParam);
+        dispoValues.put(DBGeneralHandler.KEY_RULES_MESSAGEPARAM,""+rule.messageParam);
+        dispoValues.put(DBGeneralHandler.KEY_RULES_TEMPERATUREPARAM,""+rule.temperatureParam);
+        dispoValues.put(DBGeneralHandler.KEY_RULES_HUMIDITYPARAM,""+rule.humidityParam);
+        dispoValues.put(DBGeneralHandler.KEY_RULES_LUXPARAM,""+rule.luxParam);
+        dispoValues.put(DBGeneralHandler.KEY_RULES_UVPARAM,""+rule.uvParam);
+        dispoValues.put(DBGeneralHandler.KEY_RULES_BATTERYPARAM,""+rule.batteryParam);
 
         db.insert(DBGeneralHandler.TABLE_RULES,null, dispoValues);
         db.close();
@@ -298,6 +314,14 @@ public class RepositorioDBGeneralSingleton {
         dispoValues.put(DBGeneralHandler.KEY_RULES_VALUE1,rule.Value1);
         dispoValues.put(DBGeneralHandler.KEY_RULES_VALUE2,rule.Value2);
         dispoValues.put(DBGeneralHandler.KEY_RULES_ISENABLED, rule.IsEnabled);
+
+        dispoValues.put(DBGeneralHandler.KEY_RULES_EMAILPARAM,""+rule.emailParam);
+        dispoValues.put(DBGeneralHandler.KEY_RULES_MESSAGEPARAM,""+rule.messageParam);
+        dispoValues.put(DBGeneralHandler.KEY_RULES_TEMPERATUREPARAM,""+rule.temperatureParam);
+        dispoValues.put(DBGeneralHandler.KEY_RULES_HUMIDITYPARAM,""+rule.humidityParam);
+        dispoValues.put(DBGeneralHandler.KEY_RULES_LUXPARAM,""+rule.luxParam);
+        dispoValues.put(DBGeneralHandler.KEY_RULES_UVPARAM,""+rule.uvParam);
+        dispoValues.put(DBGeneralHandler.KEY_RULES_BATTERYPARAM,""+rule.batteryParam);
 
         db.update(DBGeneralHandler.TABLE_RULES, dispoValues, DBGeneralHandler.KEY_RULES_ID + "=?", new String[] {""+rule.id});
         db.close();

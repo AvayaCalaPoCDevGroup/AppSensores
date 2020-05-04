@@ -33,6 +33,13 @@ public class DBGeneralHandler extends SQLiteOpenHelper {
     public static String KEY_RULES_VALUE2 = "Value2";
     public static String KEY_RULES_ISENABLED = "IsEnabled";
     public static String KEY_RULES_LASTDATE = "LastDate";
+    public static String KEY_RULES_EMAILPARAM = "emailParam";
+    public static String KEY_RULES_MESSAGEPARAM = "messageParam";
+    public static String KEY_RULES_TEMPERATUREPARAM = "temperatureParam";
+    public static String KEY_RULES_HUMIDITYPARAM = "humidityParam";
+    public static String KEY_RULES_LUXPARAM = "luxParam";
+    public static String KEY_RULES_UVPARAM = "uvParam";
+    public static String KEY_RULES_BATTERYPARAM = "batteryParam";
 
     public DBGeneralHandler(@Nullable Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -58,7 +65,14 @@ public class DBGeneralHandler extends SQLiteOpenHelper {
                 + KEY_RULES_VALUE1 + " FLOAT,"
                 + KEY_RULES_VALUE2 + " FLOAT,"
                 + KEY_RULES_ISENABLED + " INTEGER,"
-                + KEY_RULES_LASTDATE + " TEXT"
+                + KEY_RULES_LASTDATE + " TEXT,"
+                + KEY_RULES_EMAILPARAM + " TEXT,"
+                + KEY_RULES_MESSAGEPARAM + " TEXT,"
+                + KEY_RULES_TEMPERATUREPARAM + " TEXT,"
+                + KEY_RULES_HUMIDITYPARAM + " TEXT,"
+                + KEY_RULES_LUXPARAM + " TEXT,"
+                + KEY_RULES_UVPARAM + " TEXT,"
+                + KEY_RULES_BATTERYPARAM + " TEXT"
                 + ")";
         db.execSQL(CREATE_RULES_TABLE);
 

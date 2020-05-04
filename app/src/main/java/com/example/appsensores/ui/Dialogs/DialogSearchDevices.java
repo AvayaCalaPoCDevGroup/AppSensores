@@ -123,13 +123,13 @@ public class DialogSearchDevices extends Dialog {
         if(!isInCurrentList(mac_address) && !isInDatabase(mac_address)){
             //el dispositivo es nuevo tanto en la lista como en la base
             BaseDispositivo newDevice = new BaseDispositivo();
-            newDevice.setNombre(EnumTipoDispo.values()[enumTipoDispo.ordinal()].toString());
-            newDevice.setMacAddress(mac_address);
-            newDevice.setTipoDispositivo(enumTipoDispo.ordinal());
+            newDevice.Nombre = EnumTipoDispo.values()[enumTipoDispo.ordinal()].toString();
+            newDevice.MacAddress = mac_address;
+            newDevice.TipoDispositivo = enumTipoDispo.ordinal();
             listDispoScaneados.add(newDevice);
             lisDispoString.clear();
             for (BaseDispositivo unit : listDispoScaneados) {
-                lisDispoString.add(unit.getMacAddress() + " - " + ((EnumTipoDispo.values()[unit.getTipoDispositivo()])));
+                lisDispoString.add(unit.MacAddress + " - " + ((EnumTipoDispo.values()[unit.TipoDispositivo])));
             }
             adapterDispositivos.notifyDataSetChanged();
         }
