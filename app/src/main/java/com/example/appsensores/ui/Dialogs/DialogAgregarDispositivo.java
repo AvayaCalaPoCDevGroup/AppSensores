@@ -22,6 +22,8 @@ import com.google.zxing.integration.android.IntentIntegrator;
 
 import java.util.ArrayList;
 
+import javax.xml.XMLConstants;
+
 public class DialogAgregarDispositivo extends Dialog implements MainActivity.IScanListener {
 
     private Activity mActivity;
@@ -72,7 +74,7 @@ public class DialogAgregarDispositivo extends Dialog implements MainActivity.ISc
                 if(!ValidarDispositivo()){
                     return;
                 }
-                BaseDispositivo dispositivo = new BaseDispositivo();
+                BaseDispositivo dispositivo = new BaseDispositivo(getContext());
                 dispositivo.Nombre = et_dialog_agregar_dispositivo_nombre.getText().toString();
                 dispositivo.MacAddress = et_dialog_agregar_dispositivo_mac.getText().toString();
                 dispositivo.Token = et_dialog_agregar_dispositivo_token.getText().toString();

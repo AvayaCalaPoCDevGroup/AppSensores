@@ -6,9 +6,16 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import androidx.navigation.Navigation;
+
+import com.example.appsensores.Clases.Enums.EnumTipoDispo;
 import com.example.appsensores.DBHelpers.DBGeneralHandler;
 import com.example.appsensores.Models.Dispositivos.BaseDispositivo;
+import com.example.appsensores.Models.Dispositivos.DispoSensorPuck;
+import com.example.appsensores.Models.Dispositivos.DispoTelefono;
+import com.example.appsensores.Models.Dispositivos.DispoThunderBoard;
 import com.example.appsensores.Models.Rule;
+import com.example.appsensores.R;
 
 import java.util.ArrayList;
 
@@ -78,7 +85,7 @@ public class RepositorioDBGeneralSingleton {
 
         if (cursor.moveToFirst()) {
             do {
-                BaseDispositivo dispositivo = new BaseDispositivo();
+                BaseDispositivo dispositivo = new BaseDispositivo(mContext);
 
                 dispositivo.id = Integer.parseInt(cursor.getString(0));
                 dispositivo.Nombre = cursor.getString(1);
@@ -131,7 +138,20 @@ public class RepositorioDBGeneralSingleton {
 
         if (cursor.moveToFirst()) {
             do {
-                dispositivo = new BaseDispositivo();
+                String caso = (EnumTipoDispo.values()[cursor.getInt(4)]).toString();
+
+                //Switch para saber que tipo de dispositivo instanciaremos, ya que cada uno llena diferente sus sensores en el constructor
+                switch (EnumTipoDispo.valueOf(caso)){
+                    case TELEFONO :
+                        dispositivo = new DispoTelefono(mContext);
+                        break;
+                    case THUNDERBOARD:
+                        dispositivo = new DispoThunderBoard(mContext);
+                        break;
+                    case SENSOR_PUCK:
+                        dispositivo = new DispoSensorPuck(mContext);
+                        break;
+                }
                 dispositivo.id = Integer.parseInt(cursor.getString(0));
                 dispositivo.Nombre = cursor.getString(1);
                 dispositivo.MacAddress = cursor.getString(2);
@@ -158,7 +178,7 @@ public class RepositorioDBGeneralSingleton {
 
         if (cursor.moveToFirst()) {
             do {
-                dispositivo = new BaseDispositivo();
+                dispositivo = new BaseDispositivo(mContext);
                 dispositivo.id = Integer.parseInt(cursor.getString(0));
                 dispositivo.Nombre = cursor.getString(1);
                 dispositivo.MacAddress = cursor.getString(2);
@@ -185,7 +205,7 @@ public class RepositorioDBGeneralSingleton {
 
         if (cursor.moveToFirst()) {
             do {
-                dispositivo = new BaseDispositivo();
+                dispositivo = new BaseDispositivo(mContext);
                 dispositivo.id = Integer.parseInt(cursor.getString(0));
                 dispositivo.Nombre = cursor.getString(1);
                 dispositivo.MacAddress = cursor.getString(2);
@@ -218,6 +238,9 @@ public class RepositorioDBGeneralSingleton {
                 rule.IsEnabled = cursor.getInt(6) != 0;
                 rule.LastDate = Long.parseLong(cursor.getString(7));
 
+                rule.jsonParams = cursor.getString(8);
+                rule.EndpointId = cursor.getInt(9);
+
                 rules.add(rule);
             } while (cursor.moveToNext());
         }
@@ -247,13 +270,8 @@ public class RepositorioDBGeneralSingleton {
                 rule.IsEnabled = cursor.getInt(6) != 0;
                 rule.LastDate = Long.parseLong(cursor.getString(7));
 
-                rule.emailParam = cursor.getString(8);
-                rule.messageParam = cursor.getString(9);
-                rule.temperatureParam = cursor.getString(10);
-                rule.humidityParam = cursor.getString(11);
-                rule.luxParam = cursor.getString(12);
-                rule.uvParam = cursor.getString(13);
-                rule.batteryParam = cursor.getString(14);
+                rule.jsonParams = cursor.getString(8);
+                rule.EndpointId = cursor.getInt(9);
 
                 rules.add(rule);
             } while (cursor.moveToNext());
@@ -275,13 +293,8 @@ public class RepositorioDBGeneralSingleton {
         dispoValues.put(DBGeneralHandler.KEY_RULES_ISENABLED,rule.IsEnabled);
         dispoValues.put(DBGeneralHandler.KEY_RULES_LASTDATE,""+rule.LastDate);
 
-        dispoValues.put(DBGeneralHandler.KEY_RULES_EMAILPARAM,""+rule.emailParam);
-        dispoValues.put(DBGeneralHandler.KEY_RULES_MESSAGEPARAM,""+rule.messageParam);
-        dispoValues.put(DBGeneralHandler.KEY_RULES_TEMPERATUREPARAM,""+rule.temperatureParam);
-        dispoValues.put(DBGeneralHandler.KEY_RULES_HUMIDITYPARAM,""+rule.humidityParam);
-        dispoValues.put(DBGeneralHandler.KEY_RULES_LUXPARAM,""+rule.luxParam);
-        dispoValues.put(DBGeneralHandler.KEY_RULES_UVPARAM,""+rule.uvParam);
-        dispoValues.put(DBGeneralHandler.KEY_RULES_BATTERYPARAM,""+rule.batteryParam);
+        dispoValues.put(DBGeneralHandler.KEY_RULES_JSONPARAMS,""+rule.jsonParams);
+        dispoValues.put(DBGeneralHandler.KEY_RULES_ENDPOINTID, rule.EndpointId);
 
         db.insert(DBGeneralHandler.TABLE_RULES,null, dispoValues);
         db.close();
@@ -315,13 +328,8 @@ public class RepositorioDBGeneralSingleton {
         dispoValues.put(DBGeneralHandler.KEY_RULES_VALUE2,rule.Value2);
         dispoValues.put(DBGeneralHandler.KEY_RULES_ISENABLED, rule.IsEnabled);
 
-        dispoValues.put(DBGeneralHandler.KEY_RULES_EMAILPARAM,""+rule.emailParam);
-        dispoValues.put(DBGeneralHandler.KEY_RULES_MESSAGEPARAM,""+rule.messageParam);
-        dispoValues.put(DBGeneralHandler.KEY_RULES_TEMPERATUREPARAM,""+rule.temperatureParam);
-        dispoValues.put(DBGeneralHandler.KEY_RULES_HUMIDITYPARAM,""+rule.humidityParam);
-        dispoValues.put(DBGeneralHandler.KEY_RULES_LUXPARAM,""+rule.luxParam);
-        dispoValues.put(DBGeneralHandler.KEY_RULES_UVPARAM,""+rule.uvParam);
-        dispoValues.put(DBGeneralHandler.KEY_RULES_BATTERYPARAM,""+rule.batteryParam);
+        dispoValues.put(DBGeneralHandler.KEY_RULES_JSONPARAMS, rule.jsonParams);
+        dispoValues.put(DBGeneralHandler.KEY_RULES_ENDPOINTID, rule.EndpointId);
 
         db.update(DBGeneralHandler.TABLE_RULES, dispoValues, DBGeneralHandler.KEY_RULES_ID + "=?", new String[] {""+rule.id});
         db.close();

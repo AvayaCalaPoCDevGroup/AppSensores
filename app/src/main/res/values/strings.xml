@@ -118,10 +118,17 @@
     <string name="dialog_select_select">Seleccione</string>
     <string name="dialog_addrule_adv">Los parametros E-Mail y Mensaje son obligatorios.</string>
     <string name="dialog_addrule_addparam">Agragar Parametro</string>
-    <string name="dialog_addrule_titleparams">Selecciona un parametro para cada valor.\nLos Parametros se obtienen de el JSON de configuracion del endpoint.</string>
+    <string name="dialog_addrule_titleparams">Presiona \"Agregar Mapeo\" para mapear valores adicionales</string>
     <string name="dialog_ruledetails_title">Detalle de la regla</string>
     <string name="dlog_ruledetails_sensortype">Sensor:</string>
     <string name="dlog_ruledetails_ruletype">Tipo de regla:</string>
     <string name="dlog_ruledetails_val1">Valor 1</string>
     <string name="dlog_ruledetails_val2">Valor 2</string>
+    <string name="dialog_mapping_title">Mapear parametro</string>
+    <string name="dialog_mapping_param">Seleccione Parametro</string>
+    <string name="dialog_mapping_value">Seleccione Valor</string>
+    <string name="tv_dlog_ruledetails_mapping">Mapeo</string>
+    <string name="dialog_endpoint_title">Elige</string>
+    <string name="dialog_endpoint_mesage">Elige el tipo de endpoint para la regla.</string>
+    <string name="dlog_ruledetails_endpoint">Endpoint</string>
 </resources>

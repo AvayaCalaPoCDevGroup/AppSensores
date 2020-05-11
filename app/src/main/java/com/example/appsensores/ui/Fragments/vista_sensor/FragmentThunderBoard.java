@@ -85,7 +85,7 @@ public class FragmentThunderBoard extends BaseVistaFargment implements MqttCallb
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_detalle_thunder, container, false);
 
-        mDispoThunderBoard = new DispoThunderBoard();
+        mDispoThunderBoard = new DispoThunderBoard(getContext());
         mDispoThunderBoard.id = dispositivoBase.id;
         mDispoThunderBoard.Nombre = dispositivoBase.Nombre;
         mDispoThunderBoard.MacAddress = dispositivoBase.MacAddress;

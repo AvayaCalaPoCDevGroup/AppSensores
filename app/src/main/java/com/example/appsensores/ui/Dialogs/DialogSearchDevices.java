@@ -122,7 +122,7 @@ public class DialogSearchDevices extends Dialog {
     private void checkDevice(String mac_address, EnumTipoDispo enumTipoDispo) {
         if(!isInCurrentList(mac_address) && !isInDatabase(mac_address)){
             //el dispositivo es nuevo tanto en la lista como en la base
-            BaseDispositivo newDevice = new BaseDispositivo();
+            BaseDispositivo newDevice = new BaseDispositivo(getContext());
             newDevice.Nombre = EnumTipoDispo.values()[enumTipoDispo.ordinal()].toString();
             newDevice.MacAddress = mac_address;
             newDevice.TipoDispositivo = enumTipoDispo.ordinal();

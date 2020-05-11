@@ -1,5 +1,6 @@
 package com.example.appsensores.ui.Fragments.Rules;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,11 +13,13 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
 import com.example.appsensores.Clases.Adapters.AdapterRules;
 import com.example.appsensores.Clases.Enums.EnumTipoDispo;
 import com.example.appsensores.Clases.Enums.SensorTypes;
+import com.example.appsensores.Clases.Utils;
 import com.example.appsensores.Models.Dispositivos.BaseDispositivo;
 import com.example.appsensores.Models.Rule;
 import com.example.appsensores.R;
@@ -24,6 +27,7 @@ import com.example.appsensores.Repositorio.RepositorioDBGeneralSingleton;
 import com.example.appsensores.ui.Activities.MainActivity;
 import com.example.appsensores.ui.Dialogs.DialogAddRule;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.journeyapps.barcodescanner.Util;
 
 import java.util.ArrayList;
 
@@ -83,12 +87,41 @@ public class FragmentRules extends Fragment {
         final AdapterRules adapterRules = new AdapterRules(getContext(),R.layout.list_unit_dispositivos, rulesList);
         lv_fragment_rules.setAdapter(adapterRules);
         fab_fragment_rules.setOnClickListener(v -> {
-            DialogAddRule dialog = new DialogAddRule(getContext(), dispositivoBase);
-            dialog.setOnDismissListener(dialog1 -> {
-                iniciarListas();
-                adapterRules.notifyDataSetChanged();
+            final int[] endpoint = {-1};
+            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+            builder.setTitle(getResources().getString(R.string.dialog_endpoint_title));
+            builder.setMessage(getResources().getString(R.string.dialog_endpoint_mesage));
+            builder.setPositiveButton(Utils.getEndPoints(getContext())[Utils.ENDPOINT_BREEZE], new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dlog, int which) {
+                    endpoint[0] = Utils.ENDPOINT_BREEZE;
+                    DialogAddRule dialog = new DialogAddRule(getContext(), dispositivoBase, endpoint[0]);
+                    dialog.setOnDismissListener(dialog1 -> {
+                        iniciarListas();
+                        adapterRules.notifyDataSetChanged();
+                    });
+                    dialog.show();
+                    dlog.dismiss();
+                }
             });
-            dialog.show();
+            builder.setNegativeButton(Utils.getEndPoints(getContext())[Utils.ENDPOINT_ZANG], new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dlog, int which) {
+                    endpoint[0] = Utils.ENDPOINT_ZANG;
+                    DialogAddRule dialog = new DialogAddRule(getContext(), dispositivoBase, endpoint[0]);
+                    dialog.setOnDismissListener(dialog1 -> {
+                        iniciarListas();
+                        adapterRules.notifyDataSetChanged();
+                    });
+                    dialog.show();
+                    dlog.dismiss();
+                }
+            });
+
+            AlertDialog alert = builder.create();
+            alert.show();
+
+
+
         });
 
         lv_fragment_rules.setOnItemLongClickListener((parent, view1, position, id) -> {

@@ -26,6 +26,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
+import com.example.appsensores.Clases.Enums.SensorTypes;
 import com.example.appsensores.Clases.GPSGoogleClient;
 import com.example.appsensores.Clases.STimer;
 import com.example.appsensores.Clases.Utils;
@@ -96,7 +97,7 @@ public class FragmentDetalleTel extends BaseVistaFargment implements MqttCallbac
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        mDispoTelefono = new DispoTelefono();
+        mDispoTelefono = new DispoTelefono(getContext());
         mDispoTelefono.id = dispositivoBase.id;
         mDispoTelefono.Nombre = dispositivoBase.Nombre;
         mDispoTelefono.MacAddress = dispositivoBase.MacAddress;
@@ -137,14 +138,14 @@ public class FragmentDetalleTel extends BaseVistaFargment implements MqttCallbac
         double lat = location == null ? 0 : location.getLatitude();
         double lng = location == null ? 0 : location.getLongitude();
         //Log.e("FragmentdetalleTel", "GPS (LAT,LNG): " + lat + " ," + lng);
-        mDispoTelefono.Lat = sw_fragmentdetalle_tel_lat.isChecked() ?  lat : 0;
-        mDispoTelefono.Lng = sw_fragmentdetalle_tel_lng.isChecked() ?  lng : 0;
+        mDispoTelefono.GetSensorById(SensorTypes.SENSOR_LAT).value = sw_fragmentdetalle_tel_lat.isChecked() ?  lat : 0;
+        mDispoTelefono.GetSensorById(SensorTypes.SENSOR_LNG).value = sw_fragmentdetalle_tel_lng.isChecked() ?  lng : 0;
 
         //obtenemos Temperatura batteria
-        mDispoTelefono.Temperature = sw_fragmentdetalle_tel_temperatura.isChecked() ? Utils.batteryTemperature(getContext()) : 0;
+        mDispoTelefono.GetSensorById(SensorTypes.SENSOR_TEMPERATURA).value = sw_fragmentdetalle_tel_temperatura.isChecked() ? Utils.batteryTemperature(getContext()) : 0.0;
 
         //obtenemos battery level
-        mDispoTelefono.Battery = sw_fragmentdetalle_tel_voltaje.isChecked() ? Utils.batteryLevel(getContext()) : 0;
+        mDispoTelefono.GetSensorById(SensorTypes.SENSOR_VOLTAJE).value = sw_fragmentdetalle_tel_voltaje.isChecked() ? Utils.batteryLevel(getContext()) : 0.0;
 
         UpdateUI();
     }
@@ -285,19 +286,19 @@ public class FragmentDetalleTel extends BaseVistaFargment implements MqttCallbac
             //Log.e("FragmentTel", "clase que lanza el evento sensor: " + sensorEvent.sensor.getName()+ " tipo: " + sensorEvent.sensor.getType());
             switch (sensorEvent.sensor.getType()){
                 case Sensor.TYPE_ACCELEROMETER:
-                    mDispoTelefono.Acelereation_x = sw_fragmentdetalle_tel_ax.isChecked() ? sensorEvent.values[0] : 0;
-                    mDispoTelefono.Acelereation_y = sw_fragmentdetalle_tel_ax.isChecked() ? sensorEvent.values[1] : 0;
-                    mDispoTelefono.Acelereation_z = sw_fragmentdetalle_tel_ax.isChecked() ? sensorEvent.values[2] : 0;
+                    mDispoTelefono.GetSensorById(SensorTypes.SENSOR_ACCELERATION_X).value = sw_fragmentdetalle_tel_ax.isChecked() ? sensorEvent.values[0] : 0.0;
+                    mDispoTelefono.GetSensorById(SensorTypes.SENSOR_ACCELERATION_Y).value = sw_fragmentdetalle_tel_ax.isChecked() ? sensorEvent.values[1] : 0.0;
+                    mDispoTelefono.GetSensorById(SensorTypes.SENSOR_ACCELERATION_Z).value = sw_fragmentdetalle_tel_ax.isChecked() ? sensorEvent.values[2] : 0.0;
                     UpdateUI();
                     break;
                 case Sensor.TYPE_GYROSCOPE :
-                    mDispoTelefono.Orientation_x = sw_fragmentdetalle_tel_ox.isChecked() ? sensorEvent.values[0] : 0;
-                    mDispoTelefono.Orientation_y = sw_fragmentdetalle_tel_oy.isChecked() ? sensorEvent.values[1] : 0;
-                    mDispoTelefono.Orientation_z = sw_fragmentdetalle_tel_oz.isChecked() ? sensorEvent.values[2] : 0;
+                    mDispoTelefono.GetSensorById(SensorTypes.SENSOR_ORIENTATION_X).value = sw_fragmentdetalle_tel_ox.isChecked() ? sensorEvent.values[0] : 0.0;
+                    mDispoTelefono.GetSensorById(SensorTypes.SENSOR_ORIENTATION_Y).value = sw_fragmentdetalle_tel_oy.isChecked() ? sensorEvent.values[1] : 0.0;
+                    mDispoTelefono.GetSensorById(SensorTypes.SENSOR_ORIENTATION_Z).value = sw_fragmentdetalle_tel_oz.isChecked() ? sensorEvent.values[2] : 0.0;
                     UpdateUI();
                     break;
                 case Sensor.TYPE_LIGHT :
-                    mDispoTelefono.AmbientLight = sw_fragmentdetalle_tel_lux.isChecked() ? (int)sensorEvent.values[0] : 0;
+                    mDispoTelefono.GetSensorById(SensorTypes.SENSOR_LUZ).value = sw_fragmentdetalle_tel_lux.isChecked() ? (int)sensorEvent.values[0] : 0.0;
                     UpdateUI();
                     break;
                 /*case Sensor.TYPE_AMBIENT_TEMPERATURE : //LO COMENTE POR QUE SON POCOS LOS TELEFONO SON SENSOR DE TEMPERATURA AMBIENTE, LO CAMBIE POR LA BATERIA DEL TELEFONO EN EL TICK DEL TIMMER
@@ -305,11 +306,11 @@ public class FragmentDetalleTel extends BaseVistaFargment implements MqttCallbac
                     UpdateUI();
                     break;*/
                 case Sensor.TYPE_RELATIVE_HUMIDITY:
-                    mDispoTelefono.Humidity = sw_fragmentdetalle_tel_humedad.isChecked() ? sensorEvent.values[0] : 0;
+                    mDispoTelefono.GetSensorById(SensorTypes.SENSOR_HUMEDAD).value = sw_fragmentdetalle_tel_humedad.isChecked() ? sensorEvent.values[0] : 0.0;
                     UpdateUI();
                     break;
                 case Sensor.TYPE_PROXIMITY:
-                    mDispoTelefono.Proximidad = sw_fragmentdetalle_tel_proximity.isChecked() ? sensorEvent.values[0] : 0;
+                    mDispoTelefono.GetSensorById(SensorTypes.SENSOR_PROXIMITY).value = sw_fragmentdetalle_tel_proximity.isChecked() ? sensorEvent.values[0] : 0.0;
                     UpdateUI();
                     break;
             }
@@ -321,19 +322,19 @@ public class FragmentDetalleTel extends BaseVistaFargment implements MqttCallbac
     };
 
     private void UpdateUI() {
-        tv_fragmentdetalle_tel_temperatura.setText(String.format("%.2f",mDispoTelefono.Temperature) + "°C");
-        tv_fragmentdetalle_tel_humedad.setText(String.format("%.2f",mDispoTelefono.Humidity)+"%");
-        tv_fragmentdetalle_tel_lux.setText( mDispoTelefono.AmbientLight + " lux");
-        tv_fragmentdetalle_tel_proximity.setText(String.format("%.2f",mDispoTelefono.Proximidad));
-        tv_fragmentdetalle_tel_voltaje.setText(""+mDispoTelefono.Battery+"%");
-        tv_fragmentdetalle_tel_ox.setText(String.format("%.2f",mDispoTelefono.Orientation_x ));
-        tv_fragmentdetalle_tel_oy.setText(String.format("%.2f",mDispoTelefono.Orientation_y ));
-        tv_fragmentdetalle_tel_oz.setText(String.format("%.2f",mDispoTelefono.Orientation_z ));
-        tv_fragmentdetalle_tel_ax.setText(String.format("%.2f",mDispoTelefono.Acelereation_x));
-        tv_fragmentdetalle_tel_ay.setText(String.format("%.2f",mDispoTelefono.Acelereation_y));
-        tv_fragmentdetalle_tel_az.setText(String.format("%.2f",mDispoTelefono.Acelereation_z));
-        tv_fragmentdetalle_tel_lat.setText(""+mDispoTelefono.Lat);
-        tv_fragmentdetalle_tel_lng.setText(""+mDispoTelefono.Lng);
+        tv_fragmentdetalle_tel_temperatura.setText(String.format("%.2f",mDispoTelefono.GetSensorById(SensorTypes.SENSOR_TEMPERATURA).value) + "°C");
+        tv_fragmentdetalle_tel_humedad.setText(String.format("%.2f",mDispoTelefono.GetSensorById(SensorTypes.SENSOR_HUMEDAD).value)+"%");
+        tv_fragmentdetalle_tel_lux.setText( mDispoTelefono.GetSensorById(SensorTypes.SENSOR_LUZ).value + " lux");
+        tv_fragmentdetalle_tel_proximity.setText(String.format("%.2f",mDispoTelefono.GetSensorById(SensorTypes.SENSOR_PROXIMITY).value));
+        tv_fragmentdetalle_tel_voltaje.setText(""+mDispoTelefono.GetSensorById(SensorTypes.SENSOR_VOLTAJE).value+"%");
+        tv_fragmentdetalle_tel_ox.setText(String.format("%.2f",mDispoTelefono.GetSensorById(SensorTypes.SENSOR_ORIENTATION_X).value));
+        tv_fragmentdetalle_tel_oy.setText(String.format("%.2f",mDispoTelefono.GetSensorById(SensorTypes.SENSOR_ORIENTATION_Y).value));
+        tv_fragmentdetalle_tel_oz.setText(String.format("%.2f",mDispoTelefono.GetSensorById(SensorTypes.SENSOR_ORIENTATION_Z).value));
+        tv_fragmentdetalle_tel_ax.setText(String.format("%.2f",mDispoTelefono.GetSensorById(SensorTypes.SENSOR_ACCELERATION_X).value));
+        tv_fragmentdetalle_tel_ay.setText(String.format("%.2f",mDispoTelefono.GetSensorById(SensorTypes.SENSOR_ACCELERATION_Y).value));
+        tv_fragmentdetalle_tel_az.setText(String.format("%.2f",mDispoTelefono.GetSensorById(SensorTypes.SENSOR_ACCELERATION_Z).value));
+        tv_fragmentdetalle_tel_lat.setText(""+mDispoTelefono.GetSensorById(SensorTypes.SENSOR_LAT).value);
+        tv_fragmentdetalle_tel_lng.setText(""+mDispoTelefono.GetSensorById(SensorTypes.SENSOR_LNG).value);
 
     }
 
@@ -368,19 +369,19 @@ public class FragmentDetalleTel extends BaseVistaFargment implements MqttCallbac
 
     private void sendData() {
         ValuesTago[] values = {
-                new ValuesTago("Temperatura", ""    + mDispoTelefono.Temperature),
-                new ValuesTago("Humidity", ""       + mDispoTelefono.Humidity),
-                new ValuesTago("AmbientLight", ""   + mDispoTelefono.AmbientLight),
-                new ValuesTago("Proximity", ""      + mDispoTelefono.Proximidad),
-                new ValuesTago("Battery", ""        + mDispoTelefono.Battery),
-                new ValuesTago("Orientation_x", ""  + mDispoTelefono.Orientation_x),
-                new ValuesTago("Orientation_y", ""  + mDispoTelefono.Orientation_y),
-                new ValuesTago("Orientation_z", ""  + mDispoTelefono.Orientation_z),
-                new ValuesTago("Acceleration_x", "" + mDispoTelefono.Acelereation_x),
-                new ValuesTago("Acceleration_y", "" + mDispoTelefono.Acelereation_y),
-                new ValuesTago("Acceleration_z", "" + mDispoTelefono.Acelereation_z),
-                new ValuesTago("lat", "" + mDispoTelefono.Lat),
-                new ValuesTago("lng", "" + mDispoTelefono.Lng)
+                new ValuesTago("Temperatura", ""    + mDispoTelefono.GetSensorById(SensorTypes.SENSOR_TEMPERATURA).value),
+                new ValuesTago("Humidity", ""       + mDispoTelefono.GetSensorById(SensorTypes.SENSOR_HUMEDAD).value),
+                new ValuesTago("AmbientLight", ""   + mDispoTelefono.GetSensorById(SensorTypes.SENSOR_LUZ).value),
+                new ValuesTago("Proximity", ""      + mDispoTelefono.GetSensorById(SensorTypes.SENSOR_PROXIMITY).value),
+                new ValuesTago("Battery", ""        + mDispoTelefono.GetSensorById(SensorTypes.SENSOR_VOLTAJE).value),
+                new ValuesTago("Orientation_x", ""  + mDispoTelefono.GetSensorById(SensorTypes.SENSOR_ORIENTATION_X).value),
+                new ValuesTago("Orientation_y", ""  + mDispoTelefono.GetSensorById(SensorTypes.SENSOR_ORIENTATION_Y).value),
+                new ValuesTago("Orientation_z", ""  + mDispoTelefono.GetSensorById(SensorTypes.SENSOR_ORIENTATION_Z).value),
+                new ValuesTago("Acceleration_x", "" + mDispoTelefono.GetSensorById(SensorTypes.SENSOR_ACCELERATION_X).value),
+                new ValuesTago("Acceleration_y", "" + mDispoTelefono.GetSensorById(SensorTypes.SENSOR_ACCELERATION_Y).value),
+                new ValuesTago("Acceleration_z", "" + mDispoTelefono.GetSensorById(SensorTypes.SENSOR_ACCELERATION_Z).value),
+                new ValuesTago("lat", "" + mDispoTelefono.GetSensorById(SensorTypes.SENSOR_LAT).value),
+                new ValuesTago("lng", "" + mDispoTelefono.GetSensorById(SensorTypes.SENSOR_LNG).value)
 
         };
 

@@ -29,6 +29,7 @@ public class DialogRuleSettings extends Dialog {
     private EditText    et_dialog_rule_settings_to;
     private EditText    et_dialog_rule_settings_zurl;
     private EditText    et_dialog_rule_settings_zurlparam;
+    private EditText    et_dialog_rule_settings_zangJson;
     private Button      btn_dialog_rule_settings_ok;
 
     private String _mail;
@@ -41,6 +42,7 @@ public class DialogRuleSettings extends Dialog {
     private String _to;
     private String _zurl;
     private String _zurlparam;
+    private String _zjson;
 
     public DialogRuleSettings(@NonNull Context context) {
         super(context);
@@ -64,6 +66,7 @@ public class DialogRuleSettings extends Dialog {
         _to = sharedPreferencesAvaya.getString(Utils.AVAYA_SHARED_TO, "");
         _zurl = sharedPreferencesAvaya.getString(Utils.AVAYA_SHARED_ZURL, "");
         _zurlparam = sharedPreferencesAvaya.getString(Utils.AVAYA_SHARED_ZURLPARAM, "https://workflow.zang.io/EngagementDesignerZang/wf/Admin/createThalliumInstance/iotmom/9/ACbf889084ad63b77ddf614ddda88d2aa9");
+        _zjson = sharedPreferencesAvaya.getString(Utils.AVAYA_SHARED_ZJOSN, "{}");
 
         setViews();
 
@@ -80,6 +83,7 @@ public class DialogRuleSettings extends Dialog {
         et_dialog_rule_settings_to        = findViewById(R.id.et_dialog_rule_settings_to);
         et_dialog_rule_settings_zurl      = findViewById(R.id.et_dialog_rule_settings_zurl);
         et_dialog_rule_settings_zurlparam = findViewById(R.id.et_dialog_rule_settings_zurlparam);
+        et_dialog_rule_settings_zangJson  = findViewById(R.id.et_dialog_rule_settings_zangJson);
 
         btn_dialog_rule_settings_ok       = findViewById(R.id.btn_dialog_rule_settings_ok);
 
@@ -93,6 +97,7 @@ public class DialogRuleSettings extends Dialog {
         et_dialog_rule_settings_to.setText(_to);
         et_dialog_rule_settings_zurl.setText(_zurl);
         et_dialog_rule_settings_zurlparam.setText(_zurlparam);
+        et_dialog_rule_settings_zangJson.setText(_zjson);
 
         btn_dialog_rule_settings_ok.setOnClickListener(v -> {
             SharedPreferences.Editor editor = sharedPreferencesAvaya.edit();
@@ -107,6 +112,7 @@ public class DialogRuleSettings extends Dialog {
             editor.putString(Utils.AVAYA_SHARED_TO, et_dialog_rule_settings_to.getText().toString());
             editor.putString(Utils.AVAYA_SHARED_ZURL, et_dialog_rule_settings_zurl.getText().toString());
             editor.putString(Utils.AVAYA_SHARED_ZURLPARAM, et_dialog_rule_settings_zurlparam.getText().toString());
+            editor.putString(Utils.AVAYA_SHARED_ZJOSN, et_dialog_rule_settings_zangJson.getText().toString());
             editor.commit();
             dismiss();
         });

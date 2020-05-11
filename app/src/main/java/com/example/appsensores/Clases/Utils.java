@@ -3,14 +3,20 @@ package com.example.appsensores.Clases;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.os.BatteryManager;
 
 import com.example.appsensores.Models.Dispositivos.DispoSensorPuck;
 import com.example.appsensores.R;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.UUID;
 
 import static android.content.Context.BATTERY_SERVICE;
@@ -30,6 +36,7 @@ public class Utils {
     public static final String AVAYA_SHARED_TO = "AVAYA_SHARED_TO";
     public static final String AVAYA_SHARED_ZURLPARAM = "AVAYA_SHARED_ZURLPARAM";
     public static final String AVAYA_SHARED_ZURL = "AVAYA_SHARED_ZURL";
+    public static final String AVAYA_SHARED_ZJOSN = "AVAYA_SHARED_ZJOSN";
 
     public static final String AVAYA_SHARED_BORKERTOKEN = "AVAYA_SHARED_BORKERTOKEN";
     public static final String AVAYA_SHARED_MIN_INTERVAL_BETWEEN_RULES = "AVAYA_SHARED_MIN_INTERVAL_BETWEEN_RULES";
@@ -245,18 +252,87 @@ public class Utils {
      */
     public static float batteryTemperature(Context context)
     {
-        Intent intent = context.registerReceiver(null, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
-        float  temp   = ((float) intent.getIntExtra(BatteryManager.EXTRA_TEMPERATURE,0)) / 10;
+        float temp = -1;
+        try {
+            Intent intent = context.registerReceiver(null, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
+            temp   = ((float) intent.getIntExtra(BatteryManager.EXTRA_TEMPERATURE,0)) / 10;
+        } catch (Exception e) {
+
+        }
         return temp;
     }
 
     public static  float batteryLevel(Context context){
-        BatteryManager bm = (BatteryManager)context.getSystemService(BATTERY_SERVICE);
-        int batLevel = bm.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY);
+        int batLevel = -1;
+        try {
+            BatteryManager bm = (BatteryManager)context.getSystemService(BATTERY_SERVICE);
+            batLevel = bm.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY);
+        } catch (Exception e) {
+
+        }
         return  batLevel;
     }
 
     public static String[] getEndPoints(Context context){
         return new String[] {"Breeze", "Avaya CPaaS", context.getResources().getString(R.string.endpoint_type_none)};
+    }
+
+    private static ArrayList<String> getEndPointParametersBreeze(Context context){
+        ArrayList<String> params = new ArrayList<>();
+
+        SharedPreferences shared = context.getSharedPreferences(Utils.AVAYA_SHARED_PREFERENCES,0);
+        String endpoint_json = shared.getString(Utils.AVAYA_SHARED_JSON,"{}");
+
+        try {
+            JSONObject jsonObject = new JSONObject(endpoint_json);
+
+            if(jsonObject.has("title") && jsonObject.has("type") && jsonObject.has("properties")){
+                //el json es del formato en el que se extraen de engagement designer
+                jsonObject = jsonObject.getJSONObject("properties");
+            }
+
+            Iterator<String> iterator = jsonObject.keys();
+            while(iterator.hasNext()){
+                params.add(iterator.next());
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return params;
+    }
+
+    private static ArrayList<String> getEndPointParametersCPaaS(Context context){
+        ArrayList<String> params = new ArrayList<>();
+
+        SharedPreferences shared = context.getSharedPreferences(Utils.AVAYA_SHARED_PREFERENCES,0);
+        String endpoint_json = shared.getString(Utils.AVAYA_SHARED_ZJOSN,"{}");
+
+        try {
+            JSONObject jsonObject = new JSONObject(endpoint_json);
+
+            if(jsonObject.has("imessage")){
+                //el json es del formato {"imessage": "{\"Phone\":\"5563556882\",\"Email\":\"martinez71@avaya.com\",\"Name\":\"Alberto\",\"Message\":\"test Android\"}"}
+                jsonObject = new JSONObject(jsonObject.getString("imessage"));
+            }
+
+            Iterator<String> iterator = jsonObject.keys();
+            while(iterator.hasNext()){
+                params.add(iterator.next());
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return params;
+    }
+
+    public static ArrayList<String> GetEndpointParameters(Context context, int endpoint){
+        if(endpoint == ENDPOINT_BREEZE){
+            return getEndPointParametersBreeze(context);
+        } else if(endpoint == ENDPOINT_ZANG){
+            return getEndPointParametersCPaaS(context);
+        }
+        return null;
     }
 }

@@ -1,5 +1,7 @@
 package com.example.appsensores.Models.Dispositivos;
 
+import android.content.Context;
+
 public class DispoThunderBoard extends BaseDispositivo {
 
     //Orientation Service
@@ -24,4 +26,8 @@ public class DispoThunderBoard extends BaseDispositivo {
 
     public int sw0;
     public int sw1;
+
+    public DispoThunderBoard(Context context) {
+        super(context);
+    }
 }

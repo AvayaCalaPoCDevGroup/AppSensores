@@ -32,6 +32,7 @@ import com.example.appsensores.Models.Dispositivos.DispoThunderBoard;
 import com.example.appsensores.Models.LocationTago;
 import com.example.appsensores.Models.Parametros;
 import com.example.appsensores.Models.Rule;
+import com.example.appsensores.Models.SensorEndpointMapping;
 import com.example.appsensores.Models.ValuesTago;
 import com.example.appsensores.R;
 import com.example.appsensores.Repositorio.RepositorioDBGeneralSingleton;
@@ -41,7 +42,11 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.journeyapps.barcodescanner.Util;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.concurrent.Semaphore;
 
@@ -130,6 +135,7 @@ public abstract class BaseVistaFargment extends Fragment implements DialogSettin
         builder.setCancelable(false);
         builder.setView(R.layout.dialog_loading);
         dialogCargando = builder.create();
+        listSwitches.clear(); //Limpio por si acaso antes de set views
         setControles(view);
         setListenerForRulesButton(btn_fragmentvista_rules);
 
@@ -251,14 +257,19 @@ public abstract class BaseVistaFargment extends Fragment implements DialogSettin
         /**
          * Array booleano de los status de los switch de sensores, asi evitamos mandar una alerta de un sensor desactivado
          */
-        private boolean[] switchStatus = {false, false, false, false, false};
+        private boolean[] switchStatus =    { //hasta hoy 2020-05-06 el maximo de switch es de 16, por los que este array de 25 es suficiente para hacer una copia temporal
+                true, true, true, true, true, //si agrego un dispositivo de mas de 25 sensores tengo que umentar este array
+                true, true, true, true, true,
+                true, true, true, true, true,
+                true, true, true, true, true,
+                true, true, true, true, true};
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
 
             //Leemos el status de los switch en esta variable local por que no podemos acceder directo a la UI desde InBackGround
-            for(int i = 0; i < 5; i++){
+            for(int i = 0; i < listSwitches.size(); i++){
                 switchStatus[i] = listSwitches.get(i).isChecked();
             }
         }
@@ -288,36 +299,37 @@ public abstract class BaseVistaFargment extends Fragment implements DialogSettin
             for (Rule unit : rules) {
                 if(unit.IsEnabled && !checkLastRuleSend(unit.LastDate)) { //Si la regla esta deshabilitada no mandamos la alerta y si ya paso mas de un minuto desde la ultima regla
                     if (unit.RuleId == SensorTypes.MAYOR) {
-                        if (values[unit.SensorId] > unit.Value1) {
-                            if (switchStatus[unit.SensorId]) { //Verificamos si el switch del sensor esta habilitado
+                        if (baseDispositivos[0].GetSensorById(unit.SensorId).value > unit.Value1) {
+                        //if (values[unit.SensorId] > unit.Value1) {
+                            if (switchStatus[baseDispositivos[0].GetSensorIndexById(unit.SensorId)]) { //Verificamos si el switch del sensor esta habilitado
                                 sensortype = SensorTypes.getSensorAmbientList(getContext())[unit.SensorId];
                                 ruletype = SensorTypes.getRuleTypes(getContext())[unit.RuleId];
                                 valor1 = String.format("%.2f", unit.Value1);
-                                valor = String.format("%.2f", values[unit.SensorId]);
+                                valor = String.format("%.2f", baseDispositivos[0].GetSensorById(unit.SensorId).value);
                                 message = "Alert " + sensorName + " -> " + sensortype + " " + valor + " " + ruletype + " " + valor1;
                                 resp = sendNotification(message, unit, baseDispositivos[0]);
                             }
                         }
                     } else if (unit.RuleId == SensorTypes.MENOR) {
-                        if (values[unit.SensorId] < unit.Value1) {
+                        if (switchStatus[baseDispositivos[0].GetSensorIndexById(unit.SensorId)]) { //Verificamos si el switch del sensor esta habilitado
                             if (switchStatus[unit.SensorId]) { //Verificamos si el switch del sensor esta habilitado
                                 sensortype = SensorTypes.getSensorAmbientList(getContext())[unit.SensorId];
                                 ruletype = SensorTypes.getRuleTypes(getContext())[unit.RuleId];
                                 valor1 = String.format("%.2f", unit.Value1);
-                                valor = String.format("%.2f", values[unit.SensorId]);
+                                valor = String.format("%.2f", baseDispositivos[0].GetSensorById(unit.SensorId).value);
                                 message = "Alert " + sensorName + " -> " + sensortype + " " + valor + " " + ruletype + " " + valor1;
                                 resp = sendNotification(message, unit, baseDispositivos[0]);
                             }
                         }
                     }
                     if (unit.RuleId == SensorTypes.ENTRE) {
-                        if (values[unit.SensorId] > unit.Value1 && values[unit.SensorId] < unit.Value2) {
-                            if (switchStatus[unit.SensorId]) { //Verificamos si el switch del sensor esta habilitado
+                        if (baseDispositivos[0].GetSensorById(unit.SensorId).value > unit.Value1 && values[unit.SensorId] < unit.Value2) {
+                            if (switchStatus[baseDispositivos[0].GetSensorIndexById(unit.SensorId)]) { //Verificamos si el switch del sensor esta habilitado
                                 sensortype = SensorTypes.getSensorAmbientList(getContext())[unit.SensorId];
                                 ruletype = SensorTypes.getRuleTypes(getContext())[unit.RuleId];
                                 valor1 = String.format("%.2f", unit.Value1);
                                 valor2 = String.format("%.2f", unit.Value2);
-                                valor = String.format("%.2f", values[unit.SensorId]);
+                                valor = String.format("%.2f", baseDispositivos[0].GetSensorById(unit.SensorId).value);
                                 message = "Alert " + sensorName + " -> " + sensortype + " " + valor + " " + ruletype + " " + valor1 + " - " + valor2;
                                 resp = sendNotification(message, unit, baseDispositivos[0]);
                             }
@@ -381,26 +393,20 @@ public abstract class BaseVistaFargment extends Fragment implements DialogSettin
         RepositorioDBGeneralSingleton.getInstance(getContext()).updateLastUpdateRule(System.currentTimeMillis(), rule.id); //guardamos la ultima hora de la regla en la base
 
         //Verificamos si se enviara por breeze o por zang
-        if(endPoint == Utils.ENDPOINT_BREEZE){
+        if(rule.EndpointId == Utils.ENDPOINT_BREEZE){
 
             String jsonEndPoint = sharedPreferencesAvaya.getString(Utils.AVAYA_SHARED_JSON,"{}");
 
             JsonObject jsonObject = new Gson().fromJson(jsonEndPoint,JsonObject.class);
-            if(!rule.emailParam.equals(""))
-                jsonObject.addProperty(rule.emailParam, _mail);
-            if(!rule.messageParam.equals(""))
-                jsonObject.addProperty(rule.messageParam, message);
-            if(!rule.temperatureParam.equals(""))
-                jsonObject.addProperty(rule.temperatureParam, ""+baseDispositivo.Temperature);
-            if(!rule.humidityParam.equals(""))
-                jsonObject.addProperty(rule.humidityParam, ""+baseDispositivo.Humidity);
-            if(!rule.luxParam.equals(""))
-                jsonObject.addProperty(rule.luxParam, ""+baseDispositivo.AmbientLight);
-            if(!rule.uvParam.equals(""))
-                jsonObject.addProperty(rule.uvParam, ""+baseDispositivo.UV_Index);
-            if(!rule.batteryParam.equals(""))
-            jsonObject.addProperty(rule.batteryParam, ""+baseDispositivo.Battery);
-            
+            SensorEndpointMapping[] sepmList = new Gson().fromJson(rule.jsonParams,SensorEndpointMapping[].class);
+            for (SensorEndpointMapping sepm : sepmList ) {
+                if(sepm.idSensor == SensorTypes.SENSOR_MESAGE){
+                    jsonObject.addProperty(sepm.map, message);
+                } else {
+                    jsonObject.addProperty(sepm.map, baseDispositivo.GetSensorById(sepm.idSensor).value);
+                }
+            }
+
             //jsonObject.addProperty("phone", "17863310405");
 
             String json = jsonObject.toString();
@@ -413,12 +419,36 @@ public abstract class BaseVistaFargment extends Fragment implements DialogSettin
             eparams.put("eventBody", json);
 
             String response = WebMethods.requestPostMethodAvayaEndpoint(eparams, _url);
-            //int response = WebMethods.requestPostMethodAvayaEndpoint(params, _url, _family, _type, _version);
-            //if(response == -2)
-                //Toast.makeText(getContext(), )
+
             return ""+response;
-        } else if (endPoint == Utils.ENDPOINT_ZANG){
-            return  ""+WebMethods.postDataZang(_zurl,_from,_to,_zurlparam);
+        } else if (rule.EndpointId == Utils.ENDPOINT_ZANG){
+            String jsonEndPoint = sharedPreferencesAvaya.getString(Utils.AVAYA_SHARED_ZJOSN,"{}");
+            String json = "{}";
+            try {
+                JSONObject jsonObject = new JSONObject(jsonEndPoint);
+                if(jsonObject.has("imessage")){
+                    jsonObject = new JSONObject(jsonObject.getString("imessage"));
+                }
+
+                SensorEndpointMapping[] sepmList = new Gson().fromJson(rule.jsonParams,SensorEndpointMapping[].class);
+                for (SensorEndpointMapping sepm : sepmList) {
+                    if(sepm.idSensor == SensorTypes.SENSOR_MESAGE){
+                        jsonObject.put(sepm.map, message);
+                    } else {
+                        jsonObject.put(sepm.map, ""+baseDispositivo.GetSensorById(sepm.idSensor).value);
+                    }
+                }
+
+                JSONObject jsonToSend = new JSONObject();
+                jsonToSend.put("imessage", jsonObject.toString());
+
+                json = jsonToSend.toString();
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+                    //{"imessage": "{"Phone":"5563556882","Email":"martinez71@avaya.com","Name":"Alberto","Message":"test Android"}"}
+            return  ""+WebMethods.postBodyDataZang("https://workflow.zang.io/EngagementDesignerZang/wf/Admin/createThalliumInstance/PostToAvayaSpaces/1/ACf674eb32816d08d783f148299249fffd", json);
         } else {
             return "Invalid endpoint";
         }

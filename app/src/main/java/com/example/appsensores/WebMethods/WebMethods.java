@@ -298,6 +298,74 @@ public class WebMethods {
         return resp;
     }
 
+    public static String  postBodyDataZang(String url, String body){
+        String resp = "-1";
+        //String postParameters = createQueryStringForParameters(parameters);
+
+        HttpURLConnection urlConnection = null;
+        try {
+            // create connection
+            URL urlToRequest = new URL(url);
+            urlConnection = (HttpURLConnection) urlToRequest.openConnection();
+            urlConnection.setConnectTimeout(15000);
+            urlConnection.setReadTimeout(15000);
+            // handle POST parameters
+
+            urlConnection.setDoOutput(true);
+            urlConnection.setRequestProperty("Content-Type", "application/json");
+            urlConnection.setRequestProperty("Authorization","Basic QUNmNjc0ZWIzMjgxNmQwOGQ3ODNmMTQ4Mjk5MjQ5ZmZmZDphMzMwMmU4MDJhMTQ0MjM4Yjk0ZDVjNDk5MmFiNzc1ZA==");
+            urlConnection.setRequestMethod("POST");
+            //urlConnection.setFixedLengthStreamingMode(postParameters.getBytes().length);
+            //urlConnection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+            urlConnection.setRequestProperty("User-Agent", "Mozilla/5.0 ( compatible ) ");
+            urlConnection.setRequestProperty("Accept", "*/*");
+            //send the POST out
+            OutputStream os = urlConnection.getOutputStream();
+            os.write(body.getBytes());
+            os.close();
+
+
+            // handle issues
+            int statusCode = urlConnection.getResponseCode();
+            if (statusCode != HttpURLConnection.HTTP_OK) {
+                // throw some exception
+            }
+
+            InputStream is = urlConnection.getInputStream();
+            BufferedReader rd = new BufferedReader(new InputStreamReader(is));
+            String line;
+            StringBuffer response = new StringBuffer();
+            while((line = rd.readLine()) != null) {
+                response.append(line);
+                //response.append("\n");
+            }
+            rd.close();
+            Log.i("makeservicekall", "response:" + response);
+            resp = response.toString();
+
+
+        } catch (MalformedURLException e) {
+            Log.e("EXCEPTION malformedurl", "error:"+e);
+
+        } catch (SocketTimeoutException e) {
+            // hadle timeout
+            Log.e("EXCEPTION SOcket", "error:"+e);
+
+        } catch (IOException e) {
+            // handle I/0
+            Log.e("makesercall EXCEPTION", "error:"+e);
+
+        } finally {
+            if (urlConnection != null) {
+                urlConnection.disconnect();
+            }
+
+        }
+
+
+        return resp;
+    }
+
     public synchronized static JSONArray getJsonPOSTmethod(String url, HashMap<String, String> parameters){
         JSONArray respJsonArray = null;
         String postParameters = createQueryStringForParameters(parameters);

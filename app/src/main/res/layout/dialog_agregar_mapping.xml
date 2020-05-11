@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:background="#FF0000"
+        android:textColor="#FFFFFF"
+        android:textSize="16dp"
+        android:gravity="center"
+        android:textStyle="bold"
+        android:text="@string/dialog_mapping_title"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="5dp"
+        android:text="@string/dialog_mapping_param"/>
+    <Spinner
+        android:id="@+id/spnr_dialog_mapping_param"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:enabled="false"
+        android:layout_margin="5dp"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="5dp"
+        android:text="@string/dialog_mapping_value"/>
+    <Spinner
+        android:id="@+id/spnr_dialog_mapping_value"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:enabled="false"
+        android:layout_margin="5dp"/>
+
+    <Button
+        android:id="@+id/btn_dialog_mapping_ok"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp"
+        android:textSize="15dp"
+        style="@style/Widget.MaterialComponents.Button"
+        android:text="@string/dialog_agregar_dispositivo_ok"/>
+</LinearLayout>

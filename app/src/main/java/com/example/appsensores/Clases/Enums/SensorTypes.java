@@ -20,42 +20,28 @@ import java.util.List;
 
 public class SensorTypes {
 
-    public static final int TEMPERATURA = 0;
-    public static final int HUMEDAD = 1;
-    public static final int LUZ = 2;
-    public static final int UV = 3;
-    public static final int VOLTAJE = 4;
+    public static final int SENSOR_TEMPERATURA = 0;
+    public static final int SENSOR_HUMEDAD = 1;
+    public static final int SENSOR_LUZ = 2;
+    public static final int SENSOR_UV = 3;
+    public static final int SENSOR_VOLTAJE = 4;
+    public static final int SENSOR_PROXIMITY = 5;
+    public static final int SENSOR_ORIENTATION_X = 6;
+    public static final int SENSOR_ORIENTATION_Y = 7;
+    public static final int SENSOR_ORIENTATION_Z = 8;
+    public static final int SENSOR_ACCELERATION_X = 9;
+    public static final int SENSOR_ACCELERATION_Y = 10;
+    public static final int SENSOR_ACCELERATION_Z = 11;
+    public static final int SENSOR_LAT = 12;
+    public static final int SENSOR_LNG = 13;
+    public static final int SENSOR_SW0 = 14;
+    public static final int SENSOR_SW1 = 15;
+    public static final int SENSOR_HEART_RATE = 16;
+    public static final int SENSOR_MESAGE = 17; //Este es mas bien un comodin para aqui guardar el mensaje de la alerta.
 
     public static final int MENOR = 0;
     public static final int MAYOR = 1;
     public static final int ENTRE = 2;
-
-
-
-    public static ArrayList<String> getEndPointParameters(Context context){
-        ArrayList<String> params = new ArrayList<>();
-
-        SharedPreferences shared = context.getSharedPreferences(Utils.AVAYA_SHARED_PREFERENCES,0);
-        String endpoint_json = shared.getString(Utils.AVAYA_SHARED_JSON,"{}");
-
-        try {
-            JSONObject jsonObject = new JSONObject(endpoint_json);
-
-            if(jsonObject.has("title") && jsonObject.has("type") && jsonObject.has("properties")){
-                //el json es del formato en el que se extraen de engagement designer
-                jsonObject = jsonObject.getJSONObject("properties");
-            }
-
-            Iterator<String> iterator = jsonObject.keys();
-            while(iterator.hasNext()){
-                params.add(iterator.next());
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        return params;
-    }
 
     public static String[] getSensorAmbientList(Context context){
         Resources res = context.getResources();
@@ -65,6 +51,19 @@ public class SensorTypes {
                 res.getString(R.string.measure_lux),
                 res.getString(R.string.measure_uv),
                 res.getString(R.string.measure_voltaje),
+                res.getString(R.string.measure_proximidad),
+                res.getString(R.string.measure_orientation_x),
+                res.getString(R.string.measure_orientation_y),
+                res.getString(R.string.measure_orientation_z),
+                res.getString(R.string.measure_aceleration_x),
+                res.getString(R.string.measure_aceleration_y),
+                res.getString(R.string.measure_aceleration_z),
+                res.getString(R.string.measure_lat),
+                res.getString(R.string.measure_lng),
+                "SW0",
+                "SW1",
+                res.getString(R.string.measure_hrmrate),
+                res.getString(R.string.param_msg)
         };
 
         return resp;

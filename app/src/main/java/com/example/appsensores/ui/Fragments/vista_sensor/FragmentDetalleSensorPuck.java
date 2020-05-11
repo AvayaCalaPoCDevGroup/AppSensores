@@ -71,7 +71,7 @@ public class FragmentDetalleSensorPuck extends BaseVistaFargment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_detalle_sensorpuck, container, false);
 
-        mDispoSensorPuck = new DispoSensorPuck();
+        mDispoSensorPuck = new DispoSensorPuck(getContext());
         mDispoSensorPuck.id = dispositivoBase.id;
         mDispoSensorPuck.Nombre = dispositivoBase.Nombre;
         mDispoSensorPuck.MacAddress = dispositivoBase.MacAddress;

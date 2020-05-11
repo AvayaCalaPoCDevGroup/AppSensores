@@ -1,5 +1,7 @@
 package com.example.appsensores.Models.Dispositivos;
 
+import android.content.Context;
+
 /***
  * Clase modelo para los sensores de Silicon Labs Puck
  */
@@ -25,4 +27,8 @@ public class DispoSensorPuck extends BaseDispositivo {
     public int    LostAdv;
     public int    LostCount;
     public int    IdleCount;
+
+    public DispoSensorPuck(Context context) {
+        super(context);
+    }
 }
